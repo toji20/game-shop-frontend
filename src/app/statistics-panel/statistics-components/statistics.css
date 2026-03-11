@@ -1,0 +1,361 @@
+/* ── Tokens ────────────────────────────────────────────────────────────────── */
+.stats {
+    --bg: #0b0d14;
+    --surface: #111420;
+    --surface-2: #181c2e;
+    --border: rgba(255, 255, 255, 0.07);
+    --accent: #6366f1;
+    --accent-soft: rgba(99, 102, 241, 0.15);
+    --text: #f1f5f9;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    padding: 40px 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+.stats__header {
+    margin-bottom: 36px;
+}
+
+.stats__title {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 30%, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 4px;
+}
+
+.stats__subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+}
+
+/* ── Cards ─────────────────────────────────────────────────────────────────── */
+.stats__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: fadeUp 0.5s ease both;
+    transition:
+        border-color 0.2s,
+        transform 0.2s;
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.stat-card--skeleton {
+    height: 90px;
+    animation: pulse 1.4s ease infinite;
+}
+
+.stat-card__icon {
+    font-size: 1.6rem;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.stat-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.stat-card__label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stat-card__value {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+}
+
+/* ── Chart ─────────────────────────────────────────────────────────────────── */
+.stats__chart {
+    margin-bottom: 24px;
+}
+
+.chart-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px 20px;
+}
+
+.chart-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin: 0 0 24px;
+    letter-spacing: -0.01em;
+}
+
+.chart-tooltip {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+}
+
+.chart-tooltip__date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0 0 4px;
+}
+
+.chart-tooltip__value {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0;
+}
+
+/* ── Bottom grid ───────────────────────────────────────────────────────────── */
+.stats__bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .stats__bottom {
+        grid-template-columns: 1fr;
+    }
+    .stats {
+        padding: 24px 16px;
+    }
+}
+
+/* ── Top Games ─────────────────────────────────────────────────────────────── */
+.top-games,
+.last-users {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+}
+
+.top-games__list,
+.last-users__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.top-games__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-games__rank {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    width: 22px;
+    flex-shrink: 0;
+}
+
+.top-games__img {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.top-games__img--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2);
+    font-size: 1rem;
+}
+
+.top-games__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.top-games__name {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 6px;
+}
+
+.top-games__bar-wrap {
+    height: 3px;
+    background: var(--surface-2);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.top-games__bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+    border-radius: 99px;
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.top-games__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.top-games__revenue {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.top-games__orders {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* ── Last Users ────────────────────────────────────────────────────────────── */
+.last-users__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.last-users__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1.5px solid var(--border);
+}
+
+.last-users__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.last-users__name {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.last-users__email {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.last-users__spent {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+/* ── Skeletons ─────────────────────────────────────────────────────────────── */
+.skeleton {
+    background: var(--surface);
+    border-radius: var(--radius);
+    animation: pulse 1.4s ease infinite;
+}
+
+.skeleton--chart {
+    height: 340px;
+    width: 100%;
+}
+
+.skeleton--block {
+    height: 320px;
+    width: 100%;
+}
+
+/* ── Animations ────────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}

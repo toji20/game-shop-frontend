@@ -1,7 +1,17 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const config: NextConfig = {
+    reactStrictMode: true,
+    poweredByHeader: false,
+    output: 'standalone',
+    trailingSlash: false,
+    images: {
+        remotePatterns: [
+            { protocol: 'http', hostname: 'localhost', port: '5000' },
+        ],
+    },
+    typedRoutes: false,
+    compress: true,
 };
 
-export default nextConfig;
+export default config;
