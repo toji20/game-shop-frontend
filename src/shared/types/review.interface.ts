@@ -17,3 +17,10 @@ export interface IReviewCreate {
     text: string;
     rating: number;
 }
+export interface IReviewsPaginated {
+    reviews: IReview[];
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
+}

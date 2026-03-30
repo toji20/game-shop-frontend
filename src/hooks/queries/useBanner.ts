@@ -32,7 +32,6 @@ export function useBannerId(id: number) {
 }
 
 export function useCreateBanner() {
-    const { push } = useRouter();
     const queryClient = useQueryClient();
 
     const { mutate: createBanner, isPending: isLoadingCreate } = useMutation({
@@ -41,7 +40,6 @@ export function useCreateBanner() {
         onSuccess() {
             queryClient.invalidateQueries({ queryKey: ['banners'] });
             toast.success('Баннер создан');
-            push(DASHBOARD_URL.banners());
         },
         onError() {
             toast.error('Ошибка при создании баннера');

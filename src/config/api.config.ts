@@ -24,6 +24,8 @@ export const API_URL = {
     // Banners
     banner: (url = '') => API_URL.root(`${SERVER_URL}/banner/${url}`),
 
+    adBanner: (url = '') => API_URL.root(`${SERVER_URL}/ad-banner/${url}`),
+
     // Reviews
     reviews: (url = '') => API_URL.root(`${SERVER_URL}/reviews/${url}`),
 
@@ -49,4 +51,8 @@ export const API_URL = {
 
     // Files
     files: (url = '') => API_URL.root(`${SERVER_URL}/files/${url}`),
+
+    //promo
+    promo: (url = '') =>
+        API_URL.root(`${SERVER_URL}/promo${url ? `/${url}` : ''}`),
 };

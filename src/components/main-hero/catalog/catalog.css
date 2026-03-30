@@ -1,0 +1,145 @@
+.catalog {
+    max-width: 1460px;
+    padding: 20px;
+    margin: auto;
+}
+
+.catalog-title {
+    font-size: 21px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    transition: all 0.3s;
+    width: fit-content;
+}
+
+.catalog-title-svg {
+    margin-top: 4px;
+}
+
+.catalog-title:hover {
+    gap: 8px;
+    color: #bababa;
+}
+
+.catalog-sort {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.catalog-sort-btn {
+    padding: 6px 16px;
+    border-radius: 99px;
+    border: 1px solid #3a3b3e;
+    background: transparent;
+    color: #bababa;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.catalog-sort-btn:hover {
+    border-color: #555;
+}
+
+.catalog-sort-btn--active {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+.catalog-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.catalog-item {
+    flex-shrink: 0;
+}
+
+.catalog-item-img-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+    width: 100%;
+    aspect-ratio: 4 / 2;
+}
+
+.catalog-item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    pointer-events: none;
+}
+
+.catalog-item-rating,
+.catalog-item-age-limit {
+    position: absolute;
+    bottom: 8px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 16px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s;
+}
+
+.catalog-item-rating {
+    right: 8px;
+}
+
+.catalog-item-age-limit {
+    left: 8px;
+}
+
+.catalog-item-star {
+    color: #f5c518;
+    fill: #f5c518;
+    flex-shrink: 0;
+}
+
+.catalog-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.catalog-item-info-title {
+    color: #fff;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s;
+}
+
+.catalog-item-info-release-date {
+    color: #bababa;
+    font-weight: 400;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.catalog-item:hover .catalog-item-info-title,
+.catalog-item:hover .catalog-item-info-release-date {
+    color: #969494;
+}
+.catalog-item:hover .catalog-item-rating,
+.catalog-item:hover .catalog-item-age-limit {
+    background: rgba(0, 0, 0, 0.745);
+}
+.catalog-item-img-skeleton {
+    aspect-ratio: 4 / 2;
+    height: auto !important;
+}

@@ -1,0 +1,17 @@
+.positions {
+    display: grid;
+    width: 100%;
+    gap: 24px;
+    align-items: start;
+}
+
+.positions-block {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 17px;
+    background-color: #262829;
+    padding: 45px 60px;
+    border-radius: 16px;
+    /* overflow-y: auto; */
+    /* max-height: 600px; */
+}

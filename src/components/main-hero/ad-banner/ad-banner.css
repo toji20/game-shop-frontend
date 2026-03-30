@@ -1,0 +1,27 @@
+.ad-banner {
+    max-width: 1460px;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin: auto;
+    margin-top: 80px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.ad-banner-link {
+    display: block;
+    width: 100%;
+}
+
+.ad-banner-img {
+    width: 100%;
+    aspect-ratio: 4 / 1;
+    object-fit: cover;
+    border-radius: 18px;
+    display: block;
+}
+.ad-banner-skeleton {
+    aspect-ratio: 4 / 1 !important;
+    height: auto !important;
+}

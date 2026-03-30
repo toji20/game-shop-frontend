@@ -1,6 +1,7 @@
 export * from './user.interface';
 export * from './category.interface';
 export * from './banner.interface';
+export * from './ad-banner.interface';
 export * from './game.interface';
 export * from './review.interface';
 export * from './order.interface';

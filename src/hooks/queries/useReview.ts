@@ -1,7 +1,12 @@
 import { reviewService } from '@/services/review.service';
-import { IReviewCreate } from '@/shared/types';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { IReview, IReviewCreate } from '@/shared/types';
+import {
+    useMutation,
+    useQueries,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
+import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export function useReviews(gameId: number) {
@@ -27,6 +32,92 @@ export function useAllReviews() {
         () => ({ reviews, isLoadingReviews }),
         [reviews, isLoadingReviews],
     );
+}
+
+export function useAllReviewsPaginated(limit = 20) {
+    const [maxPage, setMaxPage] = useState(1);
+
+    const queries = useQueries({
+        queries: Array.from({ length: maxPage }, (_, i) => ({
+            queryKey: ['reviews-paginated-all', i + 1],
+            queryFn: () => reviewService.getAllPaginated(i + 1, limit),
+        })),
+    });
+
+    const allReviews = useMemo<IReview[]>(
+        () => queries.flatMap((q) => q.data?.reviews ?? []),
+        [queries],
+    );
+
+    const lastData = queries[queries.length - 1]?.data;
+    const isLoading = queries[0]?.isLoading ?? false;
+    const isFetching = queries.some((q) => q.isFetching);
+
+    const loadMore = useCallback(() => {
+        if (lastData?.hasMore && !isFetching) {
+            setMaxPage((p) => p + 1);
+        }
+    }, [lastData?.hasMore, isFetching]);
+
+    return useMemo(
+        () => ({
+            reviews: allReviews,
+            total: lastData?.total ?? 0,
+            hasMore: lastData?.hasMore ?? false,
+            isLoading,
+            isFetching,
+            loadMore,
+        }),
+        [allReviews, lastData, isLoading, isFetching, loadMore],
+    );
+}
+
+export function useReviewsPaginated(gameId: number, limit = 20) {
+    const [maxPage, setMaxPage] = useState(1);
+
+    const queries = useQueries({
+        queries: Array.from({ length: maxPage }, (_, i) => ({
+            queryKey: ['reviews-paginated', gameId, i + 1],
+            queryFn: () => reviewService.getPaginated(gameId, i + 1, limit),
+            enabled: !!gameId,
+        })),
+    });
+
+    const allReviews = useMemo<IReview[]>(
+        () => queries.flatMap((q) => q.data?.reviews ?? []),
+        [queries],
+    );
+
+    const lastData = queries[queries.length - 1]?.data;
+    const isLoading = queries[0]?.isLoading ?? false;
+    const isFetching = queries.some((q) => q.isFetching);
+
+    const loadMore = useCallback(() => {
+        if (lastData?.hasMore && !isFetching) {
+            setMaxPage((p) => p + 1);
+        }
+    }, [lastData?.hasMore, isFetching]);
+
+    return useMemo(
+        () => ({
+            reviews: allReviews,
+            total: lastData?.total ?? 0,
+            hasMore: lastData?.hasMore ?? false,
+            isLoading,
+            isFetching,
+            loadMore,
+        }),
+        [allReviews, lastData, isLoading, isFetching, loadMore],
+    );
+}
+
+export function useReviewStats(gameId?: number) {
+    const { data: stats, isLoading: isLoadingStats } = useQuery({
+        queryKey: ['review-stats', gameId],
+        queryFn: () => reviewService.getStats(gameId),
+    });
+
+    return useMemo(() => ({ stats, isLoadingStats }), [stats, isLoadingStats]);
 }
 
 export function useCreateReview(gameId: number) {

@@ -1,0 +1,134 @@
+.footer {
+    background: #141516;
+    border-top: 1px solid #1e1f22;
+    margin-top: 80px;
+}
+
+.footer__inner {
+    max-width: 1460px;
+    margin: auto;
+    padding: 48px 40px 24px;
+}
+
+.footer__grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr auto;
+    gap: 40px;
+    padding-bottom: 40px;
+}
+
+/* Секции */
+.footer__section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+}
+
+.footer__links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer__link {
+    font-size: 13px;
+    color: #6b6b6b;
+    text-decoration: none;
+    transition: color 0.2s;
+    line-height: 1.4;
+}
+
+.footer__link:hover {
+    color: #fff;
+}
+
+.footer__link--bold {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Бренд */
+.footer__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 24px;
+}
+
+.footer__logo {
+    opacity: 0.9;
+}
+
+.footer__socials {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.footer__socials-title {
+    font-size: 12px;
+    color: #6b6b6b;
+}
+
+.footer__socials-links {
+    display: flex;
+    gap: 10px;
+}
+
+.footer__social-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bababa;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.footer__social-btn:hover {
+    background: #2a2b2e;
+    color: #fff;
+    border-color: #444;
+}
+
+/* Кнопка */
+.footer__action {
+    padding-bottom: 28px;
+    border-bottom: 1px solid #1e1f22;
+}
+
+.footer__ask-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #1e1f22;
+    border: 1px solid #2c2d32;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.footer__ask-btn:hover {
+    background: #25262b;
+    border-color: #444;
+}
+
+/* Низ */
+.footer__bottom {
+    padding-top: 20px;
+}
+
+.footer__copyright {
+    font-size: 12px;
+    color: #3a3b3e;
+}

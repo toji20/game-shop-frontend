@@ -1,0 +1,115 @@
+.banners {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: #1a1b1e;
+}
+
+.banners__track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.banners__slide {
+    min-width: 100%;
+    max-width: 100%;
+    position: relative;
+    height: 680px;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.banners__slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(1);
+    transition: filter 0.4s ease;
+}
+
+.banners__slide:hover .banners__slide-img {
+    filter: brightness(1);
+}
+
+/* .banners__slide-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center,
+        transparent -10%,
+        rgba(0, 0, 0, 0.938) 100%
+    );
+} */
+.banners__slide-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 80px;
+}
+
+.banners__slide-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.banners__slide-desc {
+    font-size: 15px;
+    color: #ccc;
+    max-width: 560px;
+    line-height: 1.5;
+}
+
+/* Стрелки */
+.banners__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.718);
+    border: 1px solid rgba(200, 197, 197, 0.12);
+    color: black;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+.banners__arrow:hover {
+    background-color: rgba(255, 255, 255, 0.827);
+}
+
+.banners__arrow--left {
+    left: 75px;
+}
+.banners__arrow--right {
+    right: 75px;
+}
+
+.banners__skeleton {
+    width: 100%;
+    background: linear-gradient(90deg, #1e1f22 25%, #2a2b2e 50%, #1e1f22 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}

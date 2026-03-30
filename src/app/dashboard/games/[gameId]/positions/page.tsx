@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import ConfirmModal from '@/app/admin/shared/ConfirmModal';
@@ -23,6 +24,7 @@ type EditState = {
     id: number;
     name: string;
     myPrice: string;
+    discount: string;
     image: string;
     isActive: boolean;
     isPublic: boolean;
@@ -33,6 +35,7 @@ function toEdit(p: IPosition): EditState {
         id: p.id,
         name: p.name,
         myPrice: p.myPrice?.toString() ?? '',
+        discount: p.discount?.toString() ?? '',
         image: p.image ?? '',
         isActive: p.isActive,
         isPublic: p.isPublic ?? true,
@@ -42,6 +45,7 @@ function toEdit(p: IPosition): EditState {
 const EMPTY_FORM = {
     name: '',
     myPrice: '',
+    discount: '',
     image: '',
     isActive: true,
     isPublic: true,
@@ -69,6 +73,9 @@ export default function PositionsPage({ params }: Props) {
             {
                 name: newForm.name,
                 myPrice: Number(newForm.myPrice),
+                discount: newForm.discount
+                    ? Number(newForm.discount)
+                    : undefined,
                 image: newForm.image || undefined,
                 isActive: newForm.isActive,
                 isPublic: newForm.isPublic,
@@ -87,6 +94,7 @@ export default function PositionsPage({ params }: Props) {
         const dto: IPositionUpdate = {
             name: editing.name,
             myPrice: Number(editing.myPrice),
+            discount: editing.discount ? Number(editing.discount) : undefined,
             image: editing.image || undefined,
             isActive: editing.isActive,
             isPublic: editing.isPublic,
@@ -122,6 +130,8 @@ export default function PositionsPage({ params }: Props) {
                             <th className='col-img'></th>
                             <th>Название</th>
                             <th>Цена</th>
+                            <th>Скидка</th>
+                            <th>Итого</th>
                             <th>Статус</th>
                             <th className='col-id'>ID</th>
                             <th className='col-actions'>Действия</th>
@@ -129,10 +139,10 @@ export default function PositionsPage({ params }: Props) {
                     </thead>
                     <tbody>
                         {isLoadingPositions ? (
-                            <SkeletonRows rows={4} cols={6} />
+                            <SkeletonRows rows={4} cols={8} />
                         ) : !positions?.length ? (
                             <tr>
-                                <td colSpan={6} className='table-empty'>
+                                <td colSpan={8} className='table-empty'>
                                     Нет позиций
                                 </td>
                             </tr>
@@ -159,6 +169,34 @@ export default function PositionsPage({ params }: Props) {
                                         {p.myPrice != null
                                             ? `${Number(p.myPrice).toLocaleString('ru-RU')} ₽`
                                             : '—'}
+                                    </td>
+                                    <td>
+                                        {p.discount &&
+                                        Number(p.discount) > 0 ? (
+                                            <span className='badge badge--yellow'>
+                                                -{Number(p.discount)}%
+                                            </span>
+                                        ) : (
+                                            '—'
+                                        )}
+                                    </td>
+                                    <td className='td-price'>
+                                        {p.finalPrice &&
+                                        Number(p.discount) > 0 ? (
+                                            <span
+                                                style={{
+                                                    color: '#4ade80',
+                                                    fontWeight: 600,
+                                                }}
+                                            >
+                                                {Number(
+                                                    p.finalPrice,
+                                                ).toLocaleString('ru-RU')}{' '}
+                                                ₽
+                                            </span>
+                                        ) : (
+                                            '—'
+                                        )}
                                     </td>
                                     <td>
                                         {p.isActive ? (
@@ -221,6 +259,14 @@ export default function PositionsPage({ params }: Props) {
                             value={newForm.myPrice}
                             onChange={(v) =>
                                 setNewForm((p) => ({ ...p, myPrice: v }))
+                            }
+                        />
+                        <Field
+                            label='Скидка (%)'
+                            type='number'
+                            value={newForm.discount}
+                            onChange={(v) =>
+                                setNewForm((p) => ({ ...p, discount: v }))
                             }
                         />
                         <ImageUpload
@@ -300,6 +346,14 @@ export default function PositionsPage({ params }: Props) {
                             value={editing.myPrice}
                             onChange={(v) =>
                                 setEditing((p) => p && { ...p, myPrice: v })
+                            }
+                        />
+                        <Field
+                            label='Скидка (%)'
+                            type='number'
+                            value={editing.discount}
+                            onChange={(v) =>
+                                setEditing((p) => p && { ...p, discount: v })
                             }
                         />
                         <ImageUpload

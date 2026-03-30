@@ -1,0 +1,266 @@
+.sidebar {
+    background: #262829;
+    border-radius: 16px;
+    padding: 28px 62px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar__section-title-methods {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.sidebar__section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 3px;
+}
+
+/* Способ оплаты */
+.sidebar__payment {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar__payment-methods {
+    display: flex;
+    gap: 8px;
+}
+
+.sidebar__payment-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 10px;
+    border-radius: 10px;
+    border: 1px solid #2c2d32;
+    background: #39393c;
+    color: #bababa;
+    font-weight: 600;
+    font-size: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sidebar__payment-btn:hover {
+    border-color: #bababa;
+    color: #fff;
+}
+
+.sidebar__payment-btn--active {
+    border-color: #7c5cbf;
+    background: rgba(124, 92, 191, 0.15);
+    color: #fff;
+}
+
+.sidebar__payment-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Поля */
+.sidebar__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar__fields-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+}
+
+.sidebar__fields-hint {
+    font-size: 12px;
+    color: #7c5cbf;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.sidebar__fields-hint:hover {
+    color: #b084f7;
+}
+
+.sidebar__field {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar__field-input {
+    background: #39393c;
+    border: 1px solid #2c2d32;
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.sidebar__field-input::placeholder {
+    color: #bababa;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.sidebar__field-input:focus {
+    border-color: #7c5cbf;
+}
+
+.sidebar__field-input--success {
+    border-color: #4ade80 !important;
+}
+
+.sidebar__field-input--error {
+    border-color: #f87171 !important;
+}
+
+/* Промокод */
+.sidebar__promo {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar__promo-wrap {
+    display: flex;
+    gap: 8px;
+}
+
+.sidebar__promo-input-wrap {
+    position: relative;
+    flex: 1;
+}
+
+.sidebar__promo-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bababa;
+    font-weight: 600;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.sidebar__field-input--promo {
+    padding-left: 36px;
+}
+
+.sidebar__promo-btn {
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #2c2d32;
+    background: #39393c;
+    color: #bababa;
+    font-weight: 600;
+    font-size: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.sidebar__promo-btn:hover:not(:disabled) {
+    border-color: #7c5cbf;
+    color: #fff;
+}
+
+.sidebar__promo-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.sidebar__promo-success {
+    font-size: 12px;
+    color: #4ade80;
+    margin-top: 6px;
+}
+
+.sidebar__promo-error {
+    font-size: 12px;
+    color: #f87171;
+    margin-top: 6px;
+}
+
+/* Итог */
+.sidebar__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 4px;
+    border-top: 1px solid #2c2d32;
+}
+
+.sidebar__summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #bababa;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.sidebar__summary-row--total {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.sidebar__summary-prices {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar__summary-old {
+    font-size: 13px;
+    color: #bababa;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: line-through;
+}
+
+/* Кнопка */
+.sidebar__btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background-color: #ea0a2f;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.sidebar__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.sidebar__btn:not(:disabled):hover {
+    opacity: 0.85;
+}
+
+.sidebar__hint {
+    text-align: center;
+    font-size: 13px;
+    color: #f87171;
+}

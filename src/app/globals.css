@@ -120,5 +120,7 @@
     }
     body {
         @apply bg-background text-foreground;
+        font-family: Inter;
+        scroll-behavior: smooth;
     }
 }

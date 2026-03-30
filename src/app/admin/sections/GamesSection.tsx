@@ -4,6 +4,7 @@ import ConfirmModal from '../shared/ConfirmModal';
 import Field from '../shared/Field';
 import SkeletonRows from '../shared/SkeletonRows';
 import '../shared/admin.css';
+import { TypeSelect } from '../shared/typeSelect';
 import { DASHBOARD_URL } from '@/config/url.config';
 import { useCategories } from '@/hooks/queries/useCategory';
 import {
@@ -13,29 +14,38 @@ import {
     useCreateGame,
 } from '@/hooks/queries/useGame';
 import ImageUpload from '@/shared/ImageUpload';
-import { IGame, IGameUpdate, IGameCreate } from '@/shared/types';
+import { IGame, IGameUpdate, IGameCreate, GameType } from '@/shared/types';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-// ── form types ────────────────────────────────────────────────────────────────
 type GameForm = {
     name: string;
     description: string;
     slug: string;
-    image?: string;
+    image: string[];
     categoryId: string;
     isActive: boolean;
     isPublic: boolean;
+    type: GameType;
+    ageLimit: string;
+    genre: string;
+    releaseDate: string;
+    instructions: string[];
 };
 
 const EMPTY_FORM: GameForm = {
     name: '',
     description: '',
     slug: '',
-    image: '',
+    image: [],
     categoryId: '',
     isActive: true,
     isPublic: true,
+    type: 'AUTO',
+    ageLimit: '',
+    genre: '',
+    releaseDate: '',
+    instructions: [],
 };
 
 function toForm(g: IGame): GameForm & { id: number } {
@@ -44,14 +54,18 @@ function toForm(g: IGame): GameForm & { id: number } {
         name: g.name,
         description: g.description ?? '',
         slug: g.slug ?? '',
-        image: g.image ?? '',
+        image: g.image ?? [],
         categoryId: g.categoryId ?? '',
         isActive: g.isActive,
         isPublic: g.isPublic ?? true,
+        type: (g.type as GameType) ?? 'AUTO',
+        ageLimit: g.ageLimit ?? '',
+        genre: g.genre ?? '',
+        releaseDate: g.releaseDate ?? '',
+        instructions: g.instructions ?? [],
     };
 }
 
-// ── component ─────────────────────────────────────────────────────────────────
 export default function GamesSection() {
     const router = useRouter();
     const { games, isLoadingGames } = useGames();
@@ -74,10 +88,15 @@ export default function GamesSection() {
                 name: newForm.name,
                 description: newForm.description,
                 slug: newForm.slug,
-                image: newForm.image || '',
+                image: newForm.image,
                 categoryId: newForm.categoryId || undefined,
                 isActive: newForm.isActive,
                 isPublic: newForm.isPublic,
+                type: newForm.type,
+                ageLimit: newForm.ageLimit || undefined,
+                genre: newForm.genre || undefined,
+                releaseDate: newForm.releaseDate || undefined,
+                instructions: newForm.instructions,
             },
             {
                 onSuccess: () => {
@@ -90,16 +109,23 @@ export default function GamesSection() {
 
     const handleSave = () => {
         if (!editing) return;
-        const dto: IGameUpdate = {
-            name: editing.name,
-            description: editing.description,
-            slug: editing.slug,
-            image: editing.image,
-            categoryId: editing.categoryId || undefined,
-            isActive: editing.isActive,
-            isPublic: editing.isPublic,
-        };
-        updateGame(dto, { onSuccess: () => setEditing(null) });
+        updateGame(
+            {
+                name: editing.name,
+                description: editing.description,
+                slug: editing.slug,
+                image: editing.image,
+                categoryId: editing.categoryId || undefined,
+                isActive: editing.isActive,
+                isPublic: editing.isPublic,
+                type: editing.type,
+                ageLimit: editing.ageLimit || undefined,
+                genre: editing.genre || undefined,
+                releaseDate: editing.releaseDate || undefined,
+                instructions: editing.instructions,
+            },
+            { onSuccess: () => setEditing(null) },
+        );
     };
 
     return (
@@ -123,7 +149,9 @@ export default function GamesSection() {
                         <tr>
                             <th className='col-img'></th>
                             <th>Название</th>
-                            <th>Категория</th>
+                            <th>Жанр</th>
+                            <th>Возраст</th>
+                            <th>Тип</th>
                             <th>Slug</th>
                             <th>Статус</th>
                             <th className='col-id'>ID</th>
@@ -132,10 +160,10 @@ export default function GamesSection() {
                     </thead>
                     <tbody>
                         {isLoadingGames ? (
-                            <SkeletonRows rows={5} cols={7} />
+                            <SkeletonRows rows={5} cols={9} />
                         ) : !games?.length ? (
                             <tr>
-                                <td colSpan={7} className='table-empty'>
+                                <td colSpan={9} className='table-empty'>
                                     Нет игр
                                 </td>
                             </tr>
@@ -143,9 +171,9 @@ export default function GamesSection() {
                             games.map((g) => (
                                 <tr key={g.id}>
                                     <td className='col-img'>
-                                        {g.image && (
+                                        {g.image?.[0] && (
                                             <img
-                                                src={g.image || ''}
+                                                src={g.image[0]}
                                                 alt={g.name}
                                                 width={36}
                                                 height={36}
@@ -159,7 +187,17 @@ export default function GamesSection() {
                                     </td>
                                     <td className='td-main'>{g.name}</td>
                                     <td className='td-muted'>
-                                        {g.category?.title ?? '—'}
+                                        {g.genre || '—'}
+                                    </td>
+                                    <td className='td-muted'>
+                                        {g.ageLimit || '—'}
+                                    </td>
+                                    <td>
+                                        <span
+                                            className={`badge ${g.type === 'AUTO' ? 'badge--green' : 'badge--red'}`}
+                                        >
+                                            {g.type ?? '—'}
+                                        </span>
                                     </td>
                                     <td className='td-mono'>{g.slug ?? '—'}</td>
                                     <td>
@@ -248,6 +286,12 @@ export default function GamesSection() {
                                 setNewForm((p) => ({ ...p, slug: v }))
                             }
                         />
+                        <TypeSelect
+                            value={newForm.type}
+                            onChange={(v) =>
+                                setNewForm((p) => ({ ...p, type: v }))
+                            }
+                        />
                         <div className='form-group'>
                             <label className='form-label'>Категория</label>
                             <select
@@ -268,12 +312,34 @@ export default function GamesSection() {
                                 ))}
                             </select>
                         </div>
-                        <ImageUpload
-                            label='Изображение'
-                            value={newForm.image || ''}
-                            folder='games'
+                        <Field
+                            label='Жанр'
+                            value={newForm.genre}
                             onChange={(v) =>
-                                setNewForm((p) => ({ ...p, image: v }))
+                                setNewForm((p) => ({ ...p, genre: v }))
+                            }
+                        />
+                        <Field
+                            label='Возрастной рейтинг'
+                            value={newForm.ageLimit}
+                            onChange={(v) =>
+                                setNewForm((p) => ({ ...p, ageLimit: v }))
+                            }
+                        />
+                        <Field
+                            label='Дата выхода'
+                            value={newForm.releaseDate}
+                            onChange={(v) =>
+                                setNewForm((p) => ({ ...p, releaseDate: v }))
+                            }
+                        />
+                        <ImageUpload
+                            multiple
+                            label='Изображения'
+                            value={newForm.image}
+                            folder='games'
+                            onChange={(urls) =>
+                                setNewForm((p) => ({ ...p, image: urls }))
                             }
                         />
                         <Field
@@ -282,6 +348,18 @@ export default function GamesSection() {
                             textarea
                             onChange={(v) =>
                                 setNewForm((p) => ({ ...p, description: v }))
+                            }
+                        />
+                        <ImageUpload
+                            multiple
+                            label='Инструкции (фото)'
+                            value={newForm.instructions} // string[]
+                            folder='instructions'
+                            onChange={(urls) =>
+                                setNewForm((p) => ({
+                                    ...p,
+                                    instructions: urls,
+                                }))
                             }
                         />
                         <div className='form-check'>
@@ -353,6 +431,12 @@ export default function GamesSection() {
                                 setEditing((p) => p && { ...p, slug: v })
                             }
                         />
+                        <TypeSelect
+                            value={editing.type}
+                            onChange={(v) =>
+                                setEditing((p) => p && { ...p, type: v })
+                            }
+                        />
                         <div className='form-group'>
                             <label className='form-label'>Категория</label>
                             <select
@@ -376,12 +460,34 @@ export default function GamesSection() {
                                 ))}
                             </select>
                         </div>
-                        <ImageUpload
-                            label='Изображение'
-                            value={editing.image || ''}
-                            folder='games'
+                        <Field
+                            label='Жанр'
+                            value={editing.genre}
                             onChange={(v) =>
-                                setEditing((p) => p && { ...p, image: v })
+                                setEditing((p) => p && { ...p, genre: v })
+                            }
+                        />
+                        <Field
+                            label='Возрастной рейтинг'
+                            value={editing.ageLimit}
+                            onChange={(v) =>
+                                setEditing((p) => p && { ...p, ageLimit: v })
+                            }
+                        />
+                        <Field
+                            label='Дата выхода'
+                            value={editing.releaseDate}
+                            onChange={(v) =>
+                                setEditing((p) => p && { ...p, releaseDate: v })
+                            }
+                        />
+                        <ImageUpload
+                            multiple
+                            label='Изображения'
+                            value={editing.image}
+                            folder='games'
+                            onChange={(urls) =>
+                                setEditing((p) => p && { ...p, image: urls })
                             }
                         />
                         <Field
@@ -390,6 +496,21 @@ export default function GamesSection() {
                             textarea
                             onChange={(v) =>
                                 setEditing((p) => p && { ...p, description: v })
+                            }
+                        />
+                        <ImageUpload
+                            multiple
+                            label='Инструкции (фото)'
+                            value={editing.instructions} // string[]
+                            folder='instructions'
+                            onChange={(urls) =>
+                                setEditing(
+                                    (p) =>
+                                        p && {
+                                            ...p,
+                                            instructions: urls,
+                                        },
+                                )
                             }
                         />
                         <div className='form-check'>

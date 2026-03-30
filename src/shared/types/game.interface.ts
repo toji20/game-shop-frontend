@@ -1,4 +1,5 @@
 import { ICategory } from './category.interface';
+import { OrderType } from './order.interface';
 import { IReview } from './review.interface';
 
 export interface IGameField {
@@ -36,6 +37,8 @@ export interface IPosition {
     gameId?: number;
     createdAt: string;
     updatedAt: string;
+    discount?: number;
+    finalPrice: number;
 }
 
 export interface IPositionCreate {
@@ -45,11 +48,14 @@ export interface IPositionCreate {
     image?: string;
     isActive?: boolean;
     isPublic?: boolean;
+    discount?: number;
 }
 
 export type IPositionUpdate = Partial<IPositionCreate>;
 
 // ─────────────────────────────────────────────────────────────────────────────
+
+export type GameType = 'AUTO' | 'MANUAL';
 
 export interface IGame {
     id: number;
@@ -58,7 +64,7 @@ export interface IGame {
     slug: string;
     description: string;
     discount: number | null;
-    image: string | null;
+    image: string[];
     isActive: boolean;
     isPublic: boolean;
     categoryId: string | null;
@@ -67,8 +73,14 @@ export interface IGame {
     servers?: IGameServer[];
     positions?: IPosition[];
     reviews?: IReview[];
+    ageLimit: string;
+    genre: string;
+    releaseDate: string;
+    instructions: string[];
     createdAt: string;
     updatedAt: string;
+    type: GameType;
+    avgRating: number | null;
 }
 
 export interface IGameUpdate {
@@ -76,19 +88,29 @@ export interface IGameUpdate {
     description?: string;
     slug?: string;
     discount?: number;
-    image?: string;
+    image?: string[];
     isActive?: boolean;
     isPublic?: boolean;
     categoryId?: string;
+    ageLimit?: string;
+    genre?: string;
+    releaseDate?: string;
+    instructions?: string[];
+    type?: GameType;
 }
 
 export interface IGameCreate {
     name: string;
     description?: string;
     slug?: string;
-    image?: string;
+    image?: string[];
     categoryId?: string;
     isActive?: boolean;
     isPublic?: boolean;
     donateHubId?: number;
+    ageLimit?: string;
+    genre?: string;
+    releaseDate?: string;
+    instructions?: string[];
+    type?: GameType;
 }

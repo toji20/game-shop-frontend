@@ -7,11 +7,14 @@ export const PUBLIC_URL = {
     home: () => PUBLIC_URL.root('/'),
     auth: () => PUBLIC_URL.root('/auth'),
 
-    // Каталог игр
-    catalog: (query = '') => PUBLIC_URL.root(`/catalog${query}`),
-
     // Страница игры
     game: (slug: string) => PUBLIC_URL.root(`/game/${slug}`),
+
+    games: () => PUBLIC_URL.root(`/games`),
+
+    support: () => PUBLIC_URL.root(`/support`),
+
+    reviews: () => PUBLIC_URL.root(`/reviews`),
 
     // Страница категории
     category: (id: string) => PUBLIC_URL.root(`/category/${id}`),

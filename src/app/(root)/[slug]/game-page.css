@@ -1,0 +1,27 @@
+.game-page {
+    padding: 120px 20px 0px 20px;
+    max-width: 1460px;
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    row-gap: 60px;
+}
+.game-page__main {
+    display: grid;
+    grid-template-columns: 1fr 35%;
+    gap: 64px;
+    align-items: start;
+}
+
+.game-page__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+
+.game-page__sidebar {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+}

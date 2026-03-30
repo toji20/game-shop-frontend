@@ -1,0 +1,39 @@
+.side-banners {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-top: -70px;
+    user-select: none;
+}
+
+.side-banners__track {
+    display: flex;
+    gap: 25px;
+    width: max-content;
+    will-change: transform;
+}
+
+.side-banners__track--dragging {
+    transition: none !important;
+}
+
+.side-banner-item {
+    border-radius: 16px;
+    flex-shrink: 0;
+    width: 347px;
+    height: 199px;
+}
+
+.side-banner-item-img {
+    width: 347px;
+    height: 199px;
+    border-radius: 16px;
+    object-fit: cover;
+    pointer-events: none;
+    display: block;
+}
+.side-banners__track--static {
+    display: flex;
+    gap: 25px;
+    padding: 0 40px;
+}
