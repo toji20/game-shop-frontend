@@ -1,3 +1,6 @@
+import { IGame } from './game.interface';
+import { IOrder } from './order.interface';
+
 export type UserRole = 'USER' | 'MANAGER' | 'OPERATOR' | 'ADMIN';
 
 export interface IUser {
@@ -8,8 +11,9 @@ export interface IUser {
     role: UserRole;
     createdAt: string;
     updatedAt: string;
+    orders?: IOrder[];
+    favorites?: IGame[];
 }
-
 export interface IUserCreate {
     email: string;
     password: string;

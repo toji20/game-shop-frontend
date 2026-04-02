@@ -6,6 +6,7 @@
     flex-direction: column;
     gap: 15px;
     margin-top: 15px;
+    margin-bottom: 15px;
 }
 .sidebar__section-title {
     font-size: 13px;

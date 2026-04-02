@@ -39,6 +39,7 @@ export interface IPosition {
     updatedAt: string;
     discount?: number;
     finalPrice: number;
+    game: IGame;
 }
 
 export interface IPositionCreate {

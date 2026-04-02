@@ -1,9 +1,10 @@
 'use client';
 
+import './order.css';
 import { OrderStatusBlock } from '@/components/order/order-status';
 import { orderApiService, orderService } from '@/services/order.service';
-import { IProvide2FA } from '@/shared/types';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 export default function OrderPage() {
@@ -15,24 +16,50 @@ export default function OrderPage() {
         refetchInterval: 3000,
     });
 
-    if (!order) return null;
+    const item = order?.items?.[0];
+    const game = item?.position?.game;
+
+    if (!order || !game) return null;
 
     return (
-        <div
-            style={{
-                minHeight: '100vh',
-                background: '#000',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <OrderStatusBlock
-                order={order}
-                onSendCode={(code: string) => {
-                    orderService.provide2FA(order.id, { code });
-                }}
-            />
+        <div className='order-page'>
+            {/* ФОН */}
+            <div className='order-page__bg-wrap'>
+                <img
+                    src={game.image?.[2]}
+                    alt={game.name}
+                    className='order-page__bg'
+                />
+                <div className='order-page__bg-overlay' />
+            </div>
+
+            {/* GRID КАК В GAME PAGE */}
+            <div className='order-page__grid'>
+                {/* ЛЕВАЯ ЧАСТЬ */}
+                <div className='order-page__left'>
+                    <div className='order-page__info'>
+                        <Link href='/' className='order-page__breadcrumb'>
+                            Главная
+                        </Link>
+
+                        <h1 className='order-page__title'>{game.name}</h1>
+
+                        {game.description && (
+                            <p className='order-page__desc'>
+                                {game.description}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* 👉 ВСТАВЛЯЕМ СТАТУС СЮДА */}
+                    <OrderStatusBlock
+                        order={order}
+                        onSendCode={(code) => {
+                            orderService.provide2FA(order.id, { code });
+                        }}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

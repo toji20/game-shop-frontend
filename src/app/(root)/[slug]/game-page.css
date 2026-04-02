@@ -41,6 +41,27 @@
     );
 }
 
+.game-page__breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.game-page__breadcrumb {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.game-page__breadcrumb:hover {
+    color: #fff;
+}
+
+.game-page__breadcrumb-sep {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.3);
+}
 .game-page__grid {
     position: relative;
     z-index: 1;
@@ -74,6 +95,11 @@
 .game-page__breadcrumb {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.game-page__breadcrumb:hover {
+    color: white;
 }
 
 .game-page__title {

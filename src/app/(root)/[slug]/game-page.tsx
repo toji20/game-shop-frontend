@@ -56,9 +56,13 @@ export default function GamePage() {
             <div className='game-page__grid'>
                 <div className='game-page__left'>
                     <div className='game-page__info'>
-                        <Link href={'/'} className='game-page__breadcrumb'>
-                            Главная
-                        </Link>
+                        <div className='game-page__breadcrumbs'>
+                            <Link href={'/'} className='game-page__breadcrumb'>
+                                Главная
+                            </Link>
+                            <span className='game-page__breadcrumb-sep'>›</span>
+                            <span className='game-page__breadcrumb'>Игры</span>
+                        </div>
                         <h1 className='game-page__title'>{game.name}</h1>
                         {game.description && (
                             <p className='game-page__desc'>

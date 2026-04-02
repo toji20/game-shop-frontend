@@ -1,8 +1,21 @@
 'use client';
 
+import { Order2FA } from './order-2fa';
 import './order-status.css';
+import { OrderStep } from './order-step';
+import { OrderSuccess } from './order-success';
+import { useOrderProgress } from './use-order-progress';
 import { IOrder } from '@/shared/types';
-import { useState } from 'react';
+
+const STEPS = [
+    { title: 'Покупка оформлена', desc: 'Оплата засчитана' },
+    {
+        title: 'Формирование заказа',
+        desc: 'Заказ формируется и будет передан в доставку',
+    },
+    { title: 'Доставляем', desc: 'Заказ находится в очереди' },
+    { title: 'Завершено', desc: 'Заказ отправлен' },
+];
 
 interface Props {
     order: IOrder;
@@ -10,119 +23,43 @@ interface Props {
 }
 
 export function OrderStatusBlock({ order, onSendCode }: Props) {
-    const [code, setCode] = useState('');
+    const item = order.items?.[0];
+    const { progress, progressHeight, isCompleted, need2FA } = useOrderProgress(
+        order,
+        item,
+    );
 
-    const getProgress = () => {
-        if (order.type === 'AUTO') {
-            if (order.status === 'PENDING') return 1;
-            if (order.status === 'PAID') return 2;
-            if (order.status === 'IN_PROCESS') return 2.5;
-            if (order.status === 'COMPLETED') return 4;
-        }
-
-        if (order.type === 'MANUAL') {
-            if (order.manualStatus === 'PENDING') return 1;
-            if (order.manualStatus === 'ASSIGNED') return 2;
-            if (order.manualStatus === 'AWAITING_2FA') return 2.5;
-            if (order.manualStatus === 'IN_PROGRESS') return 3;
-            if (order.manualStatus === 'COMPLETED') return 4;
-        }
-
-        return 1;
-    };
-
-    const progress = getProgress();
-
-    const need2FA =
-        order.type === 'MANUAL' && order.manualStatus === 'AWAITING_2FA';
+    const error = item?.donateHubError;
 
     return (
         <div className='order-status'>
             <div className='order-status__steps'>
-                <Step
-                    index={1}
-                    progress={progress}
-                    title='Покупка оформлена'
-                    desc='Оплата засчитана'
+                <div
+                    className='order-status__progress'
+                    style={{ height: `${progressHeight}px` }}
                 />
-                <Step
-                    index={2}
-                    progress={progress}
-                    title='Формирование заказа'
-                    desc='Оператор принял заказ'
-                />
-                <Step
-                    index={3}
-                    progress={progress}
-                    title='Доставляем'
-                    desc='Идёт выполнение'
-                />
-                <Step
-                    index={4}
-                    progress={progress}
-                    title='Завершено'
-                    desc='Заказ выполнен'
-                />
-            </div>
-
-            {/* 2FA */}
-            {need2FA && (
-                <div className='order-status__2fa'>
-                    <p>Введите код подтверждения</p>
-                    <input
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        placeholder='123456'
+                {STEPS.map((step, i) => (
+                    <OrderStep
+                        key={i}
+                        index={i + 1}
+                        progress={progress}
+                        title={step.title}
+                        desc={step.desc}
                     />
-                    <button onClick={() => onSendCode?.(code)}>
-                        Отправить
-                    </button>
-                </div>
-            )}
-
-            {/* Код */}
-            {progress >= 4 && (
-                <div className='order-status__code'>
-                    <p>Ваш код:</p>
-                    <div className='order-status__code-box'>
-                        {order.items?.[0]?.fields?.code || '—'}
-                    </div>
-                </div>
-            )}
-
-            <div className='order-status__total'>{order.total}₽</div>
-        </div>
-    );
-}
-
-function Step({
-    index,
-    progress,
-    title,
-    desc,
-}: {
-    index: number;
-    progress: number;
-    title: string;
-    desc: string;
-}) {
-    const isActive = progress >= index;
-    const isCurrent = Math.floor(progress) === index;
-
-    return (
-        <div className='order-step'>
-            <div
-                className={`circle 
-                ${isActive ? 'active' : ''} 
-                ${isCurrent ? 'current' : ''}`}
-            >
-                {index}
+                ))}
             </div>
 
-            <div>
-                <div className='step-title'>{title}</div>
-                <div className='step-desc'>{desc}</div>
-            </div>
+            {error && (
+                <div className='order-status__error'>Ошибка: {error}</div>
+            )}
+
+            {need2FA && onSendCode && <Order2FA onSendCode={onSendCode} />}
+
+            {isCompleted ? (
+                <OrderSuccess />
+            ) : (
+                <div className='order-status__total'>{order.total} ₽</div>
+            )}
         </div>
     );
 }

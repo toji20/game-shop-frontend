@@ -1,0 +1,310 @@
+.profile-page {
+    position: relative;
+    min-height: 100vh;
+}
+
+.profile-page__bg-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.profile-page__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.profile-page__bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(10, 10, 10, 1) 100%
+    );
+}
+
+.profile-page__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1120px;
+    margin: auto;
+    padding: 110px 40px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Инфо */
+.profile-page__info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-page__breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile-page__breadcrumb {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.profile-page__breadcrumb:hover {
+    color: #fff;
+}
+
+.profile-page__breadcrumb-sep {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.profile-page__title {
+    font-size: 48px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.05;
+}
+
+.profile-page__desc {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Карточка профиля */
+.profile-card {
+    background: #1c1d1f;
+    border-radius: 8px;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.profile-card__user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-card__avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #2a2b2e;
+    flex-shrink: 0;
+}
+
+.profile-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profile-card__email {
+    font-size: 13px;
+    color: #6b6b6b;
+}
+
+.profile-card__name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.profile-card__id-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.profile-card__id-prefix {
+    font-size: 13px;
+    color: #6b6b6b;
+}
+
+.profile-card__id-value {
+    font-size: 13px;
+    color: #6b6b6b;
+    font-family: monospace;
+    transition: color 0.2s;
+}
+
+.profile-card__id-btn:hover .profile-card__id-value {
+    color: #fff;
+}
+
+.profile-card__id-icon {
+    color: #6b6b6b;
+    flex-shrink: 0;
+    transition: color 0.2s;
+}
+
+.profile-card__id-btn:hover .profile-card__id-icon {
+    color: #fff;
+}
+
+.profile-card__id-icon--success {
+    color: #4ade80 !important;
+}
+
+.profile-card__tabs {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid #2a2b2e;
+    margin: 0 -32px -28px;
+    padding: 0 32px;
+    background-color: #323236;
+}
+
+.profile-card__tab {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 16px 20px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #6b6b6b;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: -1px;
+}
+
+.profile-card__tab:hover {
+    color: #fff;
+}
+
+.profile-card__tab--active {
+    color: #fff;
+    border-bottom-color: #fff;
+}
+
+/* История покупок */
+.profile-orders__title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.profile-orders__grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+.profile-orders__empty {
+    color: #555;
+    font-size: 14px;
+    grid-column: 1 / -1;
+}
+
+/* Карточка заказа */
+.order-card {
+    background: #1c1d1f;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-card__img-wrap {
+    width: 100%;
+    aspect-ratio: 1;
+    background: #111;
+    overflow: hidden;
+}
+
+.order-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.order-card__info {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.order-card__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.order-card__game {
+    font-size: 12px;
+    color: #6b6b6b;
+}
+
+.order-card__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.order-card__date {
+    font-size: 11px;
+    color: #555;
+}
+
+.order-card__id {
+    font-size: 11px;
+    color: #555;
+}
+
+/* Инфо профиля */
+.profile-info-block {
+    background: #1c1d1f;
+    border-radius: 8px;
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.profile-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #2a2b2e;
+    font-size: 14px;
+}
+
+.profile-info-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.profile-info-label {
+    color: #6b6b6b;
+}
+
+.profile-info-value {
+    color: #fff;
+    font-weight: 500;
+}
