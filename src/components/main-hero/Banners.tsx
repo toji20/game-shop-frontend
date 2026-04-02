@@ -85,19 +85,13 @@ export function Banners() {
         resetTimer();
     };
 
-    if (isLoadingBanner) {
-        return <Skeleton width='100%' height={680} borderRadius={0} />;
-    }
-
-    if (!banners?.length) return null;
-
     return (
         <div className='banners' ref={containerRef}>
             <div
                 className='banners__track'
                 style={{ transform: `translateX(-${current * 100}%)` }}
             >
-                {banners.map((b) => (
+                {banners?.map((b) => (
                     <Link
                         key={b.id}
                         href={b.link ?? '#'}

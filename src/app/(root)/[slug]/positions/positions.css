@@ -7,11 +7,6 @@
 
 .positions-block {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 17px;
-    background-color: #262829;
-    padding: 45px 60px;
-    border-radius: 16px;
-    /* overflow-y: auto; */
-    /* max-height: 600px; */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }

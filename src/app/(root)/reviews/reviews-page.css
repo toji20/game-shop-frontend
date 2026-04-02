@@ -1,3 +1,39 @@
 .reviews-page {
-    padding: 120px 40px 0px 40px;
+    padding: 250px 200px 100px 200px;
+    display: flex;
+    margin: auto;
+}
+.reviews-page__bg-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.reviews-page__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.reviews-page__bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.5) 100%,
+        rgba(10, 10, 10, 0.92) 100%,
+        rgba(10, 10, 10, 1) 100%
+    );
+}
+.reviews-page__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 40px;
+    margin: auto;
 }

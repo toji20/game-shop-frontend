@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import './review-item.css';
@@ -29,7 +30,7 @@ function formatDate(dateStr: string): string {
 
 export function ReviewItem({ item }: ReviewItemProps) {
     const ratingColor =
-        item.rating >= 7 ? '#4ade80' : item.rating >= 4 ? '#fb923c' : '#f87171';
+        item.rating >= 7 ? '#f5c518' : item.rating >= 4 ? '#fb923c' : '#f87171';
 
     return (
         <div className='review-item'>
@@ -41,21 +42,24 @@ export function ReviewItem({ item }: ReviewItemProps) {
                 />
                 <div className='review-item__content'>
                     <div className='review-item__top'>
-                        <span className='review-item__name'>
-                            {item.user?.name}
-                        </span>
-                        <span className='review-item__ago'>
-                            {timeAgo(item.createdAt)}
-                        </span>
+                        <div className='review-item__top-info'>
+                            <span className='review-item__name'>
+                                {item.user?.name}
+                            </span>
+                            <span className='review-item__meta'>
+                                {(item.user as any)?.ordersCount
+                                    ? `${(item.user as any).ordersCount} заказов`
+                                    : ''}
+                                {' | '}
+                                {formatDate(item.createdAt)}
+                            </span>
+                        </div>
                     </div>
                     <p className='review-item__text'>{item.text}</p>
-                    <span className='review-item__date'>
-                        {formatDate(item.createdAt)}
-                    </span>
                 </div>
             </div>
-            <div className='review-item__rating' style={{ color: ratingColor }}>
-                <Star size={13} fill={ratingColor} color={ratingColor} />
+            <div className='review-item__rating-badge'>
+                <Star size={12} fill={ratingColor} color={ratingColor} />
                 <span>{item.rating}</span>
             </div>
         </div>

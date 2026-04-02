@@ -1,10 +1,11 @@
 .reviews-wrapper {
-    background: #262829;
-    border-radius: 16px;
-    padding: 28px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
+    background-color: #262829;
+    padding: 20px 25px;
+    border-radius: 12px;
+    margin: auto;
 }
 
 .reviews-header {
@@ -63,17 +64,10 @@
     background: rgba(0, 0, 0, 0.12);
 }
 
-.reviews-body {
-    display: grid;
-    grid-template-columns: 1fr 35%;
-    gap: 24px;
-    align-items: start;
-}
-
 .reviews-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .reviews-empty {
@@ -81,20 +75,9 @@
     font-size: 14px;
 }
 
-.reviews-load-more {
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid #3a3b3e;
-    background: transparent;
-    color: #bababa;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 8px;
-}
-
-.reviews-load-more:hover {
-    border-color: #fff;
-    color: #fff;
+.reviews-sentinel {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

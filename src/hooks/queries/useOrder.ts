@@ -70,8 +70,7 @@ export function useManualOrders(status?: ManualStatus) {
     const { data: orders, isLoading: isLoadingOrders } = useQuery({
         queryKey: ['manual-orders', status],
         queryFn: () => orderService.getAllManual(status),
-        // Обновляем каждые 5 секунд — актуальный список без перезагрузки
-        refetchInterval: 30_000,
+        refetchInterval: 5_000,
     });
 
     return useMemo(

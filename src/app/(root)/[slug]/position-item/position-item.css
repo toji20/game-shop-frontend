@@ -1,14 +1,29 @@
 .position-item {
-    width: 176px;
-    flex-shrink: 0;
     cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1c1d1f;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition:
+        border-color 0.2s,
+        transform 0.2s;
+    position: relative;
+    backdrop-filter: blur(4px);
+}
+
+.position-item:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.position-item--selected {
+    border-color: #b084f7 !important;
 }
 
 .position-item-img-wrapper {
     position: relative;
-    aspect-ratio: 10 / 9;
-    margin-bottom: 12px;
-    border-radius: 12px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
 }
 
@@ -23,100 +38,12 @@
         filter 0.35s ease;
 }
 
-.position-item-info {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+.position-item:hover .position-item-img {
+    transform: scale(1.04);
 }
 
-.position-item-info-title {
-    color: #fff;
-    font-weight: 500;
-    font-size: 15px;
-    transition: color 0.3s;
-}
-
-.position-item:hover .position-item-info-title {
-    color: #b084f7;
-}
-
-.position-item-info-prices {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.position-item-price-badge {
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    background: rgba(255, 255, 255, 0.08);
-    padding: 3px 10px;
-    border-radius: 99px;
-    transition:
-        background 0.3s,
-        color 0.3s;
-}
-
-.position-item:hover
-    .position-item-price-badge:not(.position-item-price-badge--gradient) {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.position-item-price-badge--gradient {
-    background: linear-gradient(
-        90deg,
-        rgba(239, 62, 255, 1),
-        rgba(64, 96, 255, 1)
-    );
-    background-size: 200% 100%;
-    animation: none;
-    transition:
-        background-position 0.4s ease,
-        box-shadow 0.3s ease;
-}
-
-.position-item:hover .position-item-price-badge--gradient {
-    background-position: right center;
-    animation: price-shimmer 1.5s linear infinite;
-    box-shadow: 0 0 12px rgba(180, 80, 255, 0.5);
-}
-
-@keyframes price-shimmer {
-    0% {
-        background-position: 0% center;
-    }
-    100% {
-        background-position: 200% center;
-    }
-}
-
-.position-item-old-price {
-    font-size: 13px;
-    font-weight: 400;
-    color: #555;
-    text-decoration: line-through;
-    transition: color 0.3s;
-}
-
-.position-item:hover .position-item-old-price {
-    color: #777;
-}
 .position-item--selected .position-item-img {
-    filter: brightness(0.75);
-}
-
-.position-item--selected .position-item-img-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    border: 2px solid #b084f7;
-    pointer-events: none;
-}
-
-.position-item--selected .position-item-info-title {
-    color: #b084f7;
+    filter: brightness(0.7);
 }
 
 .position-item-check {
@@ -134,5 +61,67 @@
     color: #fff;
     font-weight: 700;
     pointer-events: none;
-    box-shadow: 0 2px 8px rgba(176, 132, 247, 0.5);
+    z-index: 2;
+}
+
+.position-item-discount-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #ea0a2f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+    z-index: 2;
+}
+
+.position-item-info {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.position-item-info-title {
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.position-item:hover .position-item-info-title,
+.position-item--selected .position-item-info-title {
+    color: #b084f7;
+}
+
+.position-item-info-sub {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.position-item-info-game {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.position-item-info-prices {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.position-item-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.position-item-old-price {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.35);
+    text-decoration: line-through;
 }

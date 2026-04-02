@@ -7,15 +7,23 @@ interface PositionsProps {
     gameId: number;
 }
 
-export function Positions({ items, gameId }: PositionsProps) {
+export function Positions({
+    items,
+    gameId,
+    gameName,
+}: PositionsProps & { gameName?: string }) {
     return (
         <div className='positions'>
             <div className='positions-block'>
                 {items.map((item) => (
-                    <PositionItem item={item} key={item.id} gameId={gameId} />
+                    <PositionItem
+                        item={item}
+                        key={item.id}
+                        gameId={gameId}
+                        gameName={gameName}
+                    />
                 ))}
             </div>
-            <div></div>
         </div>
     );
 }

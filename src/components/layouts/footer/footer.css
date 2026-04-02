@@ -1,7 +1,7 @@
 .footer {
     background: #141516;
     border-top: 1px solid #1e1f22;
-    margin-top: 80px;
+    z-index: 100;
 }
 
 .footer__inner {
