@@ -166,6 +166,14 @@ function OrderCard({
     orderId: string;
     createdAt: string;
 }) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(orderId);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     return (
         <div className='order-card'>
             <div className='order-card__img-wrap'>
@@ -175,16 +183,34 @@ function OrderCard({
                     className='order-card__img'
                 />
             </div>
+
             <div className='order-card__info'>
                 <p className='order-card__name'>{item.position?.name}</p>
                 <p className='order-card__game'>{item.game?.name}</p>
+
                 <div className='order-card__bottom'>
                     <span className='order-card__date'>
                         {new Date(createdAt).toLocaleDateString('ru-RU')}
                     </span>
-                    <span className='order-card__id'>
-                        №{orderId.slice(-7).toUpperCase()}
-                    </span>
+
+                    <button
+                        className='order-card__id-btn'
+                        onClick={handleCopy}
+                        title='Скопировать ID заказа'
+                    >
+                        <span className='order-card__id'>
+                            №{orderId.slice(-7).toUpperCase()}
+                        </span>
+
+                        {copied ? (
+                            <Check
+                                size={12}
+                                className='order-card__id-icon order-card__id-icon--success'
+                            />
+                        ) : (
+                            <Copy size={12} className='order-card__id-icon' />
+                        )}
+                    </button>
                 </div>
             </div>
         </div>

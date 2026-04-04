@@ -79,6 +79,49 @@
     animation: livePulse 2s ease infinite;
 }
 
+.operator__search {
+    margin-bottom: 16px;
+}
+
+.operator__search-input {
+    width: 100%;
+    max-width: 320px;
+
+    padding: 8px 12px;
+
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+
+    color: var(--text);
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    outline: none;
+
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s,
+        background 0.15s;
+}
+
+/* placeholder */
+.operator__search-input::placeholder {
+    color: var(--text-dim);
+}
+
+/* hover */
+.operator__search-input:hover {
+    border-color: var(--border-strong);
+}
+
+/* focus */
+.operator__search-input:focus {
+    border-color: var(--text);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.04);
+}
+
 /* ── Filters ─────────────────────────────────────────────────────────────────── */
 .filters {
     display: flex;
@@ -486,6 +529,9 @@
 @media (max-width: 640px) {
     .operator {
         padding: 20px 16px;
+    }
+    .operator__search-input {
+        max-width: 100%;
     }
     .order-card__right {
         gap: 8px;

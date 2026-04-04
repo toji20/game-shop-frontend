@@ -61,7 +61,7 @@ export function OrderCard({ order }: OrderCardProps) {
             >
                 <div className='order-card__left'>
                     <span className='order-card__id'>
-                        #{order.id.slice(0, 8)}
+                        #{order.id.slice(-7).toUpperCase()}
                     </span>
                     <span className={`badge ${STATUS_COLOR[manualStatus]}`}>
                         {STATUS_LABELS[manualStatus]}

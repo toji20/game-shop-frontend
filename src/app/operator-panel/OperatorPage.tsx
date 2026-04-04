@@ -6,32 +6,61 @@ import './opeartor-panel-components/operator.css';
 import { useManualOrders } from '@/hooks/queries/useOrder';
 import { useOrderSocket } from '@/hooks/queries/useOrderSocket';
 import { ManualStatus } from '@/shared/types';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 export default function OperatorPage() {
     useOrderSocket();
+
     const [activeFilter, setActiveFilter] = useState<ManualStatus | 'ALL'>(
         'PENDING',
     );
+
+    const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
     const { orders, isLoadingOrders } = useManualOrders();
 
+    // debounce поиска
+    useEffect(() => {
+        const t = setTimeout(() => setDebouncedSearch(search), 300);
+        return () => clearTimeout(t);
+    }, [search]);
+
+    // фильтрация
     const filtered = useMemo(() => {
         if (!orders) return [];
-        if (activeFilter === 'ALL') return orders;
-        return orders.filter((o) => o.manualStatus === activeFilter);
-    }, [orders, activeFilter]);
 
+        let result = orders;
+
+        // фильтр по статусу
+        if (activeFilter !== 'ALL') {
+            result = result.filter((o) => o.manualStatus === activeFilter);
+        }
+
+        // поиск по id
+        if (debouncedSearch.trim()) {
+            result = result.filter((o) =>
+                o.id.toLowerCase().includes(debouncedSearch.toLowerCase()),
+            );
+        }
+
+        return result;
+    }, [orders, activeFilter, debouncedSearch]);
+
+    // счётчики
     const counts = useMemo(() => {
         if (!orders) return {};
+
         const result: Partial<Record<ManualStatus | 'ALL', number>> = {
             ALL: orders.length,
         };
+
         orders.forEach((o) => {
             if (o.manualStatus) {
-                result[o.manualStatus as ManualStatus] =
-                    (result[o.manualStatus as ManualStatus] ?? 0) + 1;
+                result[o.manualStatus] = (result[o.manualStatus] ?? 0) + 1;
             }
         });
+
         return result;
     }, [orders]);
 
@@ -50,6 +79,16 @@ export default function OperatorPage() {
                 </div>
             </header>
 
+            <div className='operator__search'>
+                <input
+                    type='text'
+                    placeholder='Поиск по ID заказа...'
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className='operator__search-input'
+                />
+            </div>
+
             <OrderFilters
                 active={activeFilter}
                 onChange={setActiveFilter}
@@ -64,7 +103,11 @@ export default function OperatorPage() {
                 ) : filtered.length === 0 ? (
                     <div className='operator__empty'>
                         <span className='operator__empty-icon'>📭</span>
-                        <p>Нет заказов</p>
+                        <p>
+                            {search
+                                ? 'Ничего не найдено по запросу'
+                                : 'Нет заказов'}
+                        </p>
                     </div>
                 ) : (
                     filtered.map((order) => (
