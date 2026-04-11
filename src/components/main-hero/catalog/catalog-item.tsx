@@ -11,7 +11,7 @@ interface CatalogItemProps {
 
 export function CatalogItem({ item }: CatalogItemProps) {
     return (
-        <Link href={item.slug} className='catalog-item'>
+        <Link href={PUBLIC_URL.game(`${item.slug}`)} className='catalog-item'>
             <div className='catalog-item-img-wrapper'>
                 <img
                     src={item.image[1]}

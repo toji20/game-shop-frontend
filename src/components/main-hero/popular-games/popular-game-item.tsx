@@ -1,5 +1,6 @@
 'use client';
 
+import { PUBLIC_URL } from '@/config/url.config';
 import { IGame } from '@/shared/types';
 import { Star } from 'lucide-react';
 import Link from 'next/link';
@@ -10,7 +11,10 @@ interface PopularGameItemProps {
 
 export function PopularGameItem({ item }: PopularGameItemProps) {
     return (
-        <Link href={item.slug} className='popular-game-item'>
+        <Link
+            href={PUBLIC_URL.game(`${item.slug}`)}
+            className='popular-game-item'
+        >
             <div className='popular-game-item-img-wrapper'>
                 <div className='popular-game-item-rating'>
                     <Star className='popular-game-item-star' size={14} />

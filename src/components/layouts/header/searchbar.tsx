@@ -77,7 +77,7 @@ export function SearchBar({ onClose }: SearchBarProps) {
                         filtered.map((g) => (
                             <Link
                                 key={g.slug}
-                                href={g.slug}
+                                href={PUBLIC_URL.game(`${g.slug}`)}
                                 className='searchbar__item'
                                 onClick={handleSelect}
                             >
