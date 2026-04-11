@@ -24,6 +24,8 @@ export const API_URL = {
     // Banners
     banner: (url = '') => API_URL.root(`${SERVER_URL}/banner/${url}`),
 
+    sideBanner: (url = '') => API_URL.root(`${SERVER_URL}/sideBanner/${url}`),
+
     adBanner: (url = '') => API_URL.root(`${SERVER_URL}/ad-banner/${url}`),
 
     // Reviews

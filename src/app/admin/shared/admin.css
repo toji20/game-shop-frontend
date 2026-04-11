@@ -311,7 +311,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 100;
+    z-index: 65;
     animation: fadeIn 0.12s ease;
 }
 .modal {
@@ -457,6 +457,62 @@
 .badge--yellow {
     background: rgba(234, 179, 8, 0.15);
     color: #eab308;
+}
+
+/* ── FAQ Editor ── */
+.faq-editor__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.faq-editor__empty {
+    font-size: 13px;
+    color: var(--text-muted);
+    padding: 8px 0;
+}
+
+.faq-editor__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.faq-editor__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--bg-2, #1a1b1e);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.faq-editor__item-index {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    min-width: 20px;
+    padding-top: 8px;
+}
+
+.faq-editor__item-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.faq-editor__textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.faq-editor__remove {
+    flex-shrink: 0;
+    margin-top: 2px;
 }
 /* ── Animations ── */
 @keyframes fadeIn {

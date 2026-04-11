@@ -7,3 +7,4 @@ export * from './review.interface';
 export * from './order.interface';
 export * from './steam-order.interface';
 export * from './statistics.interface';
+export * from './side-banner.interface';

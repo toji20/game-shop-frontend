@@ -6,9 +6,14 @@ import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 
-export function SearchBar() {
+interface SearchBarProps {
+    onClose?: () => void;
+}
+
+export function SearchBar({ onClose }: SearchBarProps) {
     const [query, setQuery] = useState('');
     const [open, setOpen] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
     const wrapRef = useRef<HTMLDivElement>(null);
 
     const { games } = useGames();
@@ -21,6 +26,12 @@ export function SearchBar() {
                   )
                   .slice(0, 8)
             : (games ?? []).slice(0, 6);
+
+    // Авто-фокус при открытии панели
+    useEffect(() => {
+        const timer = setTimeout(() => inputRef.current?.focus(), 300);
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -35,14 +46,10 @@ export function SearchBar() {
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(e.target.value);
-        setOpen(true);
-    };
-
     const handleSelect = () => {
         setQuery('');
         setOpen(false);
+        onClose?.();
     };
 
     return (
@@ -50,10 +57,14 @@ export function SearchBar() {
             <div className='searchbar__input-wrap'>
                 <Search className='searchbar__icon' />
                 <input
+                    ref={inputRef}
                     className='searchbar__input'
-                    placeholder='Поиск игр...'
+                    placeholder='Поиск...'
                     value={query}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        setOpen(true);
+                    }}
                     onFocus={() => setOpen(true)}
                 />
             </div>

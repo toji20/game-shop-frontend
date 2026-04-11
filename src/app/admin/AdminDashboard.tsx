@@ -6,6 +6,7 @@ import CategoriesSection from './sections/CategoriesSection';
 import GamesSection from './sections/GamesSection';
 import PromoCodesSection from './sections/PromoCodesSection';
 import ReviewsSection from './sections/ReviewsSection';
+import SideBannersSection from './sections/SideBannerSection';
 import './shared/admin.css';
 import { useState } from 'react';
 
@@ -14,6 +15,7 @@ type Section =
     | 'categories'
     | 'banners'
     | 'ad-banner'
+    | 'side-banners'
     | 'reviews'
     | 'promoCodes';
 
@@ -21,6 +23,7 @@ const NAV: { id: Section; label: string; icon: string }[] = [
     { id: 'games', label: 'Игры', icon: '🎮' },
     { id: 'categories', label: 'Категории', icon: '📂' },
     { id: 'banners', label: 'Баннеры', icon: '🖼️' },
+    { id: 'side-banners', label: 'Доп баннеры', icon: '📄' },
     { id: 'ad-banner', label: 'Рекламный баннер', icon: '📋' },
     { id: 'reviews', label: 'Отзывы', icon: '⭐' },
     { id: 'promoCodes', label: 'Промокоды', icon: '🎟️' },
@@ -53,6 +56,7 @@ export default function AdminDashboard() {
                 {active === 'games' && <GamesSection />}
                 {active === 'categories' && <CategoriesSection />}
                 {active === 'banners' && <BannersSection />}
+                {active === 'side-banners' && <SideBannersSection />}
                 {active === 'ad-banner' && <AdBannersSection />}
                 {active === 'reviews' && <ReviewsSection />}
                 {active === 'promoCodes' && <PromoCodesSection />}

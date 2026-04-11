@@ -4,7 +4,6 @@
 import './banners.css';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
 import { useBanner } from '@/hooks/queries/useBanner';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -50,7 +49,6 @@ export function Banners() {
             touchStartY.current = e.touches[0].clientY;
             isDragging.current = false;
         };
-
         const onTouchMove = (e: TouchEvent) => {
             const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
             const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
@@ -59,7 +57,6 @@ export function Banners() {
                 isDragging.current = true;
             }
         };
-
         const onTouchEnd = (e: TouchEvent) => {
             const diff = touchStartX.current - e.changedTouches[0].clientX;
             if (Math.abs(diff) < SWIPE_THRESHOLD) return;
@@ -71,7 +68,6 @@ export function Banners() {
         el.addEventListener('touchstart', onTouchStart, { passive: true });
         el.addEventListener('touchmove', onTouchMove, { passive: false });
         el.addEventListener('touchend', onTouchEnd, { passive: true });
-
         return () => {
             el.removeEventListener('touchstart', onTouchStart);
             el.removeEventListener('touchmove', onTouchMove);
@@ -79,72 +75,56 @@ export function Banners() {
         };
     }, [next, prev, resetTimer]);
 
-    const handleArrow = (e: React.MouseEvent, fn: () => void) => {
-        e.preventDefault();
-        fn();
-        resetTimer();
-    };
-
-    if (isLoadingBanner) {
-        return <Skeleton width='100%' height={680} borderRadius={0} />;
-    }
-
+    if (isLoadingBanner)
+        return <Skeleton width='100%' height={579} borderRadius={0} />;
     if (!banners?.length) return null;
 
     return (
         <div className='banners' ref={containerRef}>
-            <div
-                className='banners__track'
-                style={{ transform: `translateX(-${current * 100}%)` }}
-            >
-                {banners.map((b) => (
-                    <Link
-                        key={b.id}
-                        href={b.link ?? '#'}
-                        className='banners__slide'
-                        draggable={false}
-                        onClick={(e) => {
-                            if (isDragging.current) e.preventDefault();
-                        }}
-                    >
-                        {b.images?.[0] && (
-                            <img
-                                src={b.images[0]}
-                                alt={b.title}
-                                className='banners__slide-img'
-                                draggable={false}
-                            />
+            {banners.map((b, i) => (
+                <Link
+                    key={b.id}
+                    href={b.link ?? '#'}
+                    className={`banners__slide ${i === current ? 'banners__slide--active' : ''}`}
+                    draggable={false}
+                    onClick={(e) => {
+                        if (isDragging.current) e.preventDefault();
+                    }}
+                >
+                    {b.images?.[0] && (
+                        <img
+                            src={b.images[0]}
+                            alt={b.title}
+                            className='banners__slide-img'
+                            draggable={false}
+                        />
+                    )}
+                    <div className='banners__slide-overlay' />
+                    {/* <div className='banners__slide-content'>
+                        <h2 className='banners__slide-title'>{b.title}</h2>
+                        {b.description && (
+                            <p className='banners__slide-desc'>
+                                {b.description}
+                            </p>
                         )}
-                        <div className='banners__slide-overlay' />
-                        <div className='banners__slide-content'>
-                            <h2 className='banners__slide-title'>{b.title}</h2>
-                            {b.description && (
-                                <p className='banners__slide-desc'>
-                                    {b.description}
-                                </p>
-                            )}
-                        </div>
-                    </Link>
-                ))}
-            </div>
+                    </div> */}
+                </Link>
+            ))}
 
+            {/* Dots */}
             {count > 1 && (
-                <>
-                    <button
-                        className='banners__arrow banners__arrow--left'
-                        onClick={(e) => handleArrow(e, prev)}
-                        aria-label='Назад'
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-                    <button
-                        className='banners__arrow banners__arrow--right'
-                        onClick={(e) => handleArrow(e, next)}
-                        aria-label='Вперёд'
-                    >
-                        <ChevronRight size={20} />
-                    </button>
-                </>
+                <div className='banners__dots'>
+                    {banners.map((_, i) => (
+                        <button
+                            key={i}
+                            className={`banners__dot ${i === current ? 'banners__dot--active' : ''}`}
+                            onClick={() => {
+                                setCurrent(i);
+                                resetTimer();
+                            }}
+                        />
+                    ))}
+                </div>
             )}
         </div>
     );

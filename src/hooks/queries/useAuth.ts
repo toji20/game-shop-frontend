@@ -45,6 +45,40 @@ export function useRegister() {
     );
 }
 
+export function useSendCode() {
+    const { mutate: sendCode, isPending } = useMutation({
+        mutationKey: ['send-code'],
+        mutationFn: (email: string) => authService.sendCode(email),
+        onSuccess() {
+            toast.success('Код отправлен на почту');
+        },
+        onError() {
+            toast.error('Ошибка отправки кода');
+        },
+    });
+
+    return { sendCode, isLoadingSendCode: isPending };
+}
+
+export function useVerifyCode() {
+    const { push } = useRouter();
+
+    const { mutate: verifyCode, isPending } = useMutation({
+        mutationKey: ['verify-code'],
+        mutationFn: ({ email, code }: { email: string; code: string }) =>
+            authService.verifyCode(email, code),
+        onSuccess() {
+            toast.success('Вы вошли');
+            push(PUBLIC_URL.home());
+        },
+        onError() {
+            toast.error('Неверный код');
+        },
+    });
+
+    return { verifyCode, isLoadingVerify: isPending };
+}
+
 export function useLogout() {
     const { push } = useRouter();
 

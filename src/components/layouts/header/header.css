@@ -1,50 +1,134 @@
-.header {
+/* ─── HEADER ──────────────────────────────────────── */
+header {
     position: fixed;
     top: 0;
-    right: 0;
     left: 0;
-    z-index: 100;
-    background-color: #121415d6;
+    right: 0;
+    z-index: 50;
+    background-color: rgba(30, 31, 33, 0.79);
+    backdrop-filter: blur(16px);
 }
 
+.header-logo {
+    margin-right: 8px;
+}
+
+.header-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 40; /* ниже хэдера (50), выше контента */
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.header-overlay--visible {
+    opacity: 1;
+    pointer-events: auto;
+}
 .header-block {
-    padding: 10px 40px;
     display: flex;
-    width: 100%;
-    gap: 30px;
-    margin: auto;
-    align-items: center;
+    align-items: stretch;
+    gap: 0;
+    padding: 0 0 0 32px; /* лого слева с отступом */
+    height: 58px;
     max-width: 1460px;
+    margin: 0 auto;
+    width: 100%;
 }
+.header::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -20px;
+    height: 20px;
+    pointer-events: none;
 
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.25),
+        rgba(0, 0, 0, 0)
+    );
+}
+/* ─── NAV ──────────────────────────────────────────── */
 .nav {
     display: flex;
-    gap: 20px;
+    align-items: stretch; /* растягиваем айтемы на всю высоту */
+    gap: 5px;
+    flex: 1;
+    height: 100%;
 }
 
-.searchbar {
+/* Кнопка-иконка поиска в навигации */
+.nav__search-btn {
+    display: flex;
     align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+    transition:
+        color 0.2s,
+        background 0.2s;
+    margin-left: -4px;
+}
+
+.nav__search-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+/* ─── SEARCH PANEL (выезжает снизу хэдера) ─────────── */
+.header-search-panel {
+    overflow: visible;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none; /* 👈 добавить */
+    transition:
+        max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.25s ease;
+}
+
+.header-search-panel--open {
+    max-height: 80px;
+    opacity: 1;
+    pointer-events: auto; /* 👈 добавить */
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── SEARCHBAR ────────────────────────────────────── */
+.searchbar {
     position: relative;
-    width: 100%;
+    padding: 10px 40px;
+    max-width: 1460px;
+    margin: 0 auto;
 }
 
 .searchbar__input-wrap {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background-color: #2a2b2e;
-    border: 1px solid #3a3b3e;
-    border-radius: 12px;
-    padding: 10px 14px;
-    transition: border-color 0.2s ease;
+    gap: 10px;
+    background-color: #1e1f22;
+    border: 1px solid #2e2f33;
+    border-radius: 10px;
+    padding: 9px 16px;
+    transition: border-color 0.2s;
 }
 
 .searchbar__input-wrap:focus-within {
-    border-color: #6b6b6b;
+    border-color: #555;
 }
 
 .searchbar__icon {
-    color: #888;
+    color: #666;
     flex-shrink: 0;
     width: 16px;
     height: 16px;
@@ -60,19 +144,22 @@
 }
 
 .searchbar__input::placeholder {
-    color: #666;
+    color: #555;
 }
 
 .searchbar__dropdown {
     position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    right: 0;
-    background-color: #1e1f22;
-    border: 1px solid #3a3b3e;
+    top: calc(100% + 3px);
+    left: 40px;
+    right: 40px;
+    background: rgb(18, 19, 21);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     overflow: hidden;
     z-index: 200;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
     max-height: 320px;
     overflow-y: auto;
 }
@@ -80,24 +167,29 @@
 .searchbar__item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10.5px 14px;
+    gap: 12px;
+    padding: 10px 14px;
     cursor: pointer;
-    transition: background-color 0.15s ease;
+    transition: background 0.15s;
     text-decoration: none;
     color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.searchbar__item:last-child {
+    border-bottom: none;
 }
 
 .searchbar__item:hover {
-    background-color: #2a2b2e;
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .searchbar__item-img {
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
     object-fit: cover;
-    background-color: #333;
+    background: rgba(255, 255, 255, 0.06);
     flex-shrink: 0;
 }
 
@@ -111,54 +203,146 @@
 .searchbar__item-name {
     font-size: 14px;
     font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #f0f0f0;
 }
 
 .searchbar__item-category {
     font-size: 12px;
-    color: #888;
-    margin-top: 1px;
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 2px;
 }
 
 .searchbar__empty {
-    padding: 16px;
+    padding: 20px 16px;
     text-align: center;
-    color: #666;
+    color: rgba(255, 255, 255, 0.3);
     font-size: 14px;
 }
+
 .searchbar__dropdown::-webkit-scrollbar {
     width: 4px;
 }
-
 .searchbar__dropdown::-webkit-scrollbar-track {
     background: transparent;
 }
-
 .searchbar__dropdown::-webkit-scrollbar-thumb {
-    background-color: #3a3b3e;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 99px;
 }
-
 .searchbar__dropdown::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
+    background: rgba(255, 255, 255, 0.2);
 }
 
+/* ─── BUTTONS ──────────────────────────────────────── */
+.nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 28px 18px;
+    height: 100%;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition:
+        color 0.15s,
+        background 0.15s;
+    white-space: nowrap;
+
+    /* линия снизу — скрыта по умолчанию */
+    border-bottom: 3px solid transparent;
+}
+
+.nav-item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item--active {
+    color: #fff;
+    border-bottom-color: #e00; /* красная линия как на фото */
+}
+
+.nav-item--active:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ─── NAV SEARCH BTN — тоже на всю высоту ─────────── */
+.nav__search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 100%;
+    border-radius: 0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition:
+        color 0.15s,
+        background 0.15s;
+}
+
+.nav__search-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav__search-btn--active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ─── BUTTONS — тоже на всю высоту ────────────────── */
 .buttons {
     display: flex;
-    gap: 20;
+    align-items: stretch;
+    gap: 0;
+    margin-left: auto;
+    height: 100%;
 }
 
-.btn {
-    padding: 20.5px;
-    cursor: pointer;
+.btn-ghost {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 16px;
+    height: 100%;
+    border-radius: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+        color 0.15s,
+        background 0.15s;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
 }
 
-.btn-promo {
-    background-color: #353538;
+.btn-ghost:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
 }
 
-.btn-auth {
-    background-color: #ea0a2f;
+.btn-ghost--auth {
+    color: #fff;
+}
+
+.btn-ghost--active {
+    color: #fff;
+    border-bottom: 2px solid #e00;
+}
+
+.btn-ghost--active:hover {
+    color: #fff;
+}
+.btn-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
 }

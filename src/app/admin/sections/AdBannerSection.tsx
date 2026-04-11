@@ -230,7 +230,7 @@ export default function AdBannersSection() {
                         <ImageUpload
                             label='Изображение'
                             value={newForm.image}
-                            folder='adbanners'
+                            folder='image'
                             onChange={(v) =>
                                 setNewForm((p) => ({ ...p, image: v }))
                             }
@@ -302,7 +302,7 @@ export default function AdBannersSection() {
                         <ImageUpload
                             label='Изображение'
                             value={editing.image ?? ''}
-                            folder='adbanners'
+                            folder='image'
                             onChange={(v) =>
                                 setEditing((p) => p && { ...p, image: v })
                             }

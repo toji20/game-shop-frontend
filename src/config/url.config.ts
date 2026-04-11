@@ -29,6 +29,7 @@ export const PUBLIC_URL = {
     // Профиль пользователя
     profile: () => PUBLIC_URL.root('/profile'),
     orders: () => PUBLIC_URL.root('/profile/orders'),
+    order: (id: string) => PUBLIC_URL.root(`/order/${id}`),
     favorites: () => PUBLIC_URL.root('/profile/favorites'),
 };
 

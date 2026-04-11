@@ -115,6 +115,10 @@
 }
 
 @layer base {
+    html {
+        scrollbar-gutter: stable;
+        background-color: #0f1011;
+    }
     * {
         @apply border-border outline-ring/50;
     }

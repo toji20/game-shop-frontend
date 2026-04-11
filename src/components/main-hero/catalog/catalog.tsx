@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 interface CatalogProps {
-    titleOrSort?: boolean; // true = заголовок, false = сортировка
+    titleOrSort?: boolean;
 }
 
 export function Catalog({ titleOrSort = true }: CatalogProps) {

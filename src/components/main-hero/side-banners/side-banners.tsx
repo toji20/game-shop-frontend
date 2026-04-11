@@ -4,13 +4,14 @@ import { SideBannerItem } from './side-banner-item';
 import './side-banner.css';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
 import { useGamesActive } from '@/hooks/queries/useGame';
+import { useSideBanner } from '@/hooks/queries/useSideBanner';
 import { useEffect, useRef } from 'react';
 
 const SPEED = 0.4;
 const ITEM_WIDTH = 327 + 25;
 
 export function SideBanners() {
-    const { activeGames } = useGamesActive();
+    const { sideBanners } = useSideBanner();
     const trackRef = useRef<HTMLDivElement>(null);
     const wrapRef = useRef<HTMLDivElement>(null);
     const offsetRef = useRef(0);
@@ -21,7 +22,7 @@ export function SideBanners() {
     const touchStartOffset = useRef(0);
     const isTouching = useRef(false);
 
-    const items = activeGames ?? [];
+    const items = sideBanners ?? [];
     const doubled = [...items, ...items, ...items];
     const loopWidth = items.length * ITEM_WIDTH;
 
@@ -86,15 +87,15 @@ export function SideBanners() {
     }, [loopWidth]);
 
     // Скелетон пока данные не загружены
-    if (!activeGames) {
+    if (!sideBanners) {
         return (
             <div className='side-banners'>
                 <div className='side-banners__track side-banners__track--static'>
                     {Array.from({ length: 5 }).map((_, i) => (
                         <Skeleton
                             key={i}
-                            width={327}
-                            height={189}
+                            width={320}
+                            height={185}
                             borderRadius={16}
                         />
                     ))}

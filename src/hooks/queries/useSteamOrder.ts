@@ -10,20 +10,22 @@ export function usePlaceSteamOrder() {
         mutationFn: async ({
             account,
             amount,
+            currency,
         }: {
             account: string;
             amount: number;
+            currency: 'RUB' | 'USD' | 'KZT';
         }) => {
-            // Шаг 1: проверка аккаунта — если что-то не так выбросит ошибку
-            const { custom_id, total } = await steamOrderService.check(
+            const { custom_id } = await steamOrderService.check(
                 account,
                 amount,
+                currency,
             );
 
-            // Шаг 2: сразу создаём заказ с полученным custom_id
             return steamOrderService.place({
                 account,
                 amount,
+                currency,
                 customId: custom_id,
             });
         },

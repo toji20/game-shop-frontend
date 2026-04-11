@@ -6,6 +6,7 @@ import {
     useQuery,
     useQueryClient,
 } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -128,10 +129,15 @@ export function useCreateReview(gameId: number) {
         mutationFn: (dto: IReviewCreate) => reviewService.create(gameId, dto),
         onSuccess() {
             queryClient.invalidateQueries({ queryKey: ['reviews', gameId] });
-            toast.success('Отзыв оставлен');
+            queryClient.invalidateQueries({
+                queryKey: ['reviews-paginated', gameId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ['review-stats', gameId],
+            });
         },
         onError() {
-            toast.error('Ошибка при создании отзыва');
+            console.error('Ошибка при создании отзыва');
         },
     });
 

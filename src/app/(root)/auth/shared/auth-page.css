@@ -1,0 +1,190 @@
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-page__bg {
+    position: fixed;
+    inset: 0;
+    background: url('/auth-bg.png') center / cover no-repeat;
+    z-index: 0;
+}
+
+.auth-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(28, 29, 33, 0.92);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.auth-card__title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.auth-card__desc {
+    font-size: 13px;
+    color: #6b6b6b;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.auth-card__input {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.auth-card__input::placeholder {
+    color: #555;
+}
+
+.auth-card__input:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.auth-card__btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition:
+        opacity 0.2s,
+        transform 0.1s;
+}
+
+.auth-card__btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.auth-card__btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.auth-card__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.auth-card__btn--email {
+    background: #fff;
+    color: #000;
+}
+
+.auth-card__btn--vk {
+    background: #0077ff;
+    color: #fff;
+}
+
+.auth-card__btn--google {
+    background: #4285f4;
+    color: #fff;
+}
+
+.auth-card__btn-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.auth-card__terms {
+    font-size: 11px;
+    color: #444;
+    text-align: center;
+    line-height: 1.6;
+    margin-top: 4px;
+}
+
+.auth-card__terms a {
+    color: #666;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.auth-card__terms a:hover {
+    color: #fff;
+}
+
+.auth-card__hint {
+    font-size: 13px;
+    color: #9ca3af;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.auth-card__hint b {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* доп подсказка */
+.auth-card__hint-sub {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* кнопка смены email */
+.auth-card__change-email {
+    margin-top: 6px;
+    background: transparent;
+    border: none;
+    color: #7c5cbf;
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.auth-card__change-email:hover {
+    color: #b084f7;
+}
+
+/* resend */
+.auth-card__resend {
+    background: transparent;
+    border: none;
+    color: #6b6b6b;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 2px;
+    transition: color 0.2s;
+}
+
+.auth-card__resend:hover:not(:disabled) {
+    color: #fff;
+}
+
+.auth-card__resend:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

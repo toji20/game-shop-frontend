@@ -1,16 +1,20 @@
 'use client';
 
 import './instructions.css';
+import { Skeleton } from '@/components/ui/skeleton/skeleton';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface InstructionsProps {
     images: string[];
-    interval?: number; // ms, default 4000
+    interval?: number;
 }
 
 export function Instructions({ images, interval = 4000 }: InstructionsProps) {
     const [current, setCurrent] = useState(0);
     const [progress, setProgress] = useState(0);
+    const [isOpen, setIsOpen] = useState(false);
+
     const rafRef = useRef<number>(0);
     const startRef = useRef<number>(0);
     const pausedRef = useRef(false);
@@ -25,12 +29,12 @@ export function Instructions({ images, interval = 4000 }: InstructionsProps) {
     }, []);
 
     const next = useCallback(() => {
-        goTo((current + 1) % count);
-    }, [current, count, goTo]);
+        setCurrent((c) => (c + 1) % count);
+    }, [count]);
 
     const prev = useCallback(() => {
-        goTo((current - 1 + count) % count);
-    }, [current, count, goTo]);
+        setCurrent((c) => (c - 1 + count) % count);
+    }, [count]);
 
     useEffect(() => {
         startRef.current = performance.now();
@@ -42,9 +46,12 @@ export function Instructions({ images, interval = 4000 }: InstructionsProps) {
                 rafRef.current = requestAnimationFrame(tick);
                 return;
             }
+
             const elapsed = now - startRef.current;
             const pct = Math.min((elapsed / interval) * 100, 100);
+
             setProgress(pct);
+            pausedProgressRef.current = pct;
 
             if (pct >= 100) {
                 setCurrent((c) => (c + 1) % count);
@@ -59,87 +66,139 @@ export function Instructions({ images, interval = 4000 }: InstructionsProps) {
         return () => cancelAnimationFrame(rafRef.current);
     }, [current, count, interval]);
 
+    useEffect(() => {
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    }, [isOpen]);
+
     const handleManual = (index: number) => {
         cancelAnimationFrame(rafRef.current);
         goTo(index);
     };
 
-    if (!images.length) return null;
+    if (!images.length) {
+        return <Skeleton height={366} borderRadius={16} />;
+    }
 
     return (
-        <div
-            id='instructions'
-            className='instructions'
-            onMouseEnter={() => {
-                pausedRef.current = true;
-            }}
-            onMouseLeave={() => {
-                pausedRef.current = false;
-                startRef.current =
-                    performance.now() -
-                    (pausedProgressRef.current / 100) * interval;
-            }}
-        >
-            {/* Прогресс-линии */}
-            <div className='instructions__bars'>
-                {images.map((_, i) => (
-                    <button
-                        key={i}
-                        className='instructions__bar-track'
-                        onClick={() => handleManual(i)}
-                        aria-label={`Слайд ${i + 1}`}
-                    >
-                        <span
-                            className='instructions__bar-fill'
-                            style={{
-                                width:
-                                    i < current
-                                        ? '100%'
-                                        : i === current
-                                          ? `${progress}%`
-                                          : '0%',
-                            }}
+        <>
+            <div
+                id='instructions'
+                className='instructions'
+                onMouseEnter={() => (pausedRef.current = true)}
+                onMouseLeave={() => {
+                    pausedRef.current = false;
+                    startRef.current =
+                        performance.now() -
+                        (pausedProgressRef.current / 100) * interval;
+                }}
+            >
+                {/* Прогресс */}
+                <div className='instructions__bars'>
+                    {images.map((_, i) => (
+                        <button
+                            key={i}
+                            className='instructions__bar-track'
+                            onClick={() => handleManual(i)}
+                        >
+                            <span
+                                className='instructions__bar-fill'
+                                style={{
+                                    width:
+                                        i < current
+                                            ? '100%'
+                                            : i === current
+                                              ? `${progress}%`
+                                              : '0%',
+                                }}
+                            />
+                        </button>
+                    ))}
+                </div>
+
+                {/* Слайды */}
+                <div
+                    className='instructions__slides'
+                    onClick={() => setIsOpen(true)}
+                >
+                    {images.map((src, i) => (
+                        <img
+                            key={i}
+                            src={src}
+                            alt={`Инструкция ${i + 1}`}
+                            className={`instructions__slide ${
+                                i === current
+                                    ? 'instructions__slide--active'
+                                    : ''
+                            }`}
                         />
-                    </button>
-                ))}
-            </div>
+                    ))}
+                </div>
 
-            {/* Изображения */}
-            <div className='instructions__slides'>
-                {images.map((src, i) => (
-                    <img
-                        key={i}
-                        src={src}
-                        alt={`Инструкция ${i + 1}`}
-                        className={`instructions__slide ${i === current ? 'instructions__slide--active' : ''}`}
-                    />
-                ))}
-            </div>
+                {/* Стрелки */}
+                {count > 1 && (
+                    <>
+                        <button
+                            className='instructions__arrow instructions__arrow--left'
+                            onClick={prev}
+                        >
+                            ‹
+                        </button>
+                        <button
+                            className='instructions__arrow instructions__arrow--right'
+                            onClick={next}
+                        >
+                            ›
+                        </button>
+                    </>
+                )}
 
-            {/* Стрелки */}
-            {count > 1 && (
-                <>
-                    <button
-                        className='instructions__arrow instructions__arrow--left'
-                        onClick={prev}
-                        aria-label='Назад'
+                {/* Счётчик */}
+                <div className='instructions__counter'>
+                    {current + 1} / {count}
+                </div>
+            </div>
+            {isOpen &&
+                createPortal(
+                    <div
+                        className='instructions__modal'
+                        onClick={() => setIsOpen(false)}
                     >
-                        ‹
-                    </button>
-                    <button
-                        className='instructions__arrow instructions__arrow--right'
-                        onClick={next}
-                        aria-label='Вперёд'
-                    >
-                        ›
-                    </button>
-                </>
-            )}
+                        <div
+                            className='instructions__modal-content'
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <img
+                                src={images[current]}
+                                className='instructions__modal-img'
+                            />
 
-            {/* Счётчик */}
-            <div className='instructions__counter'>
-                {current + 1} / {count}
-            </div>
-        </div>
+                            <button
+                                className='instructions__modal-close'
+                                onClick={() => setIsOpen(false)}
+                            >
+                                ✕
+                            </button>
+
+                            {count > 1 && (
+                                <>
+                                    <button
+                                        className='instructions__modal-arrow left'
+                                        onClick={prev}
+                                    >
+                                        ‹
+                                    </button>
+                                    <button
+                                        className='instructions__modal-arrow right'
+                                        onClick={next}
+                                    >
+                                        ›
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>,
+                    document.body,
+                )}
+        </>
     );
 }

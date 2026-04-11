@@ -14,7 +14,14 @@ import {
     useCreateGame,
 } from '@/hooks/queries/useGame';
 import ImageUpload from '@/shared/ImageUpload';
-import { IGame, IGameUpdate, IGameCreate, GameType } from '@/shared/types';
+import {
+    IGame,
+    IGameUpdate,
+    IGameCreate,
+    GameType,
+    IFaqItem,
+} from '@/shared/types';
+import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -31,6 +38,7 @@ type GameForm = {
     genre: string;
     releaseDate: string;
     instructions: string[];
+    faq: IFaqItem[];
 };
 
 const EMPTY_FORM: GameForm = {
@@ -46,6 +54,7 @@ const EMPTY_FORM: GameForm = {
     genre: '',
     releaseDate: '',
     instructions: [],
+    faq: [],
 };
 
 function toForm(g: IGame): GameForm & { id: number } {
@@ -63,9 +72,85 @@ function toForm(g: IGame): GameForm & { id: number } {
         genre: g.genre ?? '',
         releaseDate: g.releaseDate ?? '',
         instructions: g.instructions ?? [],
+        faq: (g.faq as IFaqItem[]) ?? [],
     };
 }
 
+// ── FAQ Editor ────────────────────────────────────────────────────────────────
+function FaqEditor({
+    value,
+    onChange,
+}: {
+    value: IFaqItem[];
+    onChange: (v: IFaqItem[]) => void;
+}) {
+    const add = () => onChange([...value, { question: '', answer: '' }]);
+
+    const remove = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+
+    const update = (i: number, field: keyof IFaqItem, val: string) => {
+        const next = [...value];
+        next[i] = { ...next[i], [field]: val };
+        onChange(next);
+    };
+
+    return (
+        <div className='form-group'>
+            <div className='faq-editor__header'>
+                <label className='form-label'>Вопросы и ответы</label>
+                <button
+                    type='button'
+                    className='btn btn--ghost btn--sm'
+                    onClick={add}
+                >
+                    <Plus size={14} />
+                    Добавить
+                </button>
+            </div>
+
+            {value.length === 0 && (
+                <p className='faq-editor__empty'>Вопросов пока нет</p>
+            )}
+
+            <div className='faq-editor__list'>
+                {value.map((item, i) => (
+                    <div key={i} className='faq-editor__item'>
+                        <div className='faq-editor__item-index'>{i + 1}</div>
+                        <div className='faq-editor__item-fields'>
+                            <input
+                                className='form-input'
+                                placeholder='Вопрос'
+                                value={item.question}
+                                onChange={(e) =>
+                                    update(i, 'question', e.target.value)
+                                }
+                            />
+                            <textarea
+                                className='form-input faq-editor__textarea'
+                                placeholder='Ответ'
+                                value={item.answer}
+                                rows={2}
+                                onChange={(e) =>
+                                    update(i, 'answer', e.target.value)
+                                }
+                            />
+                        </div>
+                        <button
+                            type='button'
+                            className='btn btn--danger btn--sm faq-editor__remove'
+                            onClick={() => remove(i)}
+                            title='Удалить'
+                        >
+                            <Trash2 size={14} />
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 export default function GamesSection() {
     const router = useRouter();
     const { games, isLoadingGames } = useGames();
@@ -82,51 +167,143 @@ export default function GamesSection() {
     const { updateGame, isLoadingUpdate } = useUpdateGame(editing?.id ?? 0);
     const { deleteGame, isLoadingDelete } = useDeleteGame();
 
+    const buildPayload = (form: GameForm) => ({
+        name: form.name,
+        description: form.description,
+        slug: form.slug,
+        image: form.image,
+        categoryId: form.categoryId || undefined,
+        isActive: form.isActive,
+        isPublic: form.isPublic,
+        type: form.type,
+        ageLimit: form.ageLimit || undefined,
+        genre: form.genre || undefined,
+        releaseDate: form.releaseDate || undefined,
+        instructions: form.instructions,
+        faq: form.faq.length > 0 ? form.faq : undefined,
+    });
+
     const handleCreate = () => {
-        createGame(
-            {
-                name: newForm.name,
-                description: newForm.description,
-                slug: newForm.slug,
-                image: newForm.image,
-                categoryId: newForm.categoryId || undefined,
-                isActive: newForm.isActive,
-                isPublic: newForm.isPublic,
-                type: newForm.type,
-                ageLimit: newForm.ageLimit || undefined,
-                genre: newForm.genre || undefined,
-                releaseDate: newForm.releaseDate || undefined,
-                instructions: newForm.instructions,
+        createGame(buildPayload(newForm), {
+            onSuccess: () => {
+                setCreating(false);
+                setNewForm(EMPTY_FORM);
             },
-            {
-                onSuccess: () => {
-                    setCreating(false);
-                    setNewForm(EMPTY_FORM);
-                },
-            },
-        );
+        });
     };
 
     const handleSave = () => {
         if (!editing) return;
-        updateGame(
-            {
-                name: editing.name,
-                description: editing.description,
-                slug: editing.slug,
-                image: editing.image,
-                categoryId: editing.categoryId || undefined,
-                isActive: editing.isActive,
-                isPublic: editing.isPublic,
-                type: editing.type,
-                ageLimit: editing.ageLimit || undefined,
-                genre: editing.genre || undefined,
-                releaseDate: editing.releaseDate || undefined,
-                instructions: editing.instructions,
-            },
-            { onSuccess: () => setEditing(null) },
-        );
+        updateGame(buildPayload(editing), {
+            onSuccess: () => setEditing(null),
+        });
     };
+
+    // Shared form fields renderer
+    const renderFormFields = (
+        form: GameForm,
+        set: (updater: (p: GameForm) => GameForm) => void,
+        prefix: string,
+    ) => (
+        <>
+            <Field
+                label='Название'
+                value={form.name}
+                autoFocus
+                onChange={(v) => set((p) => ({ ...p, name: v }))}
+            />
+            <Field
+                label='Slug'
+                value={form.slug}
+                onChange={(v) => set((p) => ({ ...p, slug: v }))}
+            />
+            <TypeSelect
+                value={form.type}
+                onChange={(v) => set((p) => ({ ...p, type: v }))}
+            />
+            <div className='form-group'>
+                <label className='form-label'>Категория</label>
+                <select
+                    className='form-input'
+                    value={form.categoryId}
+                    onChange={(e) =>
+                        set((p) => ({ ...p, categoryId: e.target.value }))
+                    }
+                >
+                    <option value=''>— Без категории —</option>
+                    {categories?.map((c) => (
+                        <option key={c.id} value={c.id}>
+                            {c.title}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <Field
+                label='Жанр'
+                value={form.genre}
+                onChange={(v) => set((p) => ({ ...p, genre: v }))}
+            />
+            <Field
+                label='Возрастной рейтинг'
+                value={form.ageLimit}
+                onChange={(v) => set((p) => ({ ...p, ageLimit: v }))}
+            />
+            <Field
+                label='Дата выхода'
+                value={form.releaseDate}
+                onChange={(v) => set((p) => ({ ...p, releaseDate: v }))}
+            />
+            <ImageUpload
+                multiple
+                label='Изображения'
+                value={form.image}
+                folder='games'
+                onChange={(urls) => set((p) => ({ ...p, image: urls }))}
+            />
+            <Field
+                label='Описание'
+                value={form.description}
+                textarea
+                onChange={(v) => set((p) => ({ ...p, description: v }))}
+            />
+            <ImageUpload
+                multiple
+                label='Инструкции (фото)'
+                value={form.instructions}
+                folder='instructions'
+                onChange={(urls) => set((p) => ({ ...p, instructions: urls }))}
+            />
+
+            {/* FAQ */}
+            <FaqEditor
+                value={form.faq}
+                onChange={(faq) => set((p) => ({ ...p, faq }))}
+            />
+
+            <div className='form-check'>
+                <input
+                    type='checkbox'
+                    id={`${prefix}-isActive`}
+                    checked={form.isActive}
+                    onChange={(e) =>
+                        set((p) => ({ ...p, isActive: e.target.checked }))
+                    }
+                />
+                <label htmlFor={`${prefix}-isActive`}>Активна</label>
+            </div>
+            <div className='form-check'>
+                <input
+                    type='checkbox'
+                    id={`${prefix}-isPublic`}
+                    checked={form.isPublic}
+                    onChange={(e) =>
+                        set((p) => ({ ...p, isPublic: e.target.checked }))
+                    }
+                />
+                <label htmlFor={`${prefix}-isPublic`}>Публичная</label>
+            </div>
+        </>
+    );
 
     return (
         <>
@@ -271,125 +448,11 @@ export default function GamesSection() {
                 >
                     <div className='modal' onClick={(e) => e.stopPropagation()}>
                         <p className='modal__title'>Новая игра</p>
-                        <Field
-                            label='Название'
-                            value={newForm.name}
-                            autoFocus
-                            onChange={(v) =>
-                                setNewForm((p) => ({ ...p, name: v }))
-                            }
-                        />
-                        <Field
-                            label='Slug'
-                            value={newForm.slug}
-                            onChange={(v) =>
-                                setNewForm((p) => ({ ...p, slug: v }))
-                            }
-                        />
-                        <TypeSelect
-                            value={newForm.type}
-                            onChange={(v) =>
-                                setNewForm((p) => ({ ...p, type: v }))
-                            }
-                        />
-                        <div className='form-group'>
-                            <label className='form-label'>Категория</label>
-                            <select
-                                className='form-input'
-                                value={newForm.categoryId}
-                                onChange={(e) =>
-                                    setNewForm((p) => ({
-                                        ...p,
-                                        categoryId: e.target.value,
-                                    }))
-                                }
-                            >
-                                <option value=''>— Без категории —</option>
-                                {categories?.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.title}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <Field
-                            label='Жанр'
-                            value={newForm.genre}
-                            onChange={(v) =>
-                                setNewForm((p) => ({ ...p, genre: v }))
-                            }
-                        />
-                        <Field
-                            label='Возрастной рейтинг'
-                            value={newForm.ageLimit}
-                            onChange={(v) =>
-                                setNewForm((p) => ({ ...p, ageLimit: v }))
-                            }
-                        />
-                        <Field
-                            label='Дата выхода'
-                            value={newForm.releaseDate}
-                            onChange={(v) =>
-                                setNewForm((p) => ({ ...p, releaseDate: v }))
-                            }
-                        />
-                        <ImageUpload
-                            multiple
-                            label='Изображения'
-                            value={newForm.image}
-                            folder='games'
-                            onChange={(urls) =>
-                                setNewForm((p) => ({ ...p, image: urls }))
-                            }
-                        />
-                        <Field
-                            label='Описание'
-                            value={newForm.description}
-                            textarea
-                            onChange={(v) =>
-                                setNewForm((p) => ({ ...p, description: v }))
-                            }
-                        />
-                        <ImageUpload
-                            multiple
-                            label='Инструкции (фото)'
-                            value={newForm.instructions} // string[]
-                            folder='instructions'
-                            onChange={(urls) =>
-                                setNewForm((p) => ({
-                                    ...p,
-                                    instructions: urls,
-                                }))
-                            }
-                        />
-                        <div className='form-check'>
-                            <input
-                                type='checkbox'
-                                id='c-isActive'
-                                checked={newForm.isActive}
-                                onChange={(e) =>
-                                    setNewForm((p) => ({
-                                        ...p,
-                                        isActive: e.target.checked,
-                                    }))
-                                }
-                            />
-                            <label htmlFor='c-isActive'>Активна</label>
-                        </div>
-                        <div className='form-check'>
-                            <input
-                                type='checkbox'
-                                id='c-isPublic'
-                                checked={newForm.isPublic}
-                                onChange={(e) =>
-                                    setNewForm((p) => ({
-                                        ...p,
-                                        isPublic: e.target.checked,
-                                    }))
-                                }
-                            />
-                            <label htmlFor='c-isPublic'>Публичная</label>
-                        </div>
+                        {renderFormFields(
+                            newForm,
+                            (updater) => setNewForm((p) => updater(p)),
+                            'c',
+                        )}
                         <div className='modal__footer'>
                             <button
                                 className='btn btn--ghost'
@@ -416,137 +479,18 @@ export default function GamesSection() {
                 <div className='modal-overlay' onClick={() => setEditing(null)}>
                     <div className='modal' onClick={(e) => e.stopPropagation()}>
                         <p className='modal__title'>Редактировать игру</p>
-                        <Field
-                            label='Название'
-                            value={editing.name}
-                            autoFocus
-                            onChange={(v) =>
-                                setEditing((p) => p && { ...p, name: v })
-                            }
-                        />
-                        <Field
-                            label='Slug'
-                            value={editing.slug}
-                            onChange={(v) =>
-                                setEditing((p) => p && { ...p, slug: v })
-                            }
-                        />
-                        <TypeSelect
-                            value={editing.type}
-                            onChange={(v) =>
-                                setEditing((p) => p && { ...p, type: v })
-                            }
-                        />
-                        <div className='form-group'>
-                            <label className='form-label'>Категория</label>
-                            <select
-                                className='form-input'
-                                value={editing.categoryId}
-                                onChange={(e) =>
-                                    setEditing(
-                                        (p) =>
-                                            p && {
-                                                ...p,
-                                                categoryId: e.target.value,
-                                            },
-                                    )
-                                }
-                            >
-                                <option value=''>— Без категории —</option>
-                                {categories?.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.title}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <Field
-                            label='Жанр'
-                            value={editing.genre}
-                            onChange={(v) =>
-                                setEditing((p) => p && { ...p, genre: v })
-                            }
-                        />
-                        <Field
-                            label='Возрастной рейтинг'
-                            value={editing.ageLimit}
-                            onChange={(v) =>
-                                setEditing((p) => p && { ...p, ageLimit: v })
-                            }
-                        />
-                        <Field
-                            label='Дата выхода'
-                            value={editing.releaseDate}
-                            onChange={(v) =>
-                                setEditing((p) => p && { ...p, releaseDate: v })
-                            }
-                        />
-                        <ImageUpload
-                            multiple
-                            label='Изображения'
-                            value={editing.image}
-                            folder='games'
-                            onChange={(urls) =>
-                                setEditing((p) => p && { ...p, image: urls })
-                            }
-                        />
-                        <Field
-                            label='Описание'
-                            value={editing.description}
-                            textarea
-                            onChange={(v) =>
-                                setEditing((p) => p && { ...p, description: v })
-                            }
-                        />
-                        <ImageUpload
-                            multiple
-                            label='Инструкции (фото)'
-                            value={editing.instructions} // string[]
-                            folder='instructions'
-                            onChange={(urls) =>
+                        {renderFormFields(
+                            editing,
+                            (updater) =>
                                 setEditing(
                                     (p) =>
-                                        p && {
-                                            ...p,
-                                            instructions: urls,
-                                        },
-                                )
-                            }
-                        />
-                        <div className='form-check'>
-                            <input
-                                type='checkbox'
-                                id='e-isActive'
-                                checked={editing.isActive}
-                                onChange={(e) =>
-                                    setEditing(
-                                        (p) =>
-                                            p && {
-                                                ...p,
-                                                isActive: e.target.checked,
-                                            },
-                                    )
-                                }
-                            />
-                            <label htmlFor='e-isActive'>Активна</label>
-                        </div>
-                        <div className='form-check'>
-                            <input
-                                type='checkbox'
-                                id='e-isPublic'
-                                checked={editing.isPublic}
-                                onChange={(e) =>
-                                    setEditing(
-                                        (p) =>
-                                            p && {
-                                                ...p,
-                                                isPublic: e.target.checked,
-                                            },
-                                    )
-                                }
-                            />
-                            <label htmlFor='e-isPublic'>Публичная</label>
-                        </div>
+                                        p &&
+                                        (updater(p as GameForm) as GameForm & {
+                                            id: number;
+                                        }),
+                                ),
+                            'e',
+                        )}
                         <div className='modal__footer'>
                             <button
                                 className='btn btn--ghost'

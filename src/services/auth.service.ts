@@ -21,6 +21,24 @@ class AuthService {
         return data;
     }
 
+    async sendCode(email: string) {
+        const { data } = await axiosClassic({
+            url: API_URL.auth('send-code'),
+            method: 'POST',
+            data: { email },
+        });
+        return data;
+    }
+
+    async verifyCode(email: string, code: string) {
+        const { data } = await axiosClassic<IAuthResponse>({
+            url: API_URL.auth('verify-code'),
+            method: 'POST',
+            data: { email, code },
+        });
+        return data;
+    }
+
     async getNewTokens() {
         const { data } = await axiosClassic<IAuthResponse>({
             url: API_URL.auth('login/access-token'),

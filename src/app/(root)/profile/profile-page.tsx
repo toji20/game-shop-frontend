@@ -1,18 +1,33 @@
 'use client';
 
+import { OrderCard } from './order-card';
 import './profile-page.css';
 import { useProfile } from '@/hooks/queries/useUser';
 import { IOrderItem } from '@/shared/types';
 import { LayoutGrid, User, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 type Tab = 'profile' | 'orders';
 
 export default function ProfilePage() {
+    const router = useRouter();
+    const pathname = usePathname();
     const { profile, isLoadingProfile } = useProfile();
-    const [tab, setTab] = useState<Tab>('profile');
+    const searchParams = useSearchParams();
     const [copied, setCopied] = useState(false);
+
+    const urlTab = searchParams.get('tab');
+    const activeTab: Tab = urlTab === 'orders' ? 'orders' : 'profile';
+
+    const handleSetTab = (t: Tab) => {
+        if (t === 'orders') {
+            router.push(`${pathname}?tab=orders`);
+        } else {
+            router.push(pathname);
+        }
+    };
 
     const handleCopyId = () => {
         navigator.clipboard.writeText(profile?.id ?? '');
@@ -84,15 +99,15 @@ export default function ProfilePage() {
 
                     <div className='profile-card__tabs'>
                         <button
-                            className={`profile-card__tab ${tab === 'profile' ? 'profile-card__tab--active' : ''}`}
-                            onClick={() => setTab('profile')}
+                            className={`profile-card__tab ${activeTab === 'profile' ? 'profile-card__tab--active' : ''}`}
+                            onClick={() => handleSetTab('profile')}
                         >
                             <User size={15} />
                             Профиль
                         </button>
                         <button
-                            className={`profile-card__tab ${tab === 'orders' ? 'profile-card__tab--active' : ''}`}
-                            onClick={() => setTab('orders')}
+                            className={`profile-card__tab ${activeTab === 'orders' ? 'profile-card__tab--active' : ''}`}
+                            onClick={() => handleSetTab('orders')}
                         >
                             <LayoutGrid size={15} />
                             Все покупки
@@ -100,7 +115,7 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                {tab === 'orders' && (
+                {activeTab === 'orders' && (
                     <div className='profile-orders'>
                         <h2 className='profile-orders__title'>
                             История покупок
@@ -115,9 +130,8 @@ export default function ProfilePage() {
                                     order.items.map((item: IOrderItem) => (
                                         <OrderCard
                                             key={item.id}
-                                            item={item}
-                                            orderId={order.id}
-                                            createdAt={order.createdAt}
+                                            item={order.items[0]}
+                                            order={order}
                                         />
                                     )),
                                 )
@@ -126,7 +140,7 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                {tab === 'profile' && (
+                {activeTab === 'profile' && (
                     <div className='profile-info-block'>
                         <div className='profile-info-row'>
                             <span className='profile-info-label'>Email</span>
@@ -152,66 +166,6 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 )}
-            </div>
-        </div>
-    );
-}
-
-function OrderCard({
-    item,
-    orderId,
-    createdAt,
-}: {
-    item: IOrderItem;
-    orderId: string;
-    createdAt: string;
-}) {
-    const [copied, setCopied] = useState(false);
-
-    const handleCopy = () => {
-        navigator.clipboard.writeText(orderId);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    return (
-        <div className='order-card'>
-            <div className='order-card__img-wrap'>
-                <img
-                    src={item.position?.image || undefined}
-                    alt={item.position?.name}
-                    className='order-card__img'
-                />
-            </div>
-
-            <div className='order-card__info'>
-                <p className='order-card__name'>{item.position?.name}</p>
-                <p className='order-card__game'>{item.game?.name}</p>
-
-                <div className='order-card__bottom'>
-                    <span className='order-card__date'>
-                        {new Date(createdAt).toLocaleDateString('ru-RU')}
-                    </span>
-
-                    <button
-                        className='order-card__id-btn'
-                        onClick={handleCopy}
-                        title='Скопировать ID заказа'
-                    >
-                        <span className='order-card__id'>
-                            №{orderId.slice(-7).toUpperCase()}
-                        </span>
-
-                        {copied ? (
-                            <Check
-                                size={12}
-                                className='order-card__id-icon order-card__id-icon--success'
-                            />
-                        ) : (
-                            <Copy size={12} className='order-card__id-icon' />
-                        )}
-                    </button>
-                </div>
             </div>
         </div>
     );

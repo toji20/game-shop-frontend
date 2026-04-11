@@ -9,6 +9,11 @@ export interface IGameField {
     gameId: number;
 }
 
+export interface IFaqItem {
+    question: string;
+    answer: string;
+}
+
 export interface IGameFieldCreate {
     label: string;
     required?: boolean;
@@ -82,6 +87,7 @@ export interface IGame {
     updatedAt: string;
     type: GameType;
     avgRating: number | null;
+    faq?: IFaqItem[];
 }
 
 export interface IGameUpdate {

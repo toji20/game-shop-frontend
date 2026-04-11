@@ -1,19 +1,19 @@
 'use client';
 
 import './side-banner.css';
-import { IGame } from '@/shared/types';
+import { ISideBanner } from '@/shared/types';
 import Link from 'next/link';
 
 interface SideBannerItemProps {
-    item: IGame;
+    item: ISideBanner;
 }
 
 export function SideBannerItem({ item }: SideBannerItemProps) {
     return (
-        <Link href={item.slug} className='side-banner-item'>
+        <Link href={item.link} className='side-banner-item'>
             <img
-                src={item.image[1]}
-                alt={item.name}
+                src={item.image}
+                alt={item.image}
                 className='side-banner-item-img'
             />
         </Link>

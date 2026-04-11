@@ -23,7 +23,6 @@ export default function OrderPage() {
 
     return (
         <div className='order-page'>
-            {/* ФОН */}
             <div className='order-page__bg-wrap'>
                 <img
                     src={game.image?.[2]}
@@ -33,9 +32,7 @@ export default function OrderPage() {
                 <div className='order-page__bg-overlay' />
             </div>
 
-            {/* GRID КАК В GAME PAGE */}
             <div className='order-page__grid'>
-                {/* ЛЕВАЯ ЧАСТЬ */}
                 <div className='order-page__left'>
                     <div className='order-page__info'>
                         <Link href='/' className='order-page__breadcrumb'>
@@ -51,7 +48,6 @@ export default function OrderPage() {
                         )}
                     </div>
 
-                    {/* 👉 ВСТАВЛЯЕМ СТАТУС СЮДА */}
                     <OrderStatusBlock
                         order={order}
                         onSendCode={(code) => {

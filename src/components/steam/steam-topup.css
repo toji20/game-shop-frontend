@@ -1,0 +1,190 @@
+.steam {
+    background: #1c1d1f;
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.steam__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.steam__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: #2a2b2e;
+    padding: 6px;
+}
+
+.steam__title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.steam__desc {
+    font-size: 13px;
+    color: #6b6b6b;
+    line-height: 1.6;
+}
+
+/* Поля */
+.steam__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.steam__label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.steam__label-icon {
+    color: #555;
+    cursor: help;
+}
+
+.steam__input {
+    background: #2a2b2e;
+    border: 1px solid #2c2d32;
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.steam__input::placeholder {
+    color: #555;
+}
+
+.steam__input:focus {
+    border-color: #555;
+}
+
+/* Сумма + валюта */
+.steam__amount-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.steam__input--amount {
+    flex: 1;
+    -moz-appearance: textfield;
+}
+
+.steam__input--amount::-webkit-outer-spin-button,
+.steam__input--amount::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.steam__currencies {
+    display: flex;
+    gap: 4px;
+}
+
+.steam__currency-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #2c2d32;
+    background: #2a2b2e;
+    color: #bababa;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.steam__currency-btn:hover {
+    border-color: #555;
+    color: #fff;
+}
+
+.steam__currency-btn--active {
+    border-color: #fff;
+    color: #fff;
+    background: #35363a;
+}
+
+/* Быстрые суммы */
+.steam__quick {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.steam__quick-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #bababa;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.steam__quick-btn:hover {
+    color: #fff;
+}
+
+/* Предупреждения */
+.steam__alert {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.steam__alert--red {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+}
+
+.steam__alert--yellow {
+    background: rgba(234, 179, 8, 0.08);
+    border: 1px solid rgba(234, 179, 8, 0.2);
+    color: #fde68a;
+}
+
+.steam__alert-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.steam__alert strong {
+    color: #fff;
+}
+
+.steam__alert-link {
+    color: inherit;
+    text-decoration: underline;
+    transition: opacity 0.2s;
+}
+
+.steam__alert-link:hover {
+    opacity: 0.7;
+}

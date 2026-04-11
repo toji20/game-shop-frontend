@@ -39,6 +39,7 @@
 .sidebar__payment-btn {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 10px;
@@ -46,7 +47,16 @@
     cursor: pointer;
     transition: all 0.2s;
 }
+.sidebar__payment-title {
+    font-size: 10px;
+    font-weight: 700;
+    font-display: swap;
+    color: rgba(218, 217, 217, 0.814);
+}
 
+.sidebar__payment-title--active {
+    color: white;
+}
 .sidebar__payment-btn:hover {
     border-color: #555;
 }
@@ -57,9 +67,10 @@
 }
 
 .sidebar__payment-img {
-    height: 28px;
+    height: 22px;
     width: auto;
     object-fit: contain;
+    margin-bottom: 2px;
 }
 
 /* Итого — крупно сверху */
@@ -73,7 +84,6 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 4px;
 }
 
 .sidebar__summary-total-label {
@@ -169,7 +179,9 @@
 .sidebar__field-input--error {
     border-color: #f87171 !important;
 }
-
+.sidebar__summary-row--commission {
+    color: #aaa;
+}
 /* Промокод */
 .sidebar__promo {
     display: flex;
@@ -200,7 +212,7 @@
 }
 
 .sidebar__promo-btn {
-    padding: 12px 16px;
+    padding: 0px 16px;
     border-radius: 10px;
     border: 1px solid #2c2d32;
     background: #2a2b2e;
@@ -269,4 +281,79 @@
     font-size: 11px;
     color: #444;
     line-height: 1.5;
+}
+.sidebar__confirm {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar__confirm-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.sidebar__confirm-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border-radius: 2px;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    cursor: pointer;
+    margin-top: 1px;
+    transition:
+        background 0.15s,
+        border-color 0.15s;
+    position: relative;
+}
+
+.sidebar__confirm-checkbox:checked {
+    background: #2d362fc6;
+    border-color: #196105d1;
+}
+
+.sidebar__confirm-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 4.37px;
+    top: 1.2px;
+    width: 6px;
+    height: 10px;
+    border: 2px solid #4ade80;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
+.sidebar__confirm-label {
+    font-size: 12px;
+    line-height: 1.5;
+    user-select: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+/* Чекбокс не отмечен — текст красный */
+.sidebar__confirm-label--unchecked {
+    color: #f87171;
+}
+
+/* Чекбокс отмечен — текст белый */
+.sidebar__confirm-label--checked {
+    color: #4ade80;
+}
+
+.sidebar__confirm-label b {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
+}
+
+.sidebar__confirm-value {
+    color: #fff;
+    font-weight: 600;
 }

@@ -1,12 +1,78 @@
 .positions {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    gap: 24px;
+    gap: 0;
     align-items: start;
+}
+
+/* Враппер с fade-маской */
+.positions-block-wrap {
+    position: relative;
+    width: 100%;
 }
 
 .positions-block {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
+}
+
+/* Градиент поверх последнего ряда */
+.positions-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 140px;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(10, 10, 12, 0.7) 50%,
+        rgba(10, 10, 12, 0.97) 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+}
+
+.positions-block-wrap--faded {
+    max-height: 480px; /* ~2 полных ряда + половина третьего */
+    overflow: hidden;
+}
+
+/* Кнопка */
+.positions-more-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.positions-more-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.positions-more-btn__icon {
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.positions-more-btn--expanded .positions-more-btn__icon {
+    transform: rotate(180deg);
 }
