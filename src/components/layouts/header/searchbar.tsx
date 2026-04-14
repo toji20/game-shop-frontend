@@ -81,9 +81,9 @@ export function SearchBar({ onClose }: SearchBarProps) {
                                 className='searchbar__item'
                                 onClick={handleSelect}
                             >
-                                {g.image?.[0] ? (
+                                {g.icon?.[0] ? (
                                     <img
-                                        src={g.image[0]}
+                                        src={g.icon}
                                         alt={g.name}
                                         className='searchbar__item-img'
                                     />

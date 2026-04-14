@@ -25,7 +25,7 @@ export default function OrderPage() {
         <div className='order-page'>
             <div className='order-page__bg-wrap'>
                 <img
-                    src={game.image?.[2]}
+                    src={game.bgDesktop || ''}
                     alt={game.name}
                     className='order-page__bg'
                 />

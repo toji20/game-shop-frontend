@@ -62,7 +62,6 @@ export function Catalog({ titleOrSort = true }: CatalogProps) {
                           <div key={i} className='catalog-item'>
                               <Skeleton
                                   width='100%'
-                                  height='0'
                                   borderRadius={12}
                                   className='catalog-item-img-skeleton'
                               />

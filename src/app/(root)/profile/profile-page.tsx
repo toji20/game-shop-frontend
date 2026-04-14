@@ -2,6 +2,7 @@
 
 import { OrderCard } from './order-card';
 import './profile-page.css';
+import { ProfilePageSkeleton } from '@/components/ui/profile-skeleton/profile-page-skeleton';
 import { useProfile } from '@/hooks/queries/useUser';
 import { IOrderItem } from '@/shared/types';
 import { LayoutGrid, User, Copy, Check } from 'lucide-react';
@@ -34,9 +35,7 @@ export default function ProfilePage() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
-
-    if (isLoadingProfile) return null;
-    if (!profile) return null;
+    if (!profile) return <ProfilePageSkeleton tab={activeTab} />;
 
     return (
         <div className='profile-page'>

@@ -21,7 +21,7 @@ export function PopularGameItem({ item }: PopularGameItemProps) {
                     <span>{item.avgRating}</span>
                 </div>
                 <img
-                    src={item.image[0]}
+                    src={item.icon || ''}
                     alt={item.name}
                     className='popular-game-item-img'
                 />

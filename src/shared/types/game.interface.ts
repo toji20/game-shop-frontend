@@ -70,7 +70,10 @@ export interface IGame {
     slug: string;
     description: string;
     discount: number | null;
-    image: string[];
+    icon: string | null;
+    iconWide: string | null;
+    bgDesktop: string | null;
+    bgMobile: string | null;
     isActive: boolean;
     isPublic: boolean;
     categoryId: string | null;

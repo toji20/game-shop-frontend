@@ -26,24 +26,82 @@ type StatusConfig = {
 };
 
 const MANUAL_STATUS_CONFIG: Record<ManualStatus, StatusConfig> = {
-    PENDING:      { label: 'В очереди',  color: '#fff', bg: '#d97706', icon: <Clock size={10} /> },
-    ASSIGNED:     { label: 'Назначен',   color: '#fff', bg: '#2563eb', icon: <Zap size={10} /> },
-    AWAITING_2FA: { label: 'Ждёт код',   color: '#fff', bg: '#ea580c', icon: <KeyRound size={10} /> },
-    IN_PROGRESS:  { label: 'В процессе', color: '#fff', bg: '#7c3aed', icon: <Loader2 size={10} /> },
-    COMPLETED:    { label: 'Выполнен',   color: '#fff', bg: '#16a34a', icon: <Check size={10} /> },
-    FAILED:       { label: 'Ошибка',     color: '#fff', bg: '#dc2626', icon: <XCircle size={10} /> },
+    PENDING: {
+        label: 'В очереди',
+        color: '#fff',
+        bg: '#d97706',
+        icon: <Clock size={10} />,
+    },
+    ASSIGNED: {
+        label: 'Назначен',
+        color: '#fff',
+        bg: '#2563eb',
+        icon: <Zap size={10} />,
+    },
+    AWAITING_2FA: {
+        label: 'Ждёт код',
+        color: '#fff',
+        bg: '#ea580c',
+        icon: <KeyRound size={10} />,
+    },
+    IN_PROGRESS: {
+        label: 'В процессе',
+        color: '#fff',
+        bg: '#7c3aed',
+        icon: <Loader2 size={10} />,
+    },
+    COMPLETED: {
+        label: 'Выполнен',
+        color: '#fff',
+        bg: '#16a34a',
+        icon: <Check size={10} />,
+    },
+    FAILED: {
+        label: 'Ошибка',
+        color: '#fff',
+        bg: '#dc2626',
+        icon: <XCircle size={10} />,
+    },
 };
 
 const DONATEHUB_STATUS_CONFIG: Record<DonateHubStatus, StatusConfig> = {
-    WAIT:     { label: 'Ожидание',   color: '#fff', bg: '#d97706', icon: <Clock size={10} /> },
-    IN_QUEUE: { label: 'В очереди',  color: '#fff', bg: '#2563eb', icon: <Loader2 size={10} /> },
-    PROGRESS: { label: 'В процессе', color: '#fff', bg: '#7c3aed', icon: <Truck size={10} /> },
-    SUCCESS:  { label: 'Выполнен',   color: '#fff', bg: '#16a34a', icon: <Check size={10} /> },
-    FAILED:   { label: 'Ошибка',     color: '#fff', bg: '#dc2626', icon: <XCircle size={10} /> },
+    WAIT: {
+        label: 'Ожидание',
+        color: '#fff',
+        bg: '#d97706',
+        icon: <Clock size={10} />,
+    },
+    IN_QUEUE: {
+        label: 'В очереди',
+        color: '#fff',
+        bg: '#2563eb',
+        icon: <Loader2 size={10} />,
+    },
+    PROGRESS: {
+        label: 'В процессе',
+        color: '#fff',
+        bg: '#7c3aed',
+        icon: <Truck size={10} />,
+    },
+    SUCCESS: {
+        label: 'Выполнен',
+        color: '#fff',
+        bg: '#16a34a',
+        icon: <Check size={10} />,
+    },
+    FAILED: {
+        label: 'Ошибка',
+        color: '#fff',
+        bg: '#dc2626',
+        icon: <XCircle size={10} />,
+    },
 };
 
 const FALLBACK_CONFIG: StatusConfig = {
-    label: 'Оплачен', color: '#fff', bg: '#2563eb', icon: <Zap size={10} />,
+    label: 'Оплачен',
+    color: '#fff',
+    bg: '#2563eb',
+    icon: <Zap size={10} />,
 };
 function resolveStatus(order: IOrder): StatusConfig {
     if (order.type === 'MANUAL') {
@@ -76,7 +134,6 @@ export function OrderCard({
     };
 
     const s = resolveStatus(order);
-    console.log(item.donateHubStatus);
     return (
         <Link href={PUBLIC_URL.order(order.id)} className='order-card'>
             <div className='order-card__img-wrap'>

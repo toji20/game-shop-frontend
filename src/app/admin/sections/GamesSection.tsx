@@ -21,7 +21,7 @@ import {
     GameType,
     IFaqItem,
 } from '@/shared/types';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -29,7 +29,10 @@ type GameForm = {
     name: string;
     description: string;
     slug: string;
-    image: string[];
+    icon: string;
+    iconWide: string;
+    bgDesktop: string;
+    bgMobile: string;
     categoryId: string;
     isActive: boolean;
     isPublic: boolean;
@@ -45,7 +48,10 @@ const EMPTY_FORM: GameForm = {
     name: '',
     description: '',
     slug: '',
-    image: [],
+    icon: '',
+    iconWide: '',
+    bgDesktop: '',
+    bgMobile: '',
     categoryId: '',
     isActive: true,
     isPublic: true,
@@ -63,7 +69,10 @@ function toForm(g: IGame): GameForm & { id: number } {
         name: g.name,
         description: g.description ?? '',
         slug: g.slug ?? '',
-        image: g.image ?? [],
+        icon: g.icon ?? '',
+        iconWide: g.iconWide ?? '',
+        bgDesktop: g.bgDesktop ?? '',
+        bgMobile: g.bgMobile ?? '',
         categoryId: g.categoryId ?? '',
         isActive: g.isActive,
         isPublic: g.isPublic ?? true,
@@ -85,9 +94,7 @@ function FaqEditor({
     onChange: (v: IFaqItem[]) => void;
 }) {
     const add = () => onChange([...value, { question: '', answer: '' }]);
-
     const remove = (i: number) => onChange(value.filter((_, idx) => idx !== i));
-
     const update = (i: number, field: keyof IFaqItem, val: string) => {
         const next = [...value];
         next[i] = { ...next[i], [field]: val };
@@ -171,7 +178,10 @@ export default function GamesSection() {
         name: form.name,
         description: form.description,
         slug: form.slug,
-        image: form.image,
+        icon: form.icon || undefined,
+        iconWide: form.iconWide || undefined,
+        bgDesktop: form.bgDesktop || undefined,
+        bgMobile: form.bgMobile || undefined,
         categoryId: form.categoryId || undefined,
         isActive: form.isActive,
         isPublic: form.isPublic,
@@ -199,7 +209,6 @@ export default function GamesSection() {
         });
     };
 
-    // Shared form fields renderer
     const renderFormFields = (
         form: GameForm,
         set: (updater: (p: GameForm) => GameForm) => void,
@@ -254,27 +263,43 @@ export default function GamesSection() {
                 onChange={(v) => set((p) => ({ ...p, releaseDate: v }))}
             />
             <ImageUpload
-                multiple
-                label='Изображения'
-                value={form.image}
+                label='Иконка (квадратная)'
+                value={form.icon}
                 folder='games'
-                onChange={(urls) => set((p) => ({ ...p, image: urls }))}
+                onChange={(url) => set((p) => ({ ...p, icon: url ?? '' }))}
+            />
+            <ImageUpload
+                label='Широкая иконка (баннер)'
+                value={form.iconWide}
+                folder='games'
+                onChange={(url) => set((p) => ({ ...p, iconWide: url ?? '' }))}
+            />
+            <ImageUpload
+                label='Фон — десктоп'
+                value={form.bgDesktop}
+                folder='games'
+                onChange={(url) => set((p) => ({ ...p, bgDesktop: url ?? '' }))}
+            />
+            <ImageUpload
+                label='Фон — мобильный'
+                value={form.bgMobile}
+                folder='games'
+                onChange={(url) => set((p) => ({ ...p, bgMobile: url ?? '' }))}
             />
             <Field
                 label='Описание'
                 value={form.description}
                 textarea
-                onChange={(v) => set((p) => ({ ...p, description: v }))}
+                onChange={(v) => setEditing((p) => p && { ...p, image: v })}
             />
             <ImageUpload
                 multiple
                 label='Инструкции (фото)'
                 value={form.instructions}
                 folder='instructions'
-                onChange={(urls) => set((p) => ({ ...p, instructions: urls }))}
+                onChange={(v) => setEditing((p) => p && { ...p, image: v })}
             />
 
-            {/* FAQ */}
             <FaqEditor
                 value={form.faq}
                 onChange={(faq) => set((p) => ({ ...p, faq }))}
@@ -348,9 +373,9 @@ export default function GamesSection() {
                             games.map((g) => (
                                 <tr key={g.id}>
                                     <td className='col-img'>
-                                        {g.image?.[0] && (
+                                        {g.icon && (
                                             <img
-                                                src={g.image[0]}
+                                                src={g.icon}
                                                 alt={g.name}
                                                 width={36}
                                                 height={36}

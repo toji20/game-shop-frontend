@@ -9,6 +9,7 @@ import { SteamTopUp } from '@/components/steam/steam-topup';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
 import { gameService } from '@/services/game.service';
 import { Reviews } from '@/shared/reviews/reviews';
+import { useCartStore } from '@/store/cart-store';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -22,10 +23,17 @@ export default function GamePage() {
     const isSteam = params.slug.toLowerCase().includes('steam');
     const [offset, setOffset] = useState(118);
 
-    const { data: game } = useQuery({
+    const { data: game, isLoading } = useQuery({
         queryKey: ['get game', params.slug],
         queryFn: () => gameService.getBySlug(params.slug),
     });
+
+    useEffect(() => {
+        useCartStore.getState().clear();
+        return () => {
+            useCartStore.getState().clear();
+        };
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -52,7 +60,7 @@ export default function GamePage() {
                             {Array.from({ length: 6 }).map((_, i) => (
                                 <Skeleton
                                     key={i}
-                                    height={160}
+                                    height={206}
                                     borderRadius={12}
                                 />
                             ))}
@@ -61,11 +69,7 @@ export default function GamePage() {
                         <Skeleton height={366} />
                     </div>
                     <div className='game-page__sidebar'>
-                        <Skeleton
-                            height={300}
-                            borderRadius={12}
-                            className={`mt-[${offset}px]`}
-                        />
+                        <SideBar game={game ?? null} isLoading={isLoading} />
                     </div>
                 </div>
             </div>
@@ -79,7 +83,7 @@ export default function GamePage() {
             {/* Фон */}
             <div className='game-page__bg-wrap'>
                 <img
-                    src={game.image?.[2]}
+                    src={game.bgDesktop || ''}
                     alt={game.name}
                     className='game-page__bg'
                 />
@@ -159,7 +163,7 @@ export default function GamePage() {
                     className='game-page__sidebar'
                     style={{ top: `${offset}px` }}
                 >
-                    <SideBar game={game} />
+                    <SideBar game={game ?? null} isLoading={isLoading} />
                 </div>
             </div>
         </div>

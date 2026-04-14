@@ -1,12 +1,9 @@
-import ProfilePage from './profile-page';
-import { Suspense } from 'react';
+import ProfilePageClient from './profile-page-client';
 
 export default function HomePage() {
     return (
         <div className='bg-[#0000007e]'>
-            <Suspense>
-                <ProfilePage />
-            </Suspense>
+                <ProfilePageClient />
         </div>
     );
 }

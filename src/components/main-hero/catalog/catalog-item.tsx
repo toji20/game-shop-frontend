@@ -14,7 +14,7 @@ export function CatalogItem({ item }: CatalogItemProps) {
         <Link href={PUBLIC_URL.game(`${item.slug}`)} className='catalog-item'>
             <div className='catalog-item-img-wrapper'>
                 <img
-                    src={item.image[1]}
+                    src={item.iconWide || ''}
                     alt={item.name}
                     className='catalog-item-img'
                 />
