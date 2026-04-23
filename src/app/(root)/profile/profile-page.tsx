@@ -2,20 +2,24 @@
 
 import { OrderCard } from './order-card';
 import './profile-page.css';
+import { SteamOrderCard } from './steam-order-card';
 import { ProfilePageSkeleton } from '@/components/ui/profile-skeleton/profile-page-skeleton';
 import { useProfile } from '@/hooks/queries/useUser';
-import { IOrderItem } from '@/shared/types';
+import { IOrder, ISteamOrder } from '@/shared/types';
 import { LayoutGrid, User, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 type Tab = 'profile' | 'orders';
+type AnyOrder =
+    | { type: 'game'; data: IOrder }
+    | { type: 'steam'; data: ISteamOrder };
 
 export default function ProfilePage() {
     const router = useRouter();
     const pathname = usePathname();
-    const { profile, isLoadingProfile } = useProfile();
+    const { profile } = useProfile();
     const searchParams = useSearchParams();
     const [copied, setCopied] = useState(false);
 
@@ -35,6 +39,21 @@ export default function ProfilePage() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
+
+    const allOrders = useMemo((): AnyOrder[] => {
+        const game = (profile?.orders ?? []).map(
+            (o): AnyOrder => ({ type: 'game', data: o }),
+        );
+        const steam = (profile?.steamOrders ?? []).map(
+            (o): AnyOrder => ({ type: 'steam', data: o }),
+        );
+        return [...game, ...steam].sort(
+            (a, b) =>
+                new Date(b.data.createdAt).getTime() -
+                new Date(a.data.createdAt).getTime(),
+        );
+    }, [profile?.orders, profile?.steamOrders]);
+
     if (!profile) return <ProfilePageSkeleton tab={activeTab} />;
 
     return (
@@ -120,19 +139,24 @@ export default function ProfilePage() {
                             История покупок
                         </h2>
                         <div className='profile-orders__grid'>
-                            {!profile.orders?.length ? (
+                            {!allOrders.length ? (
                                 <p className='profile-orders__empty'>
                                     Покупок пока нет
                                 </p>
                             ) : (
-                                profile.orders.flatMap((order) =>
-                                    order.items.map((item: IOrderItem) => (
+                                allOrders.map((entry) =>
+                                    entry.type === 'game' ? (
                                         <OrderCard
-                                            key={item.id}
-                                            item={order.items[0]}
-                                            order={order}
+                                            key={`game-${entry.data.id}`}
+                                            item={entry.data.items[0]}
+                                            order={entry.data}
                                         />
-                                    )),
+                                    ) : (
+                                        <SteamOrderCard
+                                            key={`steam-${entry.data.id}`}
+                                            order={entry.data}
+                                        />
+                                    ),
                                 )
                             )}
                         </div>

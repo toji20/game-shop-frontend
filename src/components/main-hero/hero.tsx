@@ -11,9 +11,11 @@ export function Hero() {
         <div>
             <Banners />
             <SideBanners />
-            <AdBanner />
-            <PopularGames />
-            <Catalog />
+            <div className='px-4'>
+                <AdBanner />
+                <PopularGames />
+                <Catalog />
+            </div>
         </div>
     );
 }

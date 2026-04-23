@@ -1,7 +1,10 @@
+export type PromoCodeScope = 'ALL' | 'GAMES_ONLY' | 'STEAM_ONLY';
+
 export interface IPromoCode {
     id: string;
     code: string;
     discount: number;
+    scope: PromoCodeScope;
     isActive: boolean;
     usageLimit: number | null;
     usageCount: number;
@@ -14,6 +17,7 @@ export interface IPromoCode {
 export interface IPromoCodeCreate {
     code: string;
     discount: number;
+    scope?: PromoCodeScope;
     isActive?: boolean;
     usageLimit?: number;
     expiresAt?: string;

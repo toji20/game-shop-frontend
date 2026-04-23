@@ -5,7 +5,9 @@ import './order-status.css';
 import { OrderStep } from './order-step';
 import { OrderSuccess } from './order-success';
 import { useOrderProgress } from './use-order-progress';
+import { CheckoutWarning } from '@/shared/checkout-warning/checkout-warning';
 import { IOrder } from '@/shared/types';
+import { MailWarning } from 'lucide-react';
 
 const STEPS = [
     { title: 'Покупка оформлена', desc: 'Оплата засчитана' },
@@ -53,7 +55,17 @@ export function OrderStatusBlock({ order, onSendCode }: Props) {
                 <div className='order-status__error'>Ошибка: {error}</div>
             )}
 
-            {need2FA && onSendCode && <Order2FA onSendCode={onSendCode} />}
+            {need2FA && (
+                <>
+                    <CheckoutWarning
+                        icon={MailWarning}
+                        title='Внимание:'
+                        text='К вам на почту должен отправиться код.'
+                        variant='danger'
+                    />
+                    {onSendCode && <Order2FA onSendCode={onSendCode} />}
+                </>
+            )}
 
             {isCompleted ? (
                 <OrderSuccess />

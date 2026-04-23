@@ -4,6 +4,12 @@
     overflow: hidden;
     margin-top: -20px;
     user-select: none;
+
+    cursor: grab; /* 👈 ВАЖНО */
+}
+
+.side-banners.is-dragging {
+    cursor: grabbing;
 }
 
 .side-banners__track {
@@ -32,8 +38,29 @@
     pointer-events: none;
     display: block;
 }
+
 .side-banners__track--static {
     display: flex;
     gap: 25px;
     padding: 0 40px;
+}
+
+@media (max-width: 500px) {
+    .side-banner-item {
+        width: 270px;
+        height: 156px;
+    }
+
+    .side-banner-item-img {
+        width: 270px;
+        height: 156px;
+    }
+    .side-banners__track--static .skeleton {
+        width: 270px !important;
+        height: 156px !important;
+    }
+
+    .side-banners__track--static {
+        padding: 0;
+    }
 }

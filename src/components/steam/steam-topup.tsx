@@ -2,8 +2,12 @@
 'use client';
 
 import './steam-topup.css';
+import { useCheckSteam } from '@/hooks/queries/useSteamOrder';
+import { loadAccountHistory } from '@/lib/steam-history';
+import { CheckoutWarning } from '@/shared/checkout-warning/checkout-warning';
 import { useSteamStore } from '@/store/steam-store';
 import { AlertCircle, AlertTriangle, HelpCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const QUICK_AMOUNTS = {
     RUB: [100, 500, 1000],
@@ -26,10 +30,28 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
 export function SteamTopUp() {
     const { account, amount, currency, setAccount, setAmount, setCurrency } =
         useSteamStore();
+    const { checkSteam } = useCheckSteam();
+
+    const [accountHistory, setAccountHistory] =
+        useState<string[]>(loadAccountHistory);
+
+    useEffect(() => {
+        if (!account || !amount) return;
+        const timeout = setTimeout(() => {
+            checkSteam();
+        }, 600);
+        return () => clearTimeout(timeout);
+    }, [account, amount, currency]);
+
+    // обновлять список когда localStorage меняется (после заказа из sidebar)
+    useEffect(() => {
+        const onStorage = () => setAccountHistory(loadAccountHistory());
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
 
     return (
         <div className='steam'>
-            {/* Заголовок */}
             <div className='steam__header'>
                 <img
                     src='/steam-icon.svg'
@@ -39,7 +61,6 @@ export function SteamTopUp() {
                 <h2 className='steam__title'>Пополнить Стим</h2>
             </div>
 
-            {/* Описание */}
             <p className='steam__desc'>
                 Пополнение стим для аккаунтов России, Беларуси, Казахстана и
                 других стран СНГ. Мгновенное пополнение баланса вашего кошелька,
@@ -48,7 +69,6 @@ export function SteamTopUp() {
                 работает 24/7.
             </p>
 
-            {/* Логин */}
             <div className='steam__field'>
                 <label className='steam__label'>
                     Логин Steam
@@ -60,9 +80,22 @@ export function SteamTopUp() {
                     value={account}
                     onChange={(e) => setAccount(e.target.value)}
                 />
+                {accountHistory.length > 0 && account === '' && (
+                    <div className='steam__suggestions'>
+                        {accountHistory.map((a) => (
+                            <button
+                                key={a}
+                                type='button'
+                                className='steam__suggestion'
+                                onClick={() => setAccount(a)}
+                            >
+                                {a}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
 
-            {/* Сумма + валюта */}
             <div className='steam__field'>
                 <label className='steam__label'>Сумма</label>
                 <div className='steam__amount-wrap'>
@@ -73,9 +106,7 @@ export function SteamTopUp() {
                         min={1}
                         onChange={(e) => {
                             const value = e.target.value;
-
                             if (value.length > 6) return;
-
                             setAmount(Number(value));
                         }}
                     />
@@ -93,7 +124,6 @@ export function SteamTopUp() {
                     </div>
                 </div>
 
-                {/* Быстрые суммы */}
                 <div className='steam__quick'>
                     {QUICK_AMOUNTS[currency].map((q) => (
                         <button
@@ -107,32 +137,19 @@ export function SteamTopUp() {
                 </div>
             </div>
 
-            {/* Предупреждения */}
-            <div className='steam__alert steam__alert--red'>
-                <AlertCircle size={16} className='steam__alert-icon' />
-                <p>
-                    <strong>Внимание:</strong> Указывайте только логин Steam. Мы
-                    пополняем аккаунты только из стран СНГ (Россия, Казахстан,
-                    Узбекистан и др.). Для пополнения{' '}
-                    <a href='/guide' className='steam__alert-link'>
-                        прочтите гайд
-                    </a>
-                    .
-                </p>
-            </div>
+            <CheckoutWarning
+                icon={AlertCircle}
+                title='Внимание:'
+                text='Указывайте только логин Steam. Мы пополняем аккаунты только из стран СНГ (Россия, Казахстан, Узбекистан и др.). Для пополнения прочтите гайд.'
+                variant='danger'
+            />
 
-            <div className='steam__alert steam__alert--yellow'>
-                <AlertTriangle size={16} className='steam__alert-icon' />
-                <p>
-                    <strong>Обратите внимание</strong>
-                    <br />
-                    Внимание: Если у вас на аккаунте до этого не было пополнений{' '}
-                    <a href='/guide' className='steam__alert-link'>
-                        прочтите гайд
-                    </a>
-                    .
-                </p>
-            </div>
+            <CheckoutWarning
+                icon={AlertTriangle}
+                title='Обратите внимание'
+                text='Если у вас на аккаунте до этого не было пополнений прочтите гайд.'
+                variant='alert'
+            />
         </div>
     );
 }

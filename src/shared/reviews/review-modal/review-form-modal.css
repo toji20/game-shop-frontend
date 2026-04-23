@@ -1,0 +1,227 @@
+.review-form-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.72);
+}
+
+.review-form-modal__dialog {
+    width: min(100%, 450px);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    background: #1f2329;
+    border-radius: 20px;
+    padding: 16px;
+    color: #fff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.review-form-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.review-form-modal__title {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.review-form-modal__close {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.review-form-modal__game {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #2c3137;
+    border-radius: 16px;
+    margin-bottom: 14px;
+}
+
+.review-form-modal__game-image {
+    width: 88px;
+    height: 52px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.review-form-modal__game-info {
+    min-width: 0;
+}
+
+.review-form-modal__game-name {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.review-form-modal__game-category {
+    margin-top: 3px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.25;
+}
+
+.review-form-modal__section {
+    margin-bottom: 12px;
+}
+
+.review-form-modal__label {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.review-form-modal__marks {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.review-form-modal__mark {
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.review-form-modal__mark--active {
+    color: #fff;
+    font-weight: 700;
+}
+
+.review-form-modal__range {
+    width: 100%;
+    accent-color: #f2c200;
+    cursor: pointer;
+}
+
+.review-form-modal__textarea {
+    width: 100%;
+    min-height: 120px;
+    resize: none;
+    border: none;
+    outline: none;
+    border-radius: 16px;
+    background: #2c3137;
+    color: #fff;
+    padding: 14px;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+.review-form-modal__textarea::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.review-form-modal__submit {
+    width: 100%;
+    min-height: 44px;
+    border: none;
+    border-radius: 12px;
+    background: #fff;
+    color: #1d1d1d;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.review-form-modal__submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+    .review-form-modal {
+        align-items: flex-end;
+        padding: 0px;
+        padding-bottom: 56px;
+    }
+
+    .review-form-modal__dialog {
+        width: 100%;
+        max-height: calc(100vh - 16px);
+        margin-top: 0;
+        border-radius: 18px 18px 0 0;
+        padding: 14px;
+    }
+
+    .review-form-modal__header {
+        margin-bottom: 12px;
+    }
+
+    .review-form-modal__title {
+        font-size: 16px;
+    }
+
+    .review-form-modal__game {
+        padding: 9px;
+        border-radius: 14px;
+        margin-bottom: 12px;
+    }
+
+    .review-form-modal__game-image {
+        width: 82px;
+        height: 48px;
+        border-radius: 10px;
+    }
+
+    .review-form-modal__game-name {
+        font-size: 14px;
+    }
+
+    .review-form-modal__game-category {
+        font-size: 12px;
+    }
+
+    .review-form-modal__label {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .review-form-modal__marks {
+        gap: 2px;
+        margin-bottom: 6px;
+    }
+
+    .review-form-modal__mark {
+        font-size: 12px;
+    }
+
+    .review-form-modal__textarea {
+        min-height: 104px;
+        border-radius: 14px;
+        padding: 12px;
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .review-form-modal__submit {
+        min-height: 42px;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+}

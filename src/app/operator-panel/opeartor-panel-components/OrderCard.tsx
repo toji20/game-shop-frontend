@@ -3,6 +3,7 @@
 import { DASHBOARD_URL } from '@/config/url.config';
 import { useUpdateManualStatus } from '@/hooks/queries/useOrder';
 import { IOrder, ManualStatus } from '@/shared/types';
+import { Check, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -31,6 +32,7 @@ interface OrderCardProps {
 export function OrderCard({ order }: OrderCardProps) {
     const { push } = useRouter();
     const [expanded, setExpanded] = useState(false);
+    const [copied, setCopied] = useState(false);
     const { updateStatus, isLoadingUpdate } = useUpdateManualStatus(order.id);
 
     const manualStatus = order.manualStatus as ManualStatus;
@@ -40,9 +42,17 @@ export function OrderCard({ order }: OrderCardProps) {
         push(DASHBOARD_URL.manualOrder(order.id));
     };
 
-    // Если заказ уже в работе — просто переходим на страницу
     const handleOpenOrder = () => {
         push(DASHBOARD_URL.manualOrder(order.id));
+    };
+
+    const handleCopyOrderId = async (
+        e: React.MouseEvent<HTMLButtonElement>,
+    ) => {
+        e.stopPropagation();
+        await navigator.clipboard.writeText(order.id);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     const createdAt = new Date(order.createdAt).toLocaleString('ru-RU', {
@@ -54,22 +64,32 @@ export function OrderCard({ order }: OrderCardProps) {
 
     return (
         <div className={`order-card ${expanded ? 'order-card--expanded' : ''}`}>
-            {/* Header */}
             <div
                 className='order-card__header'
                 onClick={() => setExpanded(!expanded)}
             >
                 <div className='order-card__left'>
-                    <span className='order-card__id'>
-                        #{order.id.slice(-7).toUpperCase()}
-                    </span>
+                    <button
+                        type='button'
+                        className='order-card__id-copy flex gap-2 items-center'
+                        onClick={handleCopyOrderId}
+                        title='Скопировать ID заказа'
+                    >
+                        <span className='order-card__id'>
+                            #{order.id.toUpperCase()}
+                        </span>
+                        {copied ? <Check size={14} /> : <Copy size={14} />}
+                    </button>
+
                     <span className={`badge ${STATUS_COLOR[manualStatus]}`}>
                         {STATUS_LABELS[manualStatus]}
                     </span>
+
                     {manualStatus === 'AWAITING_2FA' && (
                         <span className='badge badge--pulse'>⚡ 2FA</span>
                     )}
                 </div>
+
                 <div className='order-card__right'>
                     <span className='order-card__total'>
                         {order.total.toLocaleString('ru-RU')} ₽
@@ -83,7 +103,6 @@ export function OrderCard({ order }: OrderCardProps) {
                 </div>
             </div>
 
-            {/* Items preview */}
             <div className='order-card__items-preview'>
                 {order.items.slice(0, 2).map((item) => (
                     <span key={item.id} className='order-card__item-chip'>
@@ -98,7 +117,6 @@ export function OrderCard({ order }: OrderCardProps) {
                 )}
             </div>
 
-            {/* Expanded content */}
             {expanded && (
                 <div className='order-card__body'>
                     <div className='order-card__section'>
@@ -124,6 +142,7 @@ export function OrderCard({ order }: OrderCardProps) {
                                         × {item.quantity}
                                     </span>
                                 </div>
+
                                 {item.fields &&
                                     Object.keys(item.fields).length > 0 && (
                                         <div className='order-card__fields'>
@@ -148,7 +167,6 @@ export function OrderCard({ order }: OrderCardProps) {
                         ))}
                     </div>
 
-                    {/* Actions */}
                     <div className='order-card__actions'>
                         {manualStatus === 'PENDING' && (
                             <button

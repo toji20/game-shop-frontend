@@ -73,7 +73,7 @@ class OrderService {
 
 class OrderApiService {
     async getAll() {
-        const { data } = await axiosClassic<IOrder[]>({
+        const { data } = await axiosWithAuth({
             url: API_URL.orderApi(),
             method: 'GET',
         });
@@ -81,8 +81,16 @@ class OrderApiService {
     }
 
     async getById(id: string) {
-        const { data } = await axiosClassic<IOrder>({
+        const { data } = await axiosWithAuth({
             url: API_URL.orderApi(`by-id/${id}`),
+            method: 'GET',
+        });
+        return data;
+    }
+
+    async getAnyById(id: string) {
+        const { data } = await axiosWithAuth({
+            url: API_URL.orderApi(`any/${id}`),
             method: 'GET',
         });
         return data;
@@ -97,7 +105,7 @@ class OrderApiService {
     }
 
     async updateStatus(id: string, status: string) {
-        const { data } = await axiosWithAuth<IOrder>({
+        const { data } = await axiosWithAuth({
             url: API_URL.orderApi(id),
             method: 'PUT',
             data: { status },
@@ -105,8 +113,35 @@ class OrderApiService {
         return data;
     }
 
+    async updateSteamStatus(id: string, status: string) {
+        const { data } = await axiosWithAuth({
+            url: API_URL.orderApi(`steam/${id}/status`),
+            method: 'PUT',
+            data: { status },
+        });
+        return data;
+    }
+
+    async updateItemDonateHubStatus(itemId: string, status: string) {
+        const { data } = await axiosWithAuth({
+            url: API_URL.orderApi(`item/${itemId}/donatehub-status`),
+            method: 'PUT',
+            data: { status },
+        });
+        return data;
+    }
+
+    async updateSteamDonateHubStatus(id: string, status: string) {
+        const { data } = await axiosWithAuth({
+            url: API_URL.orderApi(`steam/${id}/donatehub-status`),
+            method: 'PUT',
+            data: { status },
+        });
+        return data;
+    }
+
     async delete(id: string) {
-        const { data } = await axiosWithAuth<IOrder>({
+        const { data } = await axiosWithAuth({
             url: API_URL.orderApi(id),
             method: 'DELETE',
         });

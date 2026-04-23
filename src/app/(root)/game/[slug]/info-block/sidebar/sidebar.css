@@ -1,11 +1,16 @@
+.sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
 .sidebar {
     background: #1c1d1f;
     border-radius: 12px;
-    padding: 28px 34px 20px 34px;
+    padding: 28px 34px 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-top: 15px;
 }
 
 .sidebar__section-title {
@@ -14,23 +19,17 @@
     color: #bababa;
     margin-bottom: 6px;
 }
-/* Способ оплаты */
+
 .sidebar__payment {
     display: flex;
     flex-direction: column;
     margin: auto;
+    width: 100%;
     max-width: 60%;
     border: 2px solid #ffffff1a;
     border-radius: 6px;
     background: #cccdd01f;
     backdrop-filter: blur(4px);
-}
-
-.sidebar__section-title-methods {
-    font-size: 13px;
-    font-weight: 600;
-    color: #bababa;
-    margin-bottom: 10px;
 }
 
 .sidebar__payment-methods {
@@ -48,18 +47,15 @@
     cursor: pointer;
     transition: all 0.2s;
 }
+
 .sidebar__payment-title {
     font-size: 10px;
     font-weight: 700;
-    font-display: swap;
-    color: rgba(218, 217, 217, 0.814);
+    color: rgba(218, 217, 217, 0.81);
 }
 
 .sidebar__payment-title--active {
     color: white;
-}
-.sidebar__payment-btn:hover {
-    border-color: #555;
 }
 
 .sidebar__payment-btn--active {
@@ -74,7 +70,6 @@
     margin-bottom: 2px;
 }
 
-/* Итого — крупно сверху */
 .sidebar__summary {
     display: flex;
     flex-direction: column;
@@ -85,6 +80,7 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    gap: 16px;
 }
 
 .sidebar__summary-total-label {
@@ -97,11 +93,13 @@
     font-size: 22px;
     font-weight: 800;
     color: #fff;
+    text-align: right;
 }
 
 .sidebar__summary-row {
     display: flex;
     justify-content: space-between;
+    gap: 12px;
     font-size: 13px;
     color: #6b6b6b;
 }
@@ -110,19 +108,22 @@
     color: #4ade80;
 }
 
-.sidebar__summary-prices {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.sidebar__summary-row--commission {
+    color: #aaa;
 }
 
-.sidebar__summary-old {
-    font-size: 13px;
-    color: #6b6b6b;
-    text-decoration: line-through;
+.sidebar__summary-row--accent {
+    color: #fff;
+    font-weight: 700;
 }
 
-/* Поля */
+.sidebar__summary-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 6px 0 2px;
+}
+
 .sidebar__fields {
     display: flex;
     flex-direction: column;
@@ -133,17 +134,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
 }
 
 .sidebar__fields-hint {
     font-size: 12px;
     color: #7c5cbf;
     text-decoration: none;
-    transition: color 0.2s;
-}
-
-.sidebar__fields-hint:hover {
-    color: #b084f7;
 }
 
 .sidebar__field {
@@ -155,22 +152,16 @@
     background: #2a2b2e;
     border: 1px solid #2c2d32;
     border-radius: 10px;
-    padding: 8px 12px;
+    padding: 12px 14px;
     color: #fff;
     font-size: 14px;
     outline: none;
-    transition: border-color 0.2s;
     width: 100%;
 }
 
 .sidebar__field-input::placeholder {
     color: #555;
-    font-weight: 400;
     font-size: 14px;
-}
-
-.sidebar__field-input:focus {
-    border-color: #555;
 }
 
 .sidebar__field-input--success {
@@ -180,10 +171,7 @@
 .sidebar__field-input--error {
     border-color: #f87171 !important;
 }
-.sidebar__summary-row--commission {
-    color: #aaa;
-}
-/* Промокод */
+
 .sidebar__promo {
     display: flex;
     flex-direction: column;
@@ -213,7 +201,7 @@
 }
 
 .sidebar__promo-btn {
-    padding: 0px 16px;
+    padding: 0 16px;
     border-radius: 10px;
     border: 1px solid #2c2d32;
     background: #2a2b2e;
@@ -222,18 +210,7 @@
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s;
     flex-shrink: 0;
-}
-
-.sidebar__promo-btn:hover:not(:disabled) {
-    border-color: #555;
-    color: #fff;
-}
-
-.sidebar__promo-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
 }
 
 .sidebar__promo-success {
@@ -248,7 +225,6 @@
     margin-top: 6px;
 }
 
-/* Кнопка */
 .sidebar__btn {
     width: 100%;
     padding: 16px;
@@ -259,16 +235,11 @@
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.2s;
 }
 
 .sidebar__btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-}
-
-.sidebar__btn:not(:disabled):hover {
-    opacity: 0.85;
 }
 
 .sidebar__hint {
@@ -280,18 +251,13 @@
 .sidebar__terms {
     text-align: center;
     font-size: 11px;
-    color: #444;
+    color: #666;
     line-height: 1.5;
-}
-.sidebar__confirm {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 .sidebar__confirm-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
     cursor: pointer;
 }
@@ -307,9 +273,6 @@
     background: transparent;
     cursor: pointer;
     margin-top: 1px;
-    transition:
-        background 0.15s,
-        border-color 0.15s;
     position: relative;
 }
 
@@ -336,15 +299,12 @@
     line-height: 1.5;
     user-select: none;
     font-weight: 500;
-    transition: color 0.2s;
 }
 
-/* Чекбокс не отмечен — текст красный */
 .sidebar__confirm-label--unchecked {
     color: #f87171;
 }
 
-/* Чекбокс отмечен — текст белый */
 .sidebar__confirm-label--checked {
     color: #4ade80;
 }
@@ -354,7 +314,192 @@
     font-weight: 600;
 }
 
-.sidebar__confirm-value {
+.sidebar-wrapper--mobile {
+    width: 100%;
+}
+
+.sidebar--mobile {
+    padding: 18px;
+    background: #232527;
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.34);
+    min-height: 100vh;
+}
+
+.sidebar__mobile-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.sidebar__mobile-caption {
+    font-size: 13px;
+    font-weight: 700;
+    color: #c7c9cf;
+    margin-bottom: 10px;
+}
+
+.sidebar__mobile-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
     color: #fff;
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.sidebar__mobile-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 14px;
+    background: #444955;
+}
+
+.sidebar__mobile-product-image {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #2b2f36;
+    flex-shrink: 0;
+}
+
+.sidebar__mobile-product-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.sidebar__mobile-product-name {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar__mobile-product-price {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.sidebar__mobile-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar__mobile-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.sidebar__mobile-warning strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 14px;
+}
+
+.sidebar__mobile-warning--danger {
+    background: #cf4a46;
+    color: #fff;
+}
+
+.sidebar__mobile-warning--alert {
+    background: #d9c35b;
+    color: #252525;
+}
+.sidebar__field-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.sidebar__field-select option {
+    background: #2a2b2e;
+    color: #fff;
+}
+
+.sidebar__suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.sidebar__suggestion {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #2c2d32;
+    background: #2a2b2e;
+    color: #bababa;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.sidebar__suggestion:hover {
+    border-color: #555;
+    color: #fff;
+}
+@media (max-width: 500px) {
+    .sidebar {
+        border-radius: 0;
+    }
+
+    .sidebar__payment {
+        max-width: none;
+        margin: 0;
+        border-radius: 12px;
+    }
+
+    .sidebar__payment-btn {
+        padding: 12px 10px;
+    }
+
+    .sidebar__promo-wrap {
+        flex-direction: column;
+    }
+
+    .sidebar__promo-btn {
+        min-height: 44px;
+    }
+
+    .sidebar__summary-total-label,
+    .sidebar__summary-total-value {
+        font-size: 20px;
+    }
+
+    .sidebar__btn {
+        min-height: 52px;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .sidebar__terms {
+        font-size: 10px;
+    }
 }

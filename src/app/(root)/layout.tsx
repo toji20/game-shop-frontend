@@ -4,8 +4,16 @@ import { PropsWithChildren, Suspense } from 'react';
 
 export default function Layout({ children }: PropsWithChildren) {
     return (
-        <div className='bg-[#121415] min-h-screen'>
-            <Suspense>
+        <div className='bg-[#14151B] min-h-screen'>
+            <Suspense
+                fallback={
+                    <div
+                        style={{
+                            height: '58px',
+                        }}
+                    />
+                }
+            >
                 <Header />
             </Suspense>
             {children}

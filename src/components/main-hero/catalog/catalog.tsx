@@ -28,12 +28,35 @@ export function Catalog({ titleOrSort = true }: CatalogProps) {
     return (
         <div className='catalog'>
             {titleOrSort ? (
-                <Link href={PUBLIC_URL.games()} className='catalog-title'>
-                    <h3>Все игры</h3>
-                    <ChevronRight className='catalog-title-svg' />
-                </Link>
+                <div className='catalog-header'>
+                    <Link href={PUBLIC_URL.games()} className='catalog-title'>
+                        <h3>Все игры</h3>
+                        <ChevronRight className='catalog-title-svg' />
+                    </Link>
+                    <div className='catalog-sort'>
+                        <button
+                            className={`catalog-sort-btn ${selectedCategory === null ? 'catalog-sort-btn--active' : ''}`}
+                            onClick={() => setSelectedCategory(null)}
+                        >
+                            Все
+                        </button>
+                        {categories?.map((c) => (
+                            <button
+                                key={c.id}
+                                className={`catalog-sort-btn ${selectedCategory === c.id ? 'catalog-sort-btn--active' : ''}`}
+                                onClick={() =>
+                                    setSelectedCategory(
+                                        selectedCategory === c.id ? null : c.id,
+                                    )
+                                }
+                            >
+                                {c.title}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             ) : (
-                <div className='catalog-sort'>
+                <div className='catalog-sort catalog-sort--standalone'>
                     <button
                         className={`catalog-sort-btn ${selectedCategory === null ? 'catalog-sort-btn--active' : ''}`}
                         onClick={() => setSelectedCategory(null)}
@@ -58,7 +81,7 @@ export function Catalog({ titleOrSort = true }: CatalogProps) {
 
             <div className='catalog-items'>
                 {!activeGames
-                    ? Array.from({ length: 9 }).map((_, i) => (
+                    ? Array.from({ length: 8 }).map((_, i) => (
                           <div key={i} className='catalog-item'>
                               <Skeleton
                                   width='100%'

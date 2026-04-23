@@ -20,12 +20,16 @@ export interface ISteamOrder {
 }
 
 // ─── Проверка аккаунта (GET /steam-orders/check) ─────────────────────────────
-
 export interface ISteamOrderCheck {
     custom_id: string;
     total: number;
+    totalRubBase: number;
+    totalRubCard: number;
+    totalRubSbp: number;
+    rate: number;
+    currency: string;
+    originalAmount: number;
 }
-
 // ─── Создание заказа (POST /steam-orders/place) ───────────────────────────────
 
 export interface ISteamOrderCreate {

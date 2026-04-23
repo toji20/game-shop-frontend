@@ -1,18 +1,17 @@
 .reviews-page-wrapper {
     position: relative;
     min-height: 100vh;
+    background: #111315;
+    color: #fff;
+    overflow: hidden;
 }
 
-/* Фон */
 .reviews-page__bg-wrap {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 679px;
+    inset: 0 0 auto 0;
+    height: 360px;
     z-index: 0;
     pointer-events: none;
-    overflow: hidden;
 }
 
 .reviews-page__bg {
@@ -26,19 +25,20 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.5) 0%,
-        rgba(10, 10, 10, 1) 100%
+        180deg,
+        rgba(17, 19, 21, 0.18) 0%,
+        rgba(17, 19, 21, 0.32) 24%,
+        rgba(17, 19, 21, 0.72) 70%,
+        #111315 100%
     );
 }
 
-/* Контент поверх фона */
 .reviews-page__info {
     position: relative;
     z-index: 1;
-    max-width: 860px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 100px 20px 24px;
+    padding: 110px 20px 24px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -52,10 +52,9 @@
 
 .reviews-page__breadcrumb {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.72);
     text-decoration: none;
-    transition: color 0.2s;
-    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .reviews-page__breadcrumb:hover {
@@ -64,27 +63,94 @@
 
 .reviews-page__breadcrumb-sep {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.35);
 }
 
 .reviews-page__title {
-    font-size: 52px;
+    font-size: 56px;
     font-weight: 800;
-    color: #fff;
     line-height: 1.05;
+    color: #fff;
 }
 
 .reviews-page__desc {
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.6);
-    line-height: 1.6;
+    max-width: 560px;
+    font-size: 18px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.75);
 }
 
-/* Список отзывов */
 .reviews-page__content {
     position: relative;
     z-index: 1;
-    max-width: 860px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px 80px;
+    padding: 0 20px 60px;
+}
+
+@media (max-width: 900px) {
+    .reviews-page__bg-wrap {
+        height: 320px;
+    }
+
+    .reviews-page__info {
+        padding-top: 96px;
+    }
+
+    .reviews-page__title {
+        font-size: 44px;
+    }
+
+    .reviews-page__desc {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 500px) {
+    .reviews-page-wrapper {
+        background: #111315;
+        padding-bottom: 90px;
+    }
+
+    .reviews-page__bg-wrap {
+        height: 260px;
+    }
+
+    .reviews-page__bg-overlay {
+        background: linear-gradient(
+            180deg,
+            rgba(17, 19, 21, 0.12) 0%,
+            rgba(17, 19, 21, 0.3) 28%,
+            rgba(17, 19, 21, 0.86) 100%
+        );
+    }
+
+    .reviews-page__info {
+        padding: 118px 16px 16px;
+        gap: 8px;
+    }
+
+    .reviews-page__breadcrumbs {
+        gap: 4px;
+    }
+
+    .reviews-page__breadcrumb,
+    .reviews-page__breadcrumb-sep {
+        font-size: 12px;
+    }
+
+    .reviews-page__title {
+        font-size: 28px;
+        line-height: 1.05;
+    }
+
+    .reviews-page__desc {
+        max-width: none;
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .reviews-page__content {
+        padding: 0 10px 24px;
+    }
 }

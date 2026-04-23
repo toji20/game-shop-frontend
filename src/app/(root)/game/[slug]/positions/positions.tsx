@@ -24,7 +24,7 @@ export function Positions({ items, gameId, gameName }: PositionsProps) {
         return (
             <div className='positions-block'>
                 {Array.from({ length: 6 }).map((_, i) => (
-                    <Skeleton key={i} height={160} borderRadius={12} />
+                    <Skeleton key={i} height={207} borderRadius={10} />
                 ))}
             </div>
         );

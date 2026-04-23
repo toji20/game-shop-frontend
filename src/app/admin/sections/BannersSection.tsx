@@ -13,18 +13,17 @@ import {
 } from '@/hooks/queries/useBanner';
 import ImageUpload from '@/shared/ImageUpload';
 import { IBanner, IBannerCreate, IBannerUpdate } from '@/shared/types';
-import Image from 'next/image';
 import { useState } from 'react';
 
-const EMPTY: IBannerCreate & { imagesRaw: string } = {
+const EMPTY: IBannerCreate = {
     title: '',
     description: '',
     link: '',
-    images: [],
-    imagesRaw: '',
+    desktopImage: '',
+    mobileImage: '',
 };
 
-type EditState = IBannerUpdate & { id: number; imagesRaw: string };
+type EditState = IBannerUpdate & { id: number };
 
 function toEdit(b: IBanner): EditState {
     return {
@@ -32,8 +31,8 @@ function toEdit(b: IBanner): EditState {
         title: b.title,
         description: b.description,
         link: b.link ?? '',
-        images: b.images,
-        imagesRaw: b.images?.join('\n') ?? '',
+        desktopImage: b.desktopImage,
+        mobileImage: b.mobileImage,
     };
 }
 
@@ -48,48 +47,29 @@ export default function BannersSection() {
     const { updateBanner, isLoadingUpdate } = useUpdateBanner(editing?.id ?? 0);
     const { deleteBanner, isLoadingDelete } = useDeleteBanner();
 
-    const addUploadedImage =
-        (setter: (fn: (p: any) => any) => void) => (url: string) => {
-            setter((p) => ({
-                ...p,
-                imagesRaw: [
-                    url,
-                    ...p.imagesRaw.split('\n').filter(Boolean),
-                ].join('\n'),
-            }));
-        };
-
     const handleCreate = () => {
-        createBanner(
-            {
-                title: newForm.title,
-                description: newForm.description,
-                link: newForm.link,
-                images: newForm.imagesRaw
-                    .split('\n')
-                    .map((s) => s.trim())
-                    .filter(Boolean),
+        console.log('CREATE DATA:', newForm);
+
+        createBanner(newForm, {
+            onSuccess: () => {
+                setCreating(false);
+                setNewForm(EMPTY);
             },
-            {
-                onSuccess: () => {
-                    setCreating(false);
-                    setNewForm(EMPTY);
-                },
-            },
-        );
+        });
     };
 
     const handleSave = () => {
         if (!editing) return;
+
+        console.log('UPDATE DATA:', editing);
+
         updateBanner(
             {
                 title: editing.title,
                 description: editing.description,
                 link: editing.link,
-                images: editing.imagesRaw
-                    .split('\n')
-                    .map((s) => s.trim())
-                    .filter(Boolean),
+                desktopImage: editing.desktopImage,
+                mobileImage: editing.mobileImage,
             },
             { onSuccess: () => setEditing(null) },
         );
@@ -137,9 +117,9 @@ export default function BannersSection() {
                             banners.map((b) => (
                                 <tr key={b.id}>
                                     <td className='col-img'>
-                                        {b.images?.[0] && (
+                                        {b.desktopImage && (
                                             <img
-                                                src={b.images[0]}
+                                                src={b.desktopImage}
                                                 alt={b.title}
                                                 width={36}
                                                 height={36}
@@ -194,6 +174,7 @@ export default function BannersSection() {
                 >
                     <div className='modal' onClick={(e) => e.stopPropagation()}>
                         <p className='modal__title'>Новый баннер</p>
+
                         <Field
                             label='Заголовок'
                             value={newForm.title}
@@ -202,14 +183,19 @@ export default function BannersSection() {
                                 setNewForm((p) => ({ ...p, title: v }))
                             }
                         />
+
                         <Field
                             label='Описание'
                             value={newForm.description}
                             textarea
                             onChange={(v) =>
-                                setNewForm((p) => ({ ...p, description: v }))
+                                setNewForm((p) => ({
+                                    ...p,
+                                    description: v,
+                                }))
                             }
                         />
+
                         <Field
                             label='Ссылка (необязательно)'
                             value={newForm.link ?? ''}
@@ -217,24 +203,31 @@ export default function BannersSection() {
                                 setNewForm((p) => ({ ...p, link: v }))
                             }
                         />
-                        {/* Upload one image at a time — it gets added to the URLs list below */}
+
                         <ImageUpload
-                            label='Загрузить изображение'
-                            value=''
+                            label='Изображение — десктоп'
+                            value={newForm.desktopImage}
                             folder='banners'
-                            onChange={addUploadedImage(setNewForm)}
-                        />
-                        <Field
-                            label='URL изображений (каждый с новой строки)'
-                            value={newForm.imagesRaw}
-                            textarea
-                            placeholder={
-                                'https://example.com/img1.jpg\nhttps://example.com/img2.jpg'
-                            }
-                            onChange={(v) =>
-                                setNewForm((p) => ({ ...p, imagesRaw: v }))
+                            onChange={(url: string) =>
+                                setNewForm((p) => ({
+                                    ...p,
+                                    desktopImage: url ?? '',
+                                }))
                             }
                         />
+
+                        <ImageUpload
+                            label='Изображение — мобильный'
+                            value={newForm.mobileImage}
+                            folder='banners'
+                            onChange={(url: string) =>
+                                setNewForm((p) => ({
+                                    ...p,
+                                    mobileImage: url ?? '',
+                                }))
+                            }
+                        />
+
                         <div className='modal__footer'>
                             <button
                                 className='btn btn--ghost'
@@ -242,6 +235,7 @@ export default function BannersSection() {
                             >
                                 Отмена
                             </button>
+
                             <button
                                 className='btn btn--primary'
                                 disabled={
@@ -261,6 +255,7 @@ export default function BannersSection() {
                 <div className='modal-overlay' onClick={() => setEditing(null)}>
                     <div className='modal' onClick={(e) => e.stopPropagation()}>
                         <p className='modal__title'>Редактировать баннер</p>
+
                         <Field
                             label='Заголовок'
                             value={editing.title ?? ''}
@@ -268,6 +263,7 @@ export default function BannersSection() {
                                 setEditing((p) => p && { ...p, title: v })
                             }
                         />
+
                         <Field
                             label='Описание'
                             value={editing.description ?? ''}
@@ -276,6 +272,7 @@ export default function BannersSection() {
                                 setEditing((p) => p && { ...p, description: v })
                             }
                         />
+
                         <Field
                             label='Ссылка'
                             value={editing.link ?? ''}
@@ -283,20 +280,37 @@ export default function BannersSection() {
                                 setEditing((p) => p && { ...p, link: v })
                             }
                         />
+
                         <ImageUpload
-                            label='Загрузить изображение'
-                            value=''
+                            label='Изображение — десктоп'
+                            value={editing.desktopImage || ''}
                             folder='banners'
-                            onChange={addUploadedImage(setEditing)}
-                        />
-                        <Field
-                            label='URL изображений (каждый с новой строки)'
-                            value={editing.imagesRaw}
-                            textarea
-                            onChange={(v) =>
-                                setEditing((p) => p && { ...p, imagesRaw: v })
+                            onChange={(url: string) =>
+                                setEditing(
+                                    (p) =>
+                                        p && {
+                                            ...p,
+                                            desktopImage: url,
+                                        },
+                                )
                             }
                         />
+
+                        <ImageUpload
+                            label='Изображение — мобильный'
+                            value={editing.mobileImage || ''}
+                            folder='banners'
+                            onChange={(url: string) =>
+                                setEditing(
+                                    (p) =>
+                                        p && {
+                                            ...p,
+                                            mobileImage: url,
+                                        },
+                                )
+                            }
+                        />
+
                         <div className='modal__footer'>
                             <button
                                 className='btn btn--ghost'
@@ -304,6 +318,7 @@ export default function BannersSection() {
                             >
                                 Отмена
                             </button>
+
                             <button
                                 className='btn btn--primary'
                                 disabled={isLoadingUpdate}

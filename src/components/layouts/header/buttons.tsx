@@ -1,14 +1,94 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 import { PUBLIC_URL } from '@/config/url.config';
 import { useProfile } from '@/hooks/queries/useUser';
+import { getAccessToken } from '@/services/auth/auth-token.service';
 import { LogIn, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
+function ProfileButtonSkeleton() {
+    return (
+        <div
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 7,
+                padding: '0 16px',
+                height: '100%',
+            }}
+        >
+            <div
+                style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.1)',
+                    flexShrink: 0,
+                    animation: 'pulse 1.5s ease-in-out infinite',
+                }}
+            />
+            <div
+                style={{
+                    width: 64,
+                    height: 12,
+                    borderRadius: 4,
+                    background: 'rgba(255,255,255,0.07)',
+                    animation: 'pulse 1.5s ease-in-out infinite',
+                    animationDelay: '0.2s',
+                }}
+            />
+        </div>
+    );
+}
+
+function LoginButtonSkeleton() {
+    return (
+        <div
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 7,
+                padding: '0 16px',
+                height: '100%',
+            }}
+        >
+            <div
+                style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 4,
+                    background: 'rgba(255,255,255,0.1)',
+                    flexShrink: 0,
+                    animation: 'pulse 1.5s ease-in-out infinite',
+                }}
+            />
+            <div
+                style={{
+                    width: 40,
+                    height: 12,
+                    borderRadius: 4,
+                    background: 'rgba(255,255,255,0.07)',
+                    animation: 'pulse 1.5s ease-in-out infinite',
+                    animationDelay: '0.2s',
+                }}
+            />
+        </div>
+    );
+}
 
 export function Buttons() {
-    const { profile } = useProfile();
+    const { profile, isLoadingProfile } = useProfile();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const isAuth = !!profile;
+    const hasToken = mounted ? !!getAccessToken() : false;
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
@@ -30,7 +110,21 @@ export function Buttons() {
                 <span>Покупки</span>
             </Link>
 
-            {isAuth ? (
+            {!mounted ? (
+                <LoginButtonSkeleton />
+            ) : isLoadingProfile ? (
+                hasToken ? (
+                    <ProfileButtonSkeleton />
+                ) : (
+                    <Link
+                        href={PUBLIC_URL.auth()}
+                        className='btn-ghost btn-ghost--auth'
+                    >
+                        <LogIn size={18} />
+                        <span>Войти</span>
+                    </Link>
+                )
+            ) : isAuth ? (
                 <Link
                     href={PUBLIC_URL.profile()}
                     className={`btn-ghost btn-ghost--user ${isOnProfile ? 'btn-ghost--active' : ''}`}

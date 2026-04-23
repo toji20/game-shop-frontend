@@ -1,6 +1,6 @@
 import { axiosClassic, axiosWithAuth } from '../api/api.interceptors';
 import { API_URL } from '../config/api.config';
-import { IUser } from '@/shared/types';
+import { IUser, UserRole } from '@/shared/types';
 
 class UserService {
     async getById(id: string) {
@@ -23,6 +23,23 @@ class UserService {
         const { data } = await axiosWithAuth<IUser>({
             url: API_URL.users('profile'),
             method: 'GET',
+        });
+        return data;
+    }
+
+    async search(query: string) {
+        const { data } = await axiosWithAuth<IUser[]>({
+            url: API_URL.users(`search?query=${encodeURIComponent(query)}`),
+            method: 'GET',
+        });
+        return data;
+    }
+
+    async updateRole(id: string, role: UserRole) {
+        const { data } = await axiosWithAuth<IUser>({
+            url: API_URL.users(`${id}/role`),
+            method: 'PUT',
+            data: { role },
         });
         return data;
     }

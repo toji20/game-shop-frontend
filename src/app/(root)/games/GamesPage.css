@@ -1,0 +1,12 @@
+.game-page-al {
+    padding-top: 80px;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+@media (max-width: 500px) {
+    .game-page-al {
+        padding: 100px 20px 0px 20px;
+        row-gap: 0px;
+    }
+}

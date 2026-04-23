@@ -4,17 +4,21 @@ import { PUBLIC_URL } from '@/config/url.config';
 import { useGames } from '@/hooks/queries/useGame';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 
 interface SearchBarProps {
     onClose?: () => void;
+    onOpen?: () => void;
+    isOpen?: boolean;
 }
 
-export function SearchBar({ onClose }: SearchBarProps) {
+export function SearchBar({ onClose, onOpen, isOpen = false }: SearchBarProps) {
     const [query, setQuery] = useState('');
-    const [open, setOpen] = useState(false);
+
     const inputRef = useRef<HTMLInputElement>(null);
     const wrapRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
     const { games } = useGames();
 
@@ -27,29 +31,31 @@ export function SearchBar({ onClose }: SearchBarProps) {
                   .slice(0, 8)
             : (games ?? []).slice(0, 6);
 
-    // Авто-фокус при открытии панели
+    // автофокус (только десктоп)
     useEffect(() => {
-        const timer = setTimeout(() => inputRef.current?.focus(), 300);
-        return () => clearTimeout(timer);
-    }, []);
+        if (isOpen && window.innerWidth > 500) {
+            const t = setTimeout(() => inputRef.current?.focus(), 200);
+            return () => clearTimeout(t);
+        }
+    }, [isOpen]);
 
+    // закрытие по клику вне
     useEffect(() => {
         const handler = (e: MouseEvent) => {
-            if (
-                wrapRef.current &&
-                !wrapRef.current.contains(e.target as Node)
-            ) {
-                setOpen(false);
-            }
+            const target = e.target as Element;
+            if (wrapRef.current?.contains(target)) return;
+            if (target.closest?.('[data-search-toggle]')) return;
+            onClose?.();
         };
+
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
-    }, []);
+    }, [onClose]);
 
-    const handleSelect = () => {
+    const handleSelect = (slug: string) => {
         setQuery('');
-        setOpen(false);
         onClose?.();
+        router.push(PUBLIC_URL.game(slug));
     };
 
     return (
@@ -63,23 +69,30 @@ export function SearchBar({ onClose }: SearchBarProps) {
                     value={query}
                     onChange={(e) => {
                         setQuery(e.target.value);
-                        setOpen(true);
+                        onOpen?.();
                     }}
-                    onFocus={() => setOpen(true)}
+                    onFocus={() => {
+                        onOpen?.();
+                    }}
                 />
             </div>
 
-            {open && (
+            {isOpen && (
                 <div className='searchbar__dropdown'>
                     {filtered.length === 0 ? (
                         <p className='searchbar__empty'>Ничего не найдено</p>
                     ) : (
                         filtered.map((g) => (
-                            <Link
+                            <div
                                 key={g.slug}
-                                href={PUBLIC_URL.game(`${g.slug}`)}
                                 className='searchbar__item'
-                                onClick={handleSelect}
+                                // mousedown — срабатывает до blur инпута,
+                                // preventDefault не даёт инпуту терять фокус
+                                // и гарантирует переход до закрытия дропдауна
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    handleSelect(g.slug);
+                                }}
                             >
                                 {g.icon?.[0] ? (
                                     <img
@@ -92,6 +105,7 @@ export function SearchBar({ onClose }: SearchBarProps) {
                                         🎮
                                     </div>
                                 )}
+
                                 <div>
                                     <div className='searchbar__item-name'>
                                         {g.name}
@@ -102,7 +116,7 @@ export function SearchBar({ onClose }: SearchBarProps) {
                                         </div>
                                     )}
                                 </div>
-                            </Link>
+                            </div>
                         ))
                     )}
                 </div>

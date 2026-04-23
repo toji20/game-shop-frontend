@@ -1,201 +1,121 @@
 'use client';
 
 import { ReviewItem } from './review-item/review-item';
+import { ReviewFormModal } from './review-modal/review-form-modal';
 import './reviews.css';
-import { PUBLIC_URL } from '@/config/url.config';
 import {
     useAllReviewsPaginated,
-    useReviewsPaginated,
     useCreateReview,
+    useReviewsPaginated,
     useReviewStats,
 } from '@/hooks/queries/useReview';
-import { useProfile } from '@/hooks/queries/useUser';
-import { useIntersection } from '@/hooks/useInterSection';
-import { IGame } from '@/shared/types';
-import { Star, LogIn, Send } from 'lucide-react';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { IGame, IReviewCreate } from '@/shared/types';
+import { ChevronRight, Star } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface ReviewsProps {
     game?: IGame;
 }
 
 export function Reviews({ game }: ReviewsProps) {
-    const isGameMode = !!game;
-    const { profile } = useProfile();
-    const isAuth = !!profile;
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const gamePaginated = useReviewsPaginated(game?.id ?? 0, 10);
-    const allPaginated = useAllReviewsPaginated(10);
-    const active = isGameMode ? gamePaginated : allPaginated;
-    const { reviews, total, hasMore, isLoading, isFetching, loadMore } = active;
+    const gameReviews = useReviewsPaginated(game?.id ?? 0, 10);
+    const allReviews = useAllReviewsPaginated(10);
+    const { stats } = useReviewStats();
 
-    const { stats } = useReviewStats(game?.id);
+    const { reviews, hasMore, loadMore, isLoading, isFetching, total } = game
+        ? gameReviews
+        : allReviews;
+
     const { createReview, isLoadingCreate } = useCreateReview(game?.id ?? 0);
 
-    const [text, setText] = useState('');
-    const [rating, setRating] = useState(0);
-    const [hovered, setHovered] = useState(0);
-    const [submitted, setSubmitted] = useState(false);
+    const handleSubmitReview = async (payload: IReviewCreate) => {
+        if (!game) return;
 
-    const { ref: sentinelRef, isVisible } = useIntersection([], {
-        threshold: 0.1,
-    });
-
-    useEffect(() => {
-        if (!isVisible || !hasMore || isFetching) return;
-        loadMore();
-    }, [isVisible, hasMore, isFetching]);
-
-    const handleSubmit = () => {
-        if (!text.trim() || rating === 0) return;
-        createReview(
-            { text, rating },
-            {
-                onSuccess: () => {
-                    setText('');
-                    setRating(0);
-                    setSubmitted(true);
-                    setTimeout(() => setSubmitted(false), 4000);
-                },
+        createReview(payload, {
+            onSuccess: () => {
+                toast.success('Отзыв успешно отправлен');
+                setIsModalOpen(false);
             },
-        );
+            onError: () => {
+                toast.error('Не удалось отправить отзыв');
+            },
+        });
     };
 
-    const avgRating = stats?.avgRating ?? 0;
-
+    const avgRating = stats?.avgRating || 0;
     return (
-        <div className='reviews-wrapper'>
-            {/* Статистика */}
-            <div className='reviews-stats'>
-                <div className='reviews-stats__score'>
-                    <span className='reviews-stats__number'>
-                        {avgRating > 0 ? avgRating.toFixed(1) : '—'}
-                    </span>
-                    <div className='reviews-stats__stars'>
-                        {Array.from({ length: 10 }).map((_, i) => (
-                            <Star
-                                key={i}
-                                size={14}
-                                className={`reviews-stats__star ${i < Math.round(avgRating) ? 'reviews-stats__star--filled' : ''}`}
-                            />
-                        ))}
-                    </div>
-                    <span className='reviews-stats__count'>
-                        {total} отзывов
+        <>
+            {/* ⭐ БЛОК СТАТИСТИКИ */}
+            <div className='reviews-summary'>
+                <div className='reviews-summary__rating'>
+                    <Star size={18} />
+                    <span className='reviews-summary__value'>
+                        {(game?.id && game?.avgRating?.toFixed(1)) ||
+                            avgRating.toFixed(1)}
                     </span>
                 </div>
+                <span className='reviews-summary__count'>{total} отзывов</span>
             </div>
 
-            {/* Форма / благодарность / блок авторизации */}
-            {isGameMode &&
-                (isAuth ? (
-                    submitted ? (
-                        <div className='review-thanks'>
-                            <img
-                                src={'/holiday.svg'}
-                                className='review-thanks__emoji'
-                            />
-                            <div>
-                                <p className='review-thanks__title'>
-                                    Спасибо за отзыв!
-                                </p>
-                                <p className='review-thanks__desc'>
-                                    Ваше мнение помогает другим игрокам
-                                </p>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className='review-form'>
-                            <div className='review-form__rating'>
-                                <span className='review-form__rating-label'>
-                                    Ваша оценка
-                                </span>
-                                <div className='review-form__stars'>
-                                    {Array.from({ length: 10 }).map((_, i) => (
-                                        <button
-                                            key={i}
-                                            className={`review-form__star-btn ${i < (hovered || rating) ? 'review-form__star-btn--active' : ''}`}
-                                            onMouseEnter={() =>
-                                                setHovered(i + 1)
-                                            }
-                                            onMouseLeave={() => setHovered(0)}
-                                            onClick={() => setRating(i + 1)}
-                                            type='button'
-                                        >
-                                            <Star size={20} />
-                                        </button>
-                                    ))}
-                                    {(hovered || rating) > 0 && (
-                                        <span className='review-form__rating-value'>
-                                            {hovered || rating} / 10
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className='review-form__input-row'>
-                                <textarea
-                                    className='review-form__textarea'
-                                    placeholder='Поделитесь своим впечатлением...'
-                                    value={text}
-                                    onChange={(e) => setText(e.target.value)}
-                                    rows={3}
-                                />
-                                <button
-                                    className='review-form__submit'
-                                    onClick={handleSubmit}
-                                    disabled={
-                                        !text.trim() ||
-                                        rating === 0 ||
-                                        isLoadingCreate
-                                    }
-                                >
-                                    <span>Отправить</span>
-                                </button>
-                            </div>
-                        </div>
-                    )
-                ) : (
-                    <div className='review-auth-block'>
-                        <div className='review-auth-block__icon'>
-                            <LogIn size={24} />
-                        </div>
-                        <div className='review-auth-block__text'>
-                            <p className='review-auth-block__title'>
-                                Хотите оставить отзыв?
-                            </p>
-                            <p className='review-auth-block__desc'>
-                                Войдите в аккаунт чтобы поделиться своим мнением
-                            </p>
-                        </div>
-                        <Link
-                            href={PUBLIC_URL.auth()}
-                            className='review-auth-block__btn'
-                        >
-                            Войти
-                        </Link>
+            <section className='reviews-block'>
+                <div className='reviews-block__head'>
+                    <div className='reviews-block__title-wrap'>
+                        <h2 className='reviews-block__title'>Отзывы</h2>
+                        <ChevronRight
+                            size={16}
+                            className='reviews-block__title-icon'
+                        />
                     </div>
-                ))}
 
-            {/* Список отзывов */}
-            <div className='reviews-list'>
-                {isLoading ? (
-                    <p className='reviews-empty'>Загрузка...</p>
-                ) : reviews.length === 0 ? (
-                    <p className='reviews-empty'>Отзывов пока нет</p>
-                ) : (
-                    reviews.map((item) => (
-                        <ReviewItem key={item.id} item={item} />
-                    ))
-                )}
-
-                <div ref={sentinelRef} className='reviews-sentinel'>
-                    {isFetching && (
-                        <p className='reviews-empty'>Загружаем...</p>
+                    {game && (
+                        <button
+                            type='button'
+                            className='reviews-block__add-btn'
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            + Оставить отзыв
+                        </button>
                     )}
                 </div>
-            </div>
-        </div>
+
+                <div className='reviews-block__list'>
+                    {reviews?.map((review) => (
+                        <ReviewItem key={review.id} review={review} />
+                    ))}
+                </div>
+
+                {!isLoading && hasMore && (
+                    <button
+                        type='button'
+                        className='reviews-block__more-btn'
+                        onClick={loadMore}
+                        disabled={isFetching}
+                    >
+                        {isFetching ? 'Загрузка...' : 'Показать еще'}
+                        <ChevronRight
+                            size={18}
+                            className='reviews-block__more-icon'
+                        />
+                    </button>
+                )}
+            </section>
+
+            {game && (
+                <ReviewFormModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    gameName={game.name}
+                    gameCategory={game.category?.title || ''}
+                    gameImage={
+                        game.bgMobile || game.bgDesktop || game.icon || ''
+                    }
+                    onSubmit={handleSubmitReview}
+                    isLoading={isLoadingCreate}
+                />
+            )}
+        </>
     );
 }

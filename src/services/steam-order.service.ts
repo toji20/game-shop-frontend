@@ -8,29 +8,48 @@ import {
 
 export type SteamCurrency = 'RUB' | 'USD' | 'KZT';
 
+export interface ISteamOrderCheckResponse extends ISteamOrderCheck {
+    currency: SteamCurrency;
+    originalAmount: number;
+}
+
 class SteamOrderService {
-    // Шаг 1: проверка аккаунта
-    async check(account: string, amount: number, currency: SteamCurrency) {
-        const { data } = await axiosWithAuth<ISteamOrderCheck>({
-            url: API_URL.steamOrders(
-                `check?account=${encodeURIComponent(account)}&amount=${amount}&currency=${currency}`,
-            ),
-            method: 'GET',
+    async check(
+        account: string,
+        amount: number,
+        currency: SteamCurrency,
+        promoCode?: string,
+    ): Promise<ISteamOrderCheckResponse> {
+        const { data } = await axiosWithAuth<ISteamOrderCheckResponse>({
+            url: API_URL.steamOrders('check'),
+            method: 'POST',
+            data: {
+                account,
+                amount,
+                currency,
+                promoCode,
+            },
         });
 
         return data;
     }
 
-    // Шаг 2: создание заказа
-    async place(dto: ISteamOrderCreate & { currency: SteamCurrency }) {
+    async place(
+        dto: ISteamOrderCreate & {
+            currency: SteamCurrency;
+            paymentMethod?: string;
+            promoCode?: string;
+        },
+    ) {
         const { data } = await axiosWithAuth<ISteamOrderCreateResponse>({
             url: API_URL.steamOrders('place'),
             method: 'POST',
             data: {
                 account: dto.account,
-                amountRub: dto.amount, // важно: бэк ждёт amountRub
+                amountRub: dto.amount,
                 currency: dto.currency,
-                // customId можно убрать — он у тебя на бэке больше не используется
+                paymentMethod: dto.paymentMethod,
+                promoCode: dto.promoCode,
             },
         });
 

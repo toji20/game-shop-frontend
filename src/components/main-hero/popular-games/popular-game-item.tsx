@@ -28,9 +28,6 @@ export function PopularGameItem({ item }: PopularGameItemProps) {
             </div>
             <div className='popular-game-item-info'>
                 <h4 className='popular-game-item-info-title'>{item.name}</h4>
-                <p className='popular-game-item-info-release-date'>
-                    {item.releaseDate}
-                </p>
             </div>
         </Link>
     );

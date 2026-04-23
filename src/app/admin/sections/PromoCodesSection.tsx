@@ -14,12 +14,14 @@ import {
     IPromoCode,
     IPromoCodeCreate,
     IPromoCodeUpdate,
+    PromoCodeScope,
 } from '@/shared/types/promo.interface';
 import { useState } from 'react';
 
 type PromoForm = {
     code: string;
     discount: number;
+    scope: PromoCodeScope;
     isActive: boolean;
     usageLimit: string;
     expiresAt: string;
@@ -28,6 +30,7 @@ type PromoForm = {
 const EMPTY_FORM: PromoForm = {
     code: '',
     discount: 10,
+    scope: 'ALL',
     isActive: true,
     usageLimit: '',
     expiresAt: '',
@@ -38,6 +41,7 @@ function toForm(p: IPromoCode): PromoForm & { id: string } {
         id: p.id,
         code: p.code,
         discount: p.discount,
+        scope: p.scope ?? 'ALL',
         isActive: p.isActive,
         usageLimit: p.usageLimit ? String(p.usageLimit) : '',
         expiresAt: p.expiresAt
@@ -50,6 +54,7 @@ function formToCreateDto(f: PromoForm): IPromoCodeCreate {
     return {
         code: f.code.toUpperCase(),
         discount: Number(f.discount),
+        scope: f.scope,
         isActive: f.isActive,
         usageLimit: f.usageLimit ? Number(f.usageLimit) : undefined,
         expiresAt: f.expiresAt
@@ -62,12 +67,19 @@ function formToUpdateDto(f: PromoForm): IPromoCodeUpdate {
     return {
         code: f.code.toUpperCase(),
         discount: Number(f.discount),
+        scope: f.scope,
         isActive: f.isActive,
         usageLimit: f.usageLimit ? Number(f.usageLimit) : undefined,
         expiresAt: f.expiresAt
             ? new Date(f.expiresAt).toISOString()
             : undefined,
     };
+}
+
+function formatScope(scope: PromoCodeScope) {
+    if (scope === 'GAMES_ONLY') return 'Только игры';
+    if (scope === 'STEAM_ONLY') return 'Только Steam';
+    return 'Везде';
 }
 
 export function formatDate(iso: string | null) {
@@ -134,6 +146,7 @@ export default function PromoCodesSection() {
                         <tr>
                             <th>Код</th>
                             <th>Скидка</th>
+                            <th>Тип</th>
                             <th>Использований</th>
                             <th>Лимит</th>
                             <th>Истекает</th>
@@ -143,10 +156,10 @@ export default function PromoCodesSection() {
                     </thead>
                     <tbody>
                         {isLoadingPromoCodes ? (
-                            <SkeletonRows rows={5} cols={7} />
+                            <SkeletonRows rows={5} cols={8} />
                         ) : !promoCodes?.length ? (
                             <tr>
-                                <td colSpan={7} className='table-empty'>
+                                <td colSpan={8} className='table-empty'>
                                     Нет промокодов
                                 </td>
                             </tr>
@@ -158,6 +171,9 @@ export default function PromoCodesSection() {
                                         <span className='badge badge--green'>
                                             -{p.discount}%
                                         </span>
+                                    </td>
+                                    <td className='td-muted'>
+                                        {formatScope(p.scope ?? 'ALL')}
                                     </td>
                                     <td className='td-muted'>{p.usageCount}</td>
                                     <td className='td-muted'>
@@ -204,7 +220,6 @@ export default function PromoCodesSection() {
                 </table>
             </div>
 
-            {/* ── Create modal ── */}
             {creating && (
                 <div
                     className='modal-overlay'
@@ -212,6 +227,7 @@ export default function PromoCodesSection() {
                 >
                     <div className='modal' onClick={(e) => e.stopPropagation()}>
                         <p className='modal__title'>Новый промокод</p>
+
                         <Field
                             label='Код'
                             value={newForm.code}
@@ -223,6 +239,7 @@ export default function PromoCodesSection() {
                                 }))
                             }
                         />
+
                         <div className='form-group'>
                             <label className='form-label'>Скидка (%)</label>
                             <input
@@ -239,6 +256,29 @@ export default function PromoCodesSection() {
                                 }
                             />
                         </div>
+
+                        <div className='form-group'>
+                            <label className='form-label'>Тип промокода</label>
+                            <select
+                                className='form-input'
+                                value={newForm.scope}
+                                onChange={(e) =>
+                                    setNewForm((p) => ({
+                                        ...p,
+                                        scope: e.target.value as PromoCodeScope,
+                                    }))
+                                }
+                            >
+                                <option value='ALL'>Для всего</option>
+                                <option value='GAMES_ONLY'>
+                                    Только для игр
+                                </option>
+                                <option value='STEAM_ONLY'>
+                                    Только для Steam
+                                </option>
+                            </select>
+                        </div>
+
                         <div className='form-group'>
                             <label className='form-label'>
                                 Лимит использований (пусто = безлимит)
@@ -257,6 +297,7 @@ export default function PromoCodesSection() {
                                 }
                             />
                         </div>
+
                         <div className='form-group'>
                             <label className='form-label'>
                                 Истекает (пусто = бессрочный)
@@ -273,6 +314,7 @@ export default function PromoCodesSection() {
                                 }
                             />
                         </div>
+
                         <div className='form-check'>
                             <input
                                 type='checkbox'
@@ -287,6 +329,7 @@ export default function PromoCodesSection() {
                             />
                             <label htmlFor='c-isActive'>Активен</label>
                         </div>
+
                         <div className='modal__footer'>
                             <button
                                 className='btn btn--ghost'
@@ -308,11 +351,11 @@ export default function PromoCodesSection() {
                 </div>
             )}
 
-            {/* ── Edit modal ── */}
             {editing && (
                 <div className='modal-overlay' onClick={() => setEditing(null)}>
                     <div className='modal' onClick={(e) => e.stopPropagation()}>
                         <p className='modal__title'>Редактировать промокод</p>
+
                         <Field
                             label='Код'
                             value={editing.code}
@@ -323,6 +366,7 @@ export default function PromoCodesSection() {
                                 )
                             }
                         />
+
                         <div className='form-group'>
                             <label className='form-label'>Скидка (%)</label>
                             <input
@@ -344,6 +388,33 @@ export default function PromoCodesSection() {
                                 }
                             />
                         </div>
+
+                        <div className='form-group'>
+                            <label className='form-label'>Тип промокода</label>
+                            <select
+                                className='form-input'
+                                value={editing.scope}
+                                onChange={(e) =>
+                                    setEditing(
+                                        (p) =>
+                                            p && {
+                                                ...p,
+                                                scope: e.target
+                                                    .value as PromoCodeScope,
+                                            },
+                                    )
+                                }
+                            >
+                                <option value='ALL'>Для всего</option>
+                                <option value='GAMES_ONLY'>
+                                    Только для игр
+                                </option>
+                                <option value='STEAM_ONLY'>
+                                    Только для Steam
+                                </option>
+                            </select>
+                        </div>
+
                         <div className='form-group'>
                             <label className='form-label'>
                                 Лимит использований (пусто = безлимит)
@@ -365,6 +436,7 @@ export default function PromoCodesSection() {
                                 }
                             />
                         </div>
+
                         <div className='form-group'>
                             <label className='form-label'>
                                 Истекает (пусто = бессрочный)
@@ -384,6 +456,7 @@ export default function PromoCodesSection() {
                                 }
                             />
                         </div>
+
                         <div className='form-check'>
                             <input
                                 type='checkbox'
@@ -401,6 +474,7 @@ export default function PromoCodesSection() {
                             />
                             <label htmlFor='e-isActive'>Активен</label>
                         </div>
+
                         <div className='modal__footer'>
                             <button
                                 className='btn btn--ghost'

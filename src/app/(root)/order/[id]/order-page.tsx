@@ -27,7 +27,12 @@ export default function OrderPage() {
                 <img
                     src={game.bgDesktop || ''}
                     alt={game.name}
-                    className='order-page__bg'
+                    className='order-page__bg order-page__bg--desktop'
+                />
+                <img
+                    src={game.bgMobile || game.bgDesktop || ''}
+                    alt={game.name}
+                    className='order-page__bg order-page__bg--mobile'
                 />
                 <div className='order-page__bg-overlay' />
             </div>

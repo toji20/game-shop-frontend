@@ -1,48 +1,104 @@
 .popular-games {
+    --popular-arrow-size: 56px;
+    --popular-header-pad-x: 32px;
+    --popular-shift-left: 32px;
     max-width: 1460px;
-    padding-right: 20px;
-    padding-left: 20px;
-    margin: auto;
+    margin: 0 auto 40px;
     position: relative;
+    padding: 35px 0;
+    border-radius: 32px;
+    background: #ffffff0d;
+    overflow: hidden;
 }
 
-.popular-games-title {
-    font-size: 21px;
-    font-weight: 600;
-    color: #fff;
+.popular-games-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    padding: 0 20px 0 var(--popular-header-pad-x);
+    padding-left: 32px;
 }
 
 .popular-games-scroll {
-    overflow: hidden;
-    cursor: grab;
-    padding-bottom: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 20px 8px var(--popular-shift-left);
     touch-action: pan-x;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    cursor: grab;
+    transition: padding-left 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.popular-games-scroll:active {
-    cursor: grabbing;
+.popular-games-scroll--scrolled {
+    padding-left: 12px;
+}
+.popular-games-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    padding-left: 32px;
 }
 
-/* .popular-games-scroll::-webkit-scrollbar {
-    height: 4px;
+.popular-games-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-right: 20px;
 }
-.popular-games-scroll::-webkit-scrollbar-track {
-    background: transparent;
-}
-.popular-games-scroll::-webkit-scrollbar-thumb {
-    background-color: #3a3b3e;
+
+.popular-games-filter-btn {
+    padding: 6px 16px;
     border-radius: 99px;
+    border: 1px solid #3a3b3e;
+    background: transparent;
+    color: #bababa;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
-.popular-games-scroll::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
-} */
+
+.popular-games-filter-btn:hover {
+    border-color: #555;
+    color: #fff;
+}
+
+.popular-games-filter-btn--active {
+    background: #ff3b30;
+    color: #fff;
+    border-color: #ff3b30;
+}
+
+.popular-games-slider {
+    position: relative;
+}
+
+.popular-games-scroll.is-dragging {
+    cursor: grabbing;
+    scroll-behavior: auto;
+}
+
+.popular-games-scroll.is-dragging * {
+    user-select: none;
+    pointer-events: none;
+}
+
+.popular-games-scroll::-webkit-scrollbar {
+    display: none;
+}
 
 .popular-games-items {
     display: flex;
     gap: 25px;
     width: max-content;
     user-select: none;
+    padding-right: 8px;
 }
 
 .popular-game-item {
@@ -93,12 +149,14 @@
 .popular-game-item-info {
     display: flex;
     flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
 }
 
 .popular-game-item-info-title {
     color: #fff;
-    font-weight: 500;
-    font-size: 15px;
+    font-weight: 700;
+    font-size: 17px;
     transition: all 0.3s;
 }
 
@@ -113,6 +171,198 @@
 .popular-game-item:hover .popular-game-item-info-release-date {
     color: #969494;
 }
+
 .popular-game-item:hover .popular-game-item-rating {
     background: rgba(0, 0, 0, 0.745);
+}
+
+.popular-games-arrow {
+    position: absolute;
+    top: 75px;
+    z-index: 3;
+    width: var(--popular-arrow-size);
+    height: var(--popular-arrow-size);
+    border: none;
+    border-radius: 50%;
+    background: #e9f6ff;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease,
+        background 0.2s ease;
+}
+
+.popular-games-arrow:hover {
+    transform: translateY(-1px);
+    background: #ffffff;
+}
+
+.popular-games-arrow:disabled {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.popular-games-arrow--left {
+    left: 12px;
+}
+
+.popular-games-arrow--right {
+    right: 12px;
+}
+
+@media (max-width: 1200px) {
+    .popular-games {
+        --popular-header-pad-x: 24px;
+        --popular-shift-left: 24px;
+        padding-top: 28px;
+        padding-bottom: 30px;
+    }
+
+    .popular-games-items {
+        gap: 18px;
+    }
+
+    .popular-game-item,
+    .popular-game-item-img-wrapper {
+        width: 200px;
+    }
+
+    .popular-game-item-img-wrapper {
+        height: 182px;
+    }
+}
+
+@media (max-width: 768px) {
+    .popular-games {
+        --popular-header-pad-x: 18px;
+        --popular-shift-left: 18px;
+        border-radius: 24px;
+        padding-top: 22px;
+        padding-bottom: 24px;
+        margin-bottom: 28px;
+    }
+
+    .popular-games-header {
+        margin-bottom: 14px;
+        padding-right: 18px;
+    }
+
+    .popular-games-title {
+        font-size: 25px;
+        padding-left: 0;
+    }
+
+    .popular-games-filters {
+        gap: 6px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding-right: 0;
+        padding-bottom: 2px;
+        width: 100%;
+    }
+
+    .popular-games-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .popular-games-filter-btn {
+        font-size: 13px;
+        padding: 6px 12px;
+        flex-shrink: 0;
+    }
+
+    .popular-games-scroll {
+        padding: 0 14px 8px var(--popular-shift-left);
+    }
+
+    .popular-games-items {
+        gap: 14px;
+    }
+
+    .popular-game-item,
+    .popular-game-item-img-wrapper {
+        width: 152px;
+    }
+
+    .popular-game-item-img-wrapper {
+        height: 138px;
+        margin-bottom: 10px;
+    }
+
+    .popular-game-item-info {
+        gap: 4px;
+        margin-top: 6px;
+    }
+
+    .popular-game-item-info-title {
+        font-size: 14px;
+    }
+
+    .popular-game-item-info-release-date {
+        font-size: 12px;
+    }
+
+    .popular-game-item-rating {
+        font-size: 11px;
+        padding: 2px 6px;
+        gap: 5px;
+    }
+
+    .popular-games-arrow {
+        display: none;
+    }
+}
+
+@media (max-width: 500px) {
+    .popular-games {
+        --popular-header-pad-x: 16px;
+        --popular-shift-left: 16px;
+        padding-top: 30px;
+        padding-bottom: 10px;
+        border-radius: 32px;
+    }
+
+    .popular-games-header {
+        gap: 14px;
+        margin-bottom: 20px;
+        padding-right: 12px;
+        padding-left: 32px;
+    }
+
+    .popular-games-title {
+        font-size: 23px;
+        font-weight: 800;
+    }
+
+    .popular-games-filter-btn {
+        font-size: 14px;
+        padding: 7px 14px;
+    }
+
+    .popular-games-scroll {
+        padding: 0 10px 8px var(--popular-shift-left);
+    }
+
+    .popular-game-item,
+    .popular-game-item-img-wrapper {
+        width: 150px;
+    }
+
+    .popular-game-item-img-wrapper {
+        height: 130px;
+    }
+
+    .popular-game-item-info-title {
+        font-size: 14px;
+    }
+
+    .popular-game-item-info-release-date {
+        display: none;
+    }
 }

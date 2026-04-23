@@ -1,5 +1,6 @@
 import { ICategory } from './category.interface';
 import { OrderType } from './order.interface';
+import { IPositionCategory } from './position-category.interface';
 import { IReview } from './review.interface';
 
 export interface IGameField {
@@ -19,16 +20,12 @@ export interface IGameFieldCreate {
     required?: boolean;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 export interface IGameServer {
     id: number;
     name: string;
     code: string | null;
     gameId: number;
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 export interface IPosition {
     id: number;
@@ -40,6 +37,8 @@ export interface IPosition {
     isActive: boolean;
     isPublic: boolean;
     gameId?: number;
+    categoryId?: number | null;
+    category?: IPositionCategory | null;
     createdAt: string;
     updatedAt: string;
     discount?: number;
@@ -55,13 +54,18 @@ export interface IPositionCreate {
     isActive?: boolean;
     isPublic?: boolean;
     discount?: number;
+    categoryId?: number | null;
 }
 
 export type IPositionUpdate = Partial<IPositionCreate>;
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 export type GameType = 'AUTO' | 'MANUAL';
+
+export interface IWarningItem {
+    title: string;
+    text: string;
+    variant: 'danger' | 'alert';
+}
 
 export interface IGame {
     id: number;
@@ -91,6 +95,7 @@ export interface IGame {
     type: GameType;
     avgRating: number | null;
     faq?: IFaqItem[];
+    warnings?: IWarningItem[];
 }
 
 export interface IGameUpdate {
@@ -107,6 +112,7 @@ export interface IGameUpdate {
     releaseDate?: string;
     instructions?: string[];
     type?: GameType;
+    warnings?: IWarningItem[];
 }
 
 export interface IGameCreate {
@@ -123,4 +129,5 @@ export interface IGameCreate {
     releaseDate?: string;
     instructions?: string[];
     type?: GameType;
+    warnings?: IWarningItem[];
 }

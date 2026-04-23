@@ -1,78 +1,121 @@
-.order-page {
+.steam-order-page {
     display: flex;
     padding: 120px 0;
     background-color: rgba(0, 0, 0, 0.43);
 }
 
-.order-page__bg-wrap {
+.steam-order-page__bg-wrap {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
+    height: 700px;
     z-index: 0;
     pointer-events: none;
 }
 
-.order-page__bg {
+.steam-order-page__bg {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center top;
 }
 
-.order-page__bg-overlay {
+.steam-order-page__bg-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
         to bottom,
         rgba(0, 0, 0, 0.5) 0%,
-        rgba(10, 10, 10, 0.92) 100%,
+        rgba(10, 10, 10, 0.85) 75%,
         rgba(10, 10, 10, 1) 100%
     );
 }
 
-.order-page__grid {
+.steam-order-page__grid {
     position: relative;
     z-index: 1;
     max-width: 1460px;
+    width: 100%;
     margin: auto;
     display: flex;
     align-items: center;
+    padding: 0 20px;
 }
 
-.order-page__left {
+.steam-order-page__left {
     display: flex;
     flex-direction: column;
     gap: 32px;
     min-width: 0;
+    width: 100%;
 }
 
-.order-page__info {
+.steam-order-page__info {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin: 0 auto;
 }
 
-.order-page__breadcrumb {
+.steam-order-page__breadcrumb {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.5);
     transition: all 0.3s ease;
+    margin: 0 auto;
 }
 
-.order-page__breadcrumb:hover {
+.steam-order-page__breadcrumb:hover {
     color: white;
 }
 
-.order-page__title {
+.steam-order-page__title {
     font-size: 52px;
     font-weight: 800;
     color: #fff;
     line-height: 1.05;
 }
 
-.order-page__desc {
+.steam-order-page__desc {
     font-size: 15px;
     color: rgba(255, 255, 255, 0.65);
     max-width: 500px;
     line-height: 1.6;
+}
+
+@media (max-width: 500px) {
+    .steam-order-page {
+        padding: 140px 20px 60px;
+    }
+
+    .steam-order-page__bg-wrap {
+        height: 360px;
+    }
+
+    .steam-order-page__bg-overlay {
+        background: linear-gradient(
+            to bottom,
+            rgba(10, 10, 10, 0.18) 0%,
+            rgba(10, 10, 10, 0.6) 60%,
+            rgba(10, 10, 10, 1) 100%
+        );
+    }
+
+    .steam-order-page__grid {
+        padding: 0 12px;
+        align-items: flex-start;
+    }
+
+    .steam-order-page__left {
+        gap: 20px;
+        width: 100%;
+    }
+
+    .steam-order-page__info {
+        margin: 0 auto;
+    }
+
+    .steam-order-page__title {
+        font-size: 28px;
+    }
 }

@@ -1,4 +1,5 @@
 import { userService } from '@/services/user.service';
+import { UserRole } from '@/shared/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
@@ -7,11 +8,47 @@ export function useProfile() {
     const { data: profile, isLoading: isLoadingProfile } = useQuery({
         queryKey: ['profile'],
         queryFn: () => userService.getProfile(),
+        retry: false,
+        staleTime: 1000 * 60,
     });
 
     return useMemo(
         () => ({ profile, isLoadingProfile }),
         [profile, isLoadingProfile],
+    );
+}
+
+export function useUserSearch(query: string) {
+    const { data: users, isLoading } = useQuery({
+        queryKey: ['user-search', query],
+        queryFn: () => userService.search(query),
+        enabled: query.trim().length > 0,
+    });
+
+    return useMemo(() => ({ users, isLoading }), [users, isLoading]);
+}
+
+export function useUpdateUserRole() {
+    const queryClient = useQueryClient();
+
+    const { mutate: updateUserRole, isPending: isLoadingUpdate } = useMutation({
+        mutationKey: ['update user role'],
+        mutationFn: ({ id, role }: { id: string; role: UserRole }) =>
+            userService.updateRole(id, role),
+        onSuccess(_, variables) {
+            queryClient.invalidateQueries({ queryKey: ['user-search'] });
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+            queryClient.invalidateQueries({ queryKey: ['user', variables.id] });
+            toast.success('Роль пользователя обновлена');
+        },
+        onError() {
+            toast.error('Ошибка при обновлении роли');
+        },
+    });
+
+    return useMemo(
+        () => ({ updateUserRole, isLoadingUpdate }),
+        [updateUserRole, isLoadingUpdate],
     );
 }
 

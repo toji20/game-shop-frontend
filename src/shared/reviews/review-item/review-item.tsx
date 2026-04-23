@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import './review-item.css';
@@ -6,62 +5,60 @@ import { IReview } from '@/shared/types';
 import { Star } from 'lucide-react';
 
 interface ReviewItemProps {
-    item: IReview;
+    review: IReview;
 }
 
-function timeAgo(dateStr: string): string {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    const hours = Math.floor(mins / 60);
-    const days = Math.floor(hours / 24);
-    if (days > 0) return `${days} дн. назад`;
-    if (hours > 0) return `${hours} ч. назад`;
-    if (mins > 0) return `${mins} мин. назад`;
-    return 'только что';
+function getRatingClass(rating: number) {
+    if (rating <= 4) return 'review-item__rating--bad';
+    if (rating <= 7) return 'review-item__rating--medium';
+    return 'review-item__rating--good';
 }
 
-function formatDate(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString('ru-RU', {
+function formatReviewDate(dateString: string) {
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
+        return dateString;
+    }
+
+    return new Intl.DateTimeFormat('ru-RU', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
-    });
+    }).format(date);
 }
 
-export function ReviewItem({ item }: ReviewItemProps) {
-    const ratingColor =
-        item.rating >= 7 ? '#f5c518' : item.rating >= 4 ? '#fb923c' : '#f87171';
+export function ReviewItem({ review }: ReviewItemProps) {
+    const authorName = review.user?.name || 'Пользователь';
+    const ratingClass = getRatingClass(review.rating);
+    const formattedDate = formatReviewDate(review.createdAt);
 
     return (
-        <div className='review-item'>
-            <div className='review-item__left'>
-                <img
-                    src={item.user?.picture}
-                    alt={item.user?.name}
-                    className='review-item__avatar'
-                />
-                <div className='review-item__content'>
-                    <div className='review-item__top'>
-                        <div className='review-item__top-info'>
-                            <span className='review-item__name'>
-                                {item.user?.name}
-                            </span>
-                            <span className='review-item__meta'>
-                                {(item.user as any)?.ordersCount
-                                    ? `${(item.user as any).ordersCount} заказов`
-                                    : ''}
-                                {' | '}
-                                {formatDate(item.createdAt)}
-                            </span>
+        <article className='review-item'>
+            <div className='review-item__top'>
+                <div className='review-item__user'>
+                    <img
+                        src={review.user?.picture || '/no-user-image.png'}
+                        alt={authorName}
+                        className='review-item__avatar'
+                    />
+
+                    <div className='review-item__content'>
+                        <div className='review-item__name'>{authorName}</div>
+
+                        <div className='review-item__meta'>
+                            <span>{formattedDate}</span>
                         </div>
                     </div>
-                    <p className='review-item__text'>{item.text}</p>
+                </div>
+
+                <div className={`review-item__rating ${ratingClass}`}>
+                    <Star size={14} fill='currentColor' />
+                    <span>{review.rating}</span>
                 </div>
             </div>
-            <div className='review-item__rating-badge'>
-                <Star size={12} fill={ratingColor} color={ratingColor} />
-                <span>{item.rating}</span>
-            </div>
-        </div>
+
+            <div className='review-item__text'>{review.text}</div>
+        </article>
     );
 }

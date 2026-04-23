@@ -6,6 +6,14 @@ import {
     IPromoCodeUpdate,
 } from '@/shared/types/promo.interface';
 
+export type PromoTarget = 'GAME' | 'STEAM';
+
+export interface ICheckPromoResponse {
+    code: string;
+    discount: number;
+    scope?: 'ALL' | 'GAMES_ONLY' | 'STEAM_ONLY';
+}
+
 class PromoService {
     async getAll(): Promise<IPromoCode[]> {
         const { data } = await axiosWithAuth<IPromoCode[]>({
@@ -23,13 +31,17 @@ class PromoService {
         return data;
     }
 
-    async check(code: string) {
-        const { data } = await axiosWithAuth<{
-            code: string;
-            discount: number;
-        }>({
-            url: API_URL.promo(`check/${code}`),
-            method: 'GET',
+    async check(
+        code: string,
+        target: PromoTarget,
+    ): Promise<ICheckPromoResponse> {
+        const { data } = await axiosWithAuth<ICheckPromoResponse>({
+            url: API_URL.promo('check'),
+            method: 'POST',
+            data: {
+                code,
+                target,
+            },
         });
         return data;
     }

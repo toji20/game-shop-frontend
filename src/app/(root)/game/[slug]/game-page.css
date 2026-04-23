@@ -4,15 +4,6 @@
     background-color: #000000ad;
 }
 
-/* Фон — абсолютный на всю страницу
-.game-page__bg-wrap {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-
-    pointer-events: none;
-} */
-
 .game-page__bg-wrap {
     position: absolute;
     top: 0;
@@ -30,22 +21,20 @@
     object-position: center top;
 }
 
+.game-page__bg--mobile {
+    display: none;
+}
+
 .game-page__bg-overlay {
     position: absolute;
     inset: 0;
-    /* background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.5) 0%,
-        rgba(10, 10, 10, 0.315) 100%,
-        rgba(10, 10, 10, 1) 100%
-    ); */
     background: linear-gradient(
         to bottom,
-        rgba(0, 0, 0, 0.732) 0%,
-        rgba(0, 0, 0, 0.116) 25%,
-        rgba(0, 0, 0, 0.051) 50%,
-        rgba(0, 0, 0, 0.592) 75%,
-        rgb(0, 0, 0) 100%
+        rgba(0, 0, 0, 0.74) 0%,
+        rgba(0, 0, 0, 0.18) 24%,
+        rgba(0, 0, 0, 0.08) 48%,
+        rgba(0, 0, 0, 0.62) 76%,
+        #000 100%
     );
 }
 
@@ -54,6 +43,7 @@
     align-items: center;
     gap: 6px;
 }
+
 .game-page__breadcrumb {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.5);
@@ -70,6 +60,7 @@
     font-size: 13px;
     color: rgba(255, 255, 255, 0.3);
 }
+
 .game-page__grid {
     position: relative;
     z-index: 1;
@@ -77,7 +68,7 @@
     margin: auto;
     padding: 90px 170px 80px;
     display: grid;
-    grid-template-columns: 1fr 420px;
+    grid-template-columns: minmax(0, 1fr) 420px;
     gap: 48px;
     align-items: start;
 }
@@ -100,16 +91,6 @@
     gap: 10px;
 }
 
-.game-page__breadcrumb {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
-    transition: all 0.3s ease;
-}
-
-.game-page__breadcrumb:hover {
-    color: white;
-}
-
 .game-page__title {
     font-size: 52px;
     font-weight: 800;
@@ -127,11 +108,13 @@
 .game-page__tabs {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .game-page__tab {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 10px 20px;
     border-radius: 10px;
@@ -161,4 +144,269 @@
 
 .game-page__tab-content {
     width: 100%;
+}
+
+.mobile-cart-bar,
+.mobile-checkout-modal {
+    display: none;
+}
+.positions-item-skeleton {
+    height: 154px;
+}
+/* ─── 1200px ─── */
+@media (max-width: 1200px) {
+    .game-page__grid {
+        padding-inline: 40px;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 32px;
+    }
+
+    .game-page__title {
+        font-size: 44px;
+    }
+}
+
+/* ─── 900px ─── */
+@media (max-width: 900px) {
+    .game-page__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-page__sidebar {
+        position: static;
+    }
+}
+
+/* ─── 500px (mobile) ─── */
+@media (max-width: 500px) {
+    .game-page {
+        background: #111315;
+        padding-bottom: 18px;
+    }
+
+    /* Фон: мобильная картинка */
+    .game-page__bg-wrap {
+        height: 360px;
+    }
+
+    .game-page__bg--desktop {
+        display: none;
+    }
+
+    .game-page__bg--mobile {
+        display: block;
+    }
+
+    .game-page__bg-overlay {
+        background: linear-gradient(
+            180deg,
+            rgba(12, 15, 20, 0.18) 0%,
+            rgba(12, 15, 20, 0.28) 22%,
+            rgba(12, 15, 20, 0.7) 72%,
+            #111315 100%
+        );
+    }
+
+    .game-page__grid {
+        padding: 18px 16px 40px;
+        gap: 24px;
+    }
+
+    .game-page__left {
+        gap: 8px;
+    }
+
+    .game-page__sidebar {
+        display: none;
+    }
+
+    .game-page__info {
+        gap: 12px;
+        padding-top: 150px;
+    }
+
+    .game-page__breadcrumbs {
+        gap: 4px;
+        font-size: 12px;
+    }
+
+    .game-page__breadcrumb {
+        font-size: 12px;
+    }
+
+    .game-page__title {
+        font-size: 41px;
+        line-height: 1.05;
+        font-weight: 600;
+    }
+
+    .game-page__desc {
+        font-size: 14px;
+        line-height: 1.5;
+        max-width: none;
+    }
+
+    .game-page__tabs {
+        gap: 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+
+    .game-page__tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .game-page__tab {
+        flex: 0 0 auto;
+        min-width: max-content;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 13px;
+    }
+
+    /* ── Мобильная панель корзины (обычные игры) ── */
+    .mobile-cart-bar {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 62px);
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        background: rgba(15, 18, 23, 0.98);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.36);
+        backdrop-filter: blur(18px);
+    }
+
+    /* Steam — кнопка на всю ширину */
+    .mobile-cart-bar--steam {
+        padding: 12px 16px;
+    }
+
+    .mobile-cart-bar__button--full {
+        width: 100%;
+        text-align: center;
+        font-size: 15px;
+        padding: 14px;
+        border-radius: 999px;
+        min-width: unset;
+    }
+
+    .mobile-cart-bar__item {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mobile-cart-bar__image {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: #2a2d34;
+    }
+
+    .mobile-cart-bar__content {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mobile-cart-bar__name {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mobile-cart-bar__price-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+    }
+
+    .mobile-cart-bar__price {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .mobile-cart-bar__discount {
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: #ff4d4f;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .mobile-cart-bar__old-price {
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 12px;
+        text-decoration: line-through;
+    }
+
+    .mobile-cart-bar__button {
+        flex-shrink: 0;
+        border: none;
+        border-radius: 999px;
+        background: #ff3b30;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        padding: 12px 16px;
+        min-width: 96px;
+        cursor: pointer;
+    }
+
+    /* ── Модалка оплаты ── */
+    .mobile-checkout-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 140;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        overflow-y: auto;
+        background: rgba(0, 0, 0, 0.72);
+    }
+
+    .mobile-checkout-modal__dialog {
+        position: relative;
+        width: 100%;
+    }
+
+    .mobile-checkout-modal__close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        cursor: pointer;
+    }
+    .positions-item-skeleton {
+        height: 207px;
+    }
 }

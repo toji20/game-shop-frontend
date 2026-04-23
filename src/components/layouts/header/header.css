@@ -149,7 +149,7 @@ header {
 
 .searchbar__dropdown {
     position: absolute;
-    top: calc(100% + 3px);
+    top: calc(100% + 6px);
     left: 40px;
     right: 40px;
     background: rgb(18, 19, 21);
@@ -345,4 +345,115 @@ header {
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
+}
+/* ─── MOBILE HEADER ─────────────────────────────── */
+.header-block--desktop {
+    display: flex;
+}
+
+.header-block--mobile {
+    display: none;
+}
+
+.header-search-mobile {
+    display: none;
+}
+
+@media (max-width: 500px) {
+    .header-block--desktop {
+        display: none;
+    }
+
+    .header-block--mobile {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        height: 42px;
+        width: 100%;
+    }
+
+    .header-search-mobile {
+        display: block;
+        padding: 0;
+    }
+    .header-logo {
+        max-width: 100px;
+    }
+    /* Скрываем выезжающий поиск на мобиле */
+    .header-search-panel {
+        display: none !important;
+    }
+
+    /* Отступ снизу страницы под мобильную навигацию */
+    /* body {
+        padding-bottom: 60px;
+    } */
+    .btn-ghost:first-child {
+        display: none; /* скрываем "Покупки" */
+    }
+
+    .btn-ghost {
+        padding: 0 0px;
+        font-size: 13px;
+    }
+    .searchbar {
+        padding: 0px 10px 5px 10px;
+    }
+    .searchbar__dropdown {
+        left: 10px;
+        right: 10px;
+    }
+}
+
+/* ─── MOBILE BOTTOM NAV ─────────────────────────── */
+.mobile-nav {
+    display: none;
+}
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+@media (max-width: 500px) {
+    .mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: rgba(20, 21, 23, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        height: 60px;
+        align-items: stretch;
+    }
+
+    .mobile-nav__item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: rgba(255, 255, 255, 0.45);
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+
+    .mobile-nav__item--active {
+        color: #fff;
+    }
+
+    .mobile-nav__item--active svg {
+        color: #e00;
+    }
 }

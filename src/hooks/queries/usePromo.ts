@@ -8,6 +8,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 
+export type PromoTarget = 'GAME' | 'STEAM';
+
 export function usePromoCodes() {
     const { data: promoCodes, isLoading: isLoadingPromoCodes } = useQuery({
         queryKey: ['promoCodes'],
@@ -29,7 +31,8 @@ export function useCheckPromo() {
         error,
     } = useMutation({
         mutationKey: ['check promo'],
-        mutationFn: (code: string) => promoService.check(code),
+        mutationFn: ({ code, target }: { code: string; target: PromoTarget }) =>
+            promoService.check(code, target),
     });
 
     const promoError = error

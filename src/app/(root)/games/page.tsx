@@ -1,5 +1,4 @@
-import GamePage from './GamePage';
-import Home from './GamePage';
+import GamePage from './GamesPage';
 
 export default function HomePage() {
     return <GamePage />;

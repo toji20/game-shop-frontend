@@ -1,5 +1,6 @@
 import { IGame } from './game.interface';
 import { IOrder } from './order.interface';
+import { ISteamOrder } from './steam-order.interface';
 
 export type UserRole = 'USER' | 'MANAGER' | 'OPERATOR' | 'ADMIN';
 
@@ -12,6 +13,7 @@ export interface IUser {
     createdAt: string;
     updatedAt: string;
     orders?: IOrder[];
+    steamOrders?: ISteamOrder[];
     favorites?: IGame[];
 }
 export interface IUserCreate {

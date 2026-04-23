@@ -30,6 +30,7 @@ export const PUBLIC_URL = {
     profile: () => PUBLIC_URL.root('/profile'),
     orders: () => PUBLIC_URL.root('/profile/orders'),
     order: (id: string) => PUBLIC_URL.root(`/order/${id}`),
+    steamOrder: (id: string) => PUBLIC_URL.root(`/steam-order/${id}`),
     favorites: () => PUBLIC_URL.root('/profile/favorites'),
 };
 

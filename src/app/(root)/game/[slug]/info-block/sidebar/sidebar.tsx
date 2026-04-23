@@ -1,34 +1,89 @@
 'use client';
 
+import { CheckoutSelectedItems } from './checkout-selected-items/checkout-selected-items';
 import './sidebar.css';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
 import { usePlaceOrder } from '@/hooks/queries/useOrder';
 import { useCheckPromo } from '@/hooks/queries/usePromo';
-import { usePlaceSteamOrder } from '@/hooks/queries/useSteamOrder';
-import { STEAM_COMMISSION } from '@/shared/constant';
-import { IGame, PaymentMethod } from '@/shared/types';
+import {
+    useCheckSteam,
+    usePlaceSteamOrder,
+} from '@/hooks/queries/useSteamOrder';
+import { saveAccountHistory } from '@/lib/steam-history';
+import { CheckoutWarning } from '@/shared/checkout-warning/checkout-warning';
+import { IGame, IWarningItem, PaymentMethod } from '@/shared/types';
 import { useCartStore } from '@/store/cart-store';
 import { useSteamStore } from '@/store/steam-store';
-import { Ticket } from 'lucide-react';
+import { AlertTriangle, CircleAlert, Ticket } from 'lucide-react';
 import { useState } from 'react';
 
 interface SideBarProps {
     game: IGame | null;
     isLoading?: boolean;
+    mode?: 'desktop' | 'mobile';
+    onRequestClose?: () => void;
 }
 
 const PAYMENT_METHODS: { key: PaymentMethod; img: string; title: string }[] = [
     { key: 'bank_card', img: '/card.png', title: 'Картой' },
-    { key: 'sbp', img: '/spb.png', title: 'СПБ' },
+    { key: 'sbp', img: '/spb.png', title: 'СБП' },
 ];
 
-export function SideBar({ game, isLoading }: SideBarProps) {
+const VARIANT_ICONS = {
+    danger: CircleAlert,
+    alert: AlertTriangle,
+};
+
+const FIELD_HISTORY_KEY = 'field_history';
+const MAX_PER_FIELD = 3;
+
+type FieldHistory = Record<string, string[]>;
+
+function loadFieldHistory(): FieldHistory {
+    try {
+        const raw = localStorage.getItem(FIELD_HISTORY_KEY);
+        return raw ? JSON.parse(raw) : {};
+    } catch {
+        return {};
+    }
+}
+
+function saveFieldHistory(
+    fields: Record<string, string>,
+    gameFields: { id: number; label: string }[],
+) {
+    try {
+        const current = loadFieldHistory();
+        gameFields.forEach((f) => {
+            const value = fields[String(f.id)]?.trim();
+            if (!value) return;
+            const existing = current[f.label] ?? [];
+            current[f.label] = [
+                value,
+                ...existing.filter((v) => v !== value),
+            ].slice(0, MAX_PER_FIELD);
+        });
+        localStorage.setItem(FIELD_HISTORY_KEY, JSON.stringify(current));
+    } catch {}
+}
+
+export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
     const isSteam = game?.slug?.toLowerCase().includes('steam');
-    const commission = STEAM_COMMISSION;
+    const isMobile = mode === 'mobile';
 
     const { items, fields, setField, total } = useCartStore();
+    const selectedPositions = items.map((item) => item.position);
+    const { checkSteam, isChecking } = useCheckSteam();
+
     const { placeOrder, isLoadingPlace } = usePlaceOrder();
-    const { account, amount, currency } = useSteamStore();
+    const {
+        account,
+        amount,
+        currency,
+        paymentMethod: steamPaymentMethod,
+        setPaymentMethod: setSteamPaymentMethod,
+        checkResult,
+    } = useSteamStore();
     const { placeSteamOrder, isLoadingPlace: isLoadingSteam } =
         usePlaceSteamOrder();
     const { checkPromo, isCheckingPromo, promoData, promoError, resetPromo } =
@@ -38,10 +93,11 @@ export function SideBar({ game, isLoading }: SideBarProps) {
         useState<PaymentMethod>('bank_card');
     const [promoCode, setPromoCode] = useState('');
     const [confirms, setConfirms] = useState<Record<string, boolean>>({});
+    const [fieldHistory, setFieldHistory] =
+        useState<FieldHistory>(loadFieldHistory);
 
-    // ── Расчёт итогов ──────────────────────────────────────
     const rawTotal = total();
-    const discount = promoData?.discount ?? 0;
+    const discount = !isSteam ? (promoData?.discount ?? 0) : 0;
     const afterDiscount =
         discount > 0 ? +(rawTotal * (1 - discount / 100)).toFixed(2) : rawTotal;
 
@@ -51,15 +107,28 @@ export function SideBar({ game, isLoading }: SideBarProps) {
             : paymentMethod === 'bank_card'
               ? 1.02
               : 1;
+
     const commissionPercent = ((commissionRate - 1) * 100).toFixed(0);
     const commissionAmount = +(
         afterDiscount * commissionRate -
         afterDiscount
     ).toFixed(2);
     const finalTotal = +(afterDiscount * commissionRate).toFixed(2);
-    const steamTotal = amount * commission;
 
-    // ── Проверка полей ─────────────────────────────────────
+    const STEAM_SERVICE_COMMISSION_PERCENT = 6;
+    const steamBankCommissionPercent = steamPaymentMethod === 'sbp' ? 1 : 2;
+
+    const steamTotal =
+        checkResult == null
+            ? null
+            : steamPaymentMethod === 'sbp'
+              ? checkResult.totalRubSbp
+              : checkResult.totalRubCard;
+    const currencySymbol =
+        currency === 'RUB' ? '₽' : currency === 'KZT' ? '₸' : '$';
+
+    const isSteamAmountLoading = isSteam && isChecking;
+
     const requiredFields = game?.fields?.filter((f) => f.required) ?? [];
     const isFieldsFilled = requiredFields.every(
         (f) => (fields[String(f.id)] ?? '').trim().length > 0,
@@ -67,181 +136,204 @@ export function SideBar({ game, isLoading }: SideBarProps) {
     const allConfirmed = requiredFields.length === 0 || !!confirms['all'];
     const canBuy = items.length > 0 && isFieldsFilled && allConfirmed;
 
-    const handleBuy = () => {
-        if (isSteam) {
-            if (!account || !amount) return;
-            placeSteamOrder({ account, amount, currency });
-            return;
-        }
-        if (!canBuy || !game) return;
-        placeOrder({
-            type: game.type,
-            paymentMethod,
-            promoCode: promoCode.trim() || undefined,
-            items: items.map((i) => ({
-                positionId: i.position.id,
-                gameId: i.gameId,
-                price: Number(i.position.finalPrice ?? i.position.myPrice),
-                quantity: 1,
-                fields: Object.keys(fields).length > 0 ? fields : undefined,
-            })),
-        });
+    const handleApplyPromo = () => {
+        const code = promoCode.trim();
+        if (!code) return;
+        checkPromo({ code, target: isSteam ? 'STEAM' : 'GAME' });
     };
 
-    return (
-        <div className='sidebar-wrapper'>
-            {/* Методы оплаты — показываем сразу */}
-            <div className='sidebar__payment'>
-                <div className='sidebar__payment-methods'>
-                    {PAYMENT_METHODS.map((m) => (
+    const handleBuy = () => {
+        if (isSteam) {
+            if (!account || !amount || steamTotal === null) return;
+            placeSteamOrder(
+                {
+                    account,
+                    amount,
+                    currency,
+                    paymentMethod: steamPaymentMethod,
+                    promoCode: promoCode.trim() || undefined,
+                },
+                {
+                    onSuccess: () => {
+                        saveAccountHistory(account);
+                    },
+                },
+            );
+            return;
+        }
+
+        if (!canBuy || !game) return;
+
+        placeOrder(
+            {
+                type: game.type,
+                paymentMethod,
+                promoCode: promoCode.trim() || undefined,
+                items: items.map((i) => ({
+                    positionId: i.position.id,
+                    gameId: i.gameId,
+                    price: Number(i.position.finalPrice ?? i.position.myPrice),
+                    quantity: 1,
+                    fields: Object.keys(fields).length > 0 ? fields : undefined,
+                })),
+            },
+            {
+                onSuccess: () => {
+                    if (game.fields) {
+                        saveFieldHistory(fields, game.fields);
+                        setFieldHistory(loadFieldHistory());
+                    }
+                },
+            },
+        );
+    };
+
+    const paymentSection = (
+        <div className='sidebar__payment'>
+            <div className='sidebar__payment-methods'>
+                {PAYMENT_METHODS.map((m) => {
+                    const isActive = isSteam
+                        ? steamPaymentMethod === m.key
+                        : paymentMethod === m.key;
+
+                    return (
                         <button
                             key={m.key}
-                            className={`sidebar__payment-btn ${paymentMethod === m.key ? 'sidebar__payment-btn--active' : ''}`}
-                            onClick={() => setPaymentMethod(m.key)}
+                            type='button'
+                            className={`sidebar__payment-btn ${isActive ? 'sidebar__payment-btn--active' : ''}`}
+                            onClick={() => {
+                                if (isSteam) {
+                                    setSteamPaymentMethod(
+                                        m.key as 'bank_card' | 'sbp',
+                                    );
+                                } else {
+                                    setPaymentMethod(m.key);
+                                }
+                            }}
                         >
-                            <img src={m.img} className='sidebar__payment-img' />
+                            <img
+                                src={m.img}
+                                alt={m.title}
+                                className='sidebar__payment-img'
+                            />
                             <h3
-                                className={`sidebar__payment-title ${paymentMethod === m.key ? 'sidebar__payment-title--active' : ''}`}
+                                className={`sidebar__payment-title ${isActive ? 'sidebar__payment-title--active' : ''}`}
                             >
                                 {m.title}
                             </h3>
                         </button>
-                    ))}
+                    );
+                })}
+            </div>
+        </div>
+    );
+
+    const promoSection = (
+        <div className='sidebar__promo'>
+            <div className='sidebar__promo-wrap'>
+                <div className='sidebar__promo-input-wrap'>
+                    <Ticket size={16} className='sidebar__promo-icon' />
+                    <input
+                        className={`sidebar__field-input sidebar__field-input--promo ${
+                            promoData
+                                ? 'sidebar__field-input--success'
+                                : promoError
+                                  ? 'sidebar__field-input--error'
+                                  : ''
+                        }`}
+                        value={promoCode}
+                        onChange={(e) => {
+                            setPromoCode(e.target.value.toUpperCase());
+                            resetPromo();
+                        }}
+                        placeholder='Промокод'
+                    />
                 </div>
+
+                <button
+                    type='button'
+                    className='sidebar__promo-btn'
+                    onClick={handleApplyPromo}
+                    disabled={
+                        !promoCode.trim() || isCheckingPromo || !!promoData
+                    }
+                >
+                    {isCheckingPromo ? '...' : promoData ? '✓' : 'Применить'}
+                </button>
             </div>
 
-            <div className='sidebar'>
-                {/* Итого */}
-                <div className='sidebar__summary'>
-                    <div className='sidebar__summary-total-row'>
-                        <span className='sidebar__summary-total-label'>
-                            Итого
-                        </span>
-                        <span className='sidebar__summary-total-value'>
-                            {isLoading ? (
-                                <Skeleton width={80} height={22} />
-                            ) : isSteam ? (
-                                `${steamTotal.toLocaleString('ru-RU')} ${
-                                    currency === 'RUB'
-                                        ? '₽'
-                                        : currency === 'KZT'
-                                          ? '₸'
-                                          : '$'
-                                }`
-                            ) : (
-                                `${finalTotal.toLocaleString('ru-RU')} ₽`
-                            )}
-                        </span>
-                    </div>
+            {promoData && (
+                <p className='sidebar__promo-success'>
+                    Скидка {promoData.discount}% применена
+                </p>
+            )}
 
-                    {!isLoading && !isSteam && discount > 0 && (
-                        <div className='sidebar__summary-row sidebar__summary-row--discount'>
-                            <span>Скидка {discount}%</span>
-                            <span>
-                                −{(rawTotal - afterDiscount).toFixed(2)} ₽
-                            </span>
-                        </div>
-                    )}
+            {promoError && <p className='sidebar__promo-error'>{promoError}</p>}
+        </div>
+    );
 
-                    {!isLoading && !isSteam && (
-                        <div className='sidebar__summary-row sidebar__summary-row--commission'>
-                            <span>Комиссия банка {commissionPercent}%</span>
-                            <span>
-                                +{commissionAmount.toLocaleString('ru-RU')} ₽
-                            </span>
-                        </div>
-                    )}
+    const fieldsSection = isLoading ? (
+        <div className='sidebar__fields'>
+            <Skeleton height={14} width={140} />
+            <Skeleton height={44} borderRadius={8} />
+            <Skeleton height={44} borderRadius={8} />
+        </div>
+    ) : (
+        game?.fields &&
+        game.fields.length > 0 && (
+            <div className='sidebar__fields'>
+                <div className='sidebar__fields-header'>
+                    <p className='sidebar__section-title'>Данные для заказа</p>
 
-                    {!isLoading && isSteam && commission > 1 && (
-                        <div className='sidebar__summary-row'>
-                            <span>Комиссия</span>
-                            <span>{((commission - 1) * 100).toFixed(0)}%</span>
-                        </div>
-                    )}
+                    <a
+                        href='#instructions'
+                        className='sidebar__fields-hint'
+                        onClick={() =>
+                            document
+                                .getElementById('game-instructions')
+                                ?.scrollIntoView({ behavior: 'smooth' })
+                        }
+                    >
+                        Где найти?
+                    </a>
                 </div>
 
-                {/* Промокод — показываем сразу */}
-                <div className='sidebar__promo'>
-                    <div className='sidebar__promo-wrap'>
-                        <div className='sidebar__promo-input-wrap'>
-                            <Ticket size={16} className='sidebar__promo-icon' />
-                            <input
-                                className={`sidebar__field-input sidebar__field-input--promo ${
-                                    promoData
-                                        ? 'sidebar__field-input--success'
-                                        : promoError
-                                          ? 'sidebar__field-input--error'
-                                          : ''
-                                }`}
-                                value={promoCode}
-                                onChange={(e) => {
-                                    setPromoCode(e.target.value.toUpperCase());
-                                    resetPromo();
-                                }}
-                                placeholder='Промокод'
-                            />
-                        </div>
-                        <button
-                            className='sidebar__promo-btn'
-                            onClick={() => checkPromo(promoCode.trim())}
-                            disabled={
-                                !promoCode.trim() ||
-                                isCheckingPromo ||
-                                !!promoData
-                            }
-                        >
-                            {isCheckingPromo
-                                ? '...'
-                                : promoData
-                                  ? '✓'
-                                  : 'Применить'}
-                        </button>
-                    </div>
-                    {promoData && (
-                        <p className='sidebar__promo-success'>
-                            Скидка {promoData.discount}% применена
-                        </p>
-                    )}
-                    {promoError && (
-                        <p className='sidebar__promo-error'>{promoError}</p>
-                    )}
-                </div>
+                {game.fields.map((f) => {
+                    const isServerField =
+                        f.label.toLowerCase().includes('сервер') ||
+                        f.label.toLowerCase().includes('server');
+                    const suggestions = fieldHistory[f.label] ?? [];
+                    const currentValue = fields[String(f.id)] ?? '';
 
-                {/* Поля */}
-                {isLoading ? (
-                    <div className='sidebar__fields'>
-                        <Skeleton height={14} width={140} />
-                        <Skeleton height={44} borderRadius={8} />
-                        <Skeleton height={44} borderRadius={8} />
-                    </div>
-                ) : (
-                    game?.fields &&
-                    game.fields.length > 0 && (
-                        <div className='sidebar__fields'>
-                            <div className='sidebar__fields-header'>
-                                <p className='sidebar__section-title'>
-                                    Данные для заказа
-                                </p>
-
-                                <a
-                                    href='#instructions'
-                                    className='sidebar__fields-hint'
-                                    onClick={() =>
-                                        document
-                                            .getElementById('game-instructions')
-                                            ?.scrollIntoView({
-                                                behavior: 'smooth',
-                                            })
+                    return (
+                        <div key={f.id} className='sidebar__field'>
+                            {isServerField &&
+                            game.servers &&
+                            game.servers.length > 0 ? (
+                                <select
+                                    className='sidebar__field-input sidebar__field-select'
+                                    value={currentValue}
+                                    onChange={(e) =>
+                                        setField(String(f.id), e.target.value)
                                     }
                                 >
-                                    Где найти?
-                                </a>
-                            </div>
-                            {game.fields.map((f) => (
-                                <div key={f.id} className='sidebar__field'>
+                                    <option value='' disabled>
+                                        {f.required ? `${f.label} *` : f.label}
+                                    </option>
+                                    {game.servers.map((s) => (
+                                        <option
+                                            key={s.id}
+                                            value={s.code ?? s.name}
+                                        >
+                                            {s.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <>
                                     <input
                                         className='sidebar__field-input'
-                                        value={fields[String(f.id)] ?? ''}
+                                        value={currentValue}
                                         onChange={(e) =>
                                             setField(
                                                 String(f.id),
@@ -254,85 +346,258 @@ export function SideBar({ game, isLoading }: SideBarProps) {
                                                 : f.label
                                         }
                                     />
-                                </div>
-                            ))}
+                                    {suggestions.length > 0 &&
+                                        currentValue === '' && (
+                                            <div className='sidebar__suggestions'>
+                                                {suggestions.map((s) => (
+                                                    <button
+                                                        key={s}
+                                                        type='button'
+                                                        className='sidebar__suggestion'
+                                                        onClick={() =>
+                                                            setField(
+                                                                String(f.id),
+                                                                s,
+                                                            )
+                                                        }
+                                                    >
+                                                        {s}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                </>
+                            )}
                         </div>
-                    )
-                )}
+                    );
+                })}
+            </div>
+        )
+    );
 
-                {/* Чекбокс подтверждения */}
-                {!isLoading && requiredFields.length > 0 && (
-                    <label className='sidebar__confirm-item'>
-                        <input
-                            type='checkbox'
-                            className='sidebar__confirm-checkbox'
-                            checked={!!confirms['all']}
-                            onChange={(e) =>
-                                setConfirms({ all: e.target.checked })
-                            }
-                        />
-                        <span
-                            className={`sidebar__confirm-label ${
-                                confirms['all']
-                                    ? 'sidebar__confirm-label--checked'
-                                    : 'sidebar__confirm-label--unchecked'
-                            }`}
-                        >
-                            Я подтверждаю, что указал верные данные:{' '}
-                            {requiredFields.map((f, i) => (
-                                <span key={f.id}>
-                                    <b>{f.label.toLowerCase()}</b>
-                                    {fields[String(f.id)]?.trim() && (
-                                        <span className='sidebar__confirm-value'></span>
-                                    )}
-                                    {i < requiredFields.length - 1 ? ', ' : ''}
-                                </span>
-                            ))}
+    const summarySection = (
+        <div className='sidebar__summary'>
+            <div className='sidebar__summary-total-row'>
+                <span className='sidebar__summary-total-label'>Итого</span>
+                <span className='sidebar__summary-total-value'>
+                    {isLoading ? (
+                        <Skeleton width={80} height={22} />
+                    ) : isSteam ? (
+                        steamTotal !== null ? (
+                            `${steamTotal.toLocaleString('ru-RU')} ₽`
+                        ) : isChecking ? (
+                            <Skeleton width={120} height={22} />
+                        ) : (
+                            '—'
+                        )
+                    ) : (
+                        `${finalTotal.toLocaleString('ru-RU')} ₽`
+                    )}
+                </span>
+            </div>
+
+            {!isLoading && isSteam && (
+                <>
+                    <div className='sidebar__summary-row sidebar__summary-row--commission'>
+                        <span>Комиссия Steam</span>
+                        <span>{STEAM_SERVICE_COMMISSION_PERCENT}%</span>
+                    </div>
+
+                    <div className='sidebar__summary-row sidebar__summary-row--commission'>
+                        <span>Комиссия банка</span>
+                        <span>{steamBankCommissionPercent}%</span>
+                    </div>
+
+                    {promoData && (
+                        <div className='sidebar__summary-row sidebar__summary-row--discount'>
+                            <span>Скидка по промокоду</span>
+                            <span>-{promoData.discount}%</span>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {!isLoading && !isSteam && (
+                <>
+                    {discount > 0 && (
+                        <div className='sidebar__summary-row sidebar__summary-row--discount'>
+                            <span>Скидка {discount}%</span>
+                            <span>
+                                −{(rawTotal - afterDiscount).toFixed(2)} ₽
+                            </span>
+                        </div>
+                    )}
+
+                    <div className='sidebar__summary-row sidebar__summary-row--commission'>
+                        <span>Комиссия банка {commissionPercent}%</span>
+                        <span>
+                            +{commissionAmount.toLocaleString('ru-RU')} ₽
                         </span>
-                    </label>
-                )}
+                    </div>
+                </>
+            )}
 
-                {/* Кнопка */}
-                {isLoading ? (
-                    <Skeleton height={52} borderRadius={999} />
-                ) : (
-                    <button
-                        className='sidebar__btn'
-                        disabled={
-                            isSteam
-                                ? !account || !amount || isLoadingSteam
-                                : !canBuy || isLoadingPlace
-                        }
-                        onClick={handleBuy}
-                    >
-                        {isSteam
-                            ? isLoadingSteam
-                                ? 'Переход...'
-                                : `Пополнить ${amount} ${
-                                      currency === 'RUB'
-                                          ? '₽'
-                                          : currency === 'KZT'
-                                            ? '₸'
-                                            : '$'
-                                  }`
-                            : isLoadingPlace
-                              ? 'Переход к оплате...'
-                              : items.length
-                                ? `Оплатить ${finalTotal.toLocaleString('ru-RU')} ₽`
-                                : 'Выберите позиции'}
-                    </button>
-                )}
+            {isMobile && !isLoading && !isSteam && items.length > 0 && (
+                <>
+                    <div className='sidebar__summary-divider' />
 
-                <p className='sidebar__terms'>
-                    Нажимая «Купить», вы принимаете Правила пользования сайтом и
-                    Политику конфиденциальности
-                </p>
+                    <div className='sidebar__summary-row'>
+                        <span>Сумма</span>
+                        <span>{rawTotal.toLocaleString('ru-RU')} ₽</span>
+                    </div>
 
-                {!isLoading && !isFieldsFilled && items.length > 0 && (
-                    <p className='sidebar__hint'>
-                        Заполните обязательные поля *
-                    </p>
-                )}
+                    {discount > 0 && (
+                        <div className='sidebar__summary-row sidebar__summary-row--discount'>
+                            <span>Скидка {discount}%</span>
+                            <span>
+                                −{(rawTotal - afterDiscount).toFixed(2)} ₽
+                            </span>
+                        </div>
+                    )}
+
+                    <div className='sidebar__summary-row'>
+                        <span>Комиссия банка {commissionPercent}%</span>
+                        <span>
+                            +{commissionAmount.toLocaleString('ru-RU')} ₽
+                        </span>
+                    </div>
+
+                    <div className='sidebar__summary-row sidebar__summary-row--accent'>
+                        <span>Итого к оплате</span>
+                        <span>{finalTotal.toLocaleString('ru-RU')} ₽</span>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+
+    const confirmSection = !isLoading && requiredFields.length > 0 && (
+        <label className='sidebar__confirm-item'>
+            <input
+                type='checkbox'
+                className='sidebar__confirm-checkbox'
+                checked={!!confirms['all']}
+                onChange={(e) => setConfirms({ all: e.target.checked })}
+            />
+            <span
+                className={`sidebar__confirm-label ${
+                    confirms['all']
+                        ? 'sidebar__confirm-label--checked'
+                        : 'sidebar__confirm-label--unchecked'
+                }`}
+            >
+                Я подтверждаю, что указал верные данные:{' '}
+                {requiredFields.map((f, i) => (
+                    <span key={f.id}>
+                        <b>{f.label.toLowerCase()}</b>
+                        {i < requiredFields.length - 1 ? ', ' : ''}
+                    </span>
+                ))}
+            </span>
+        </label>
+    );
+
+    const actionSection = isLoading ? (
+        <Skeleton height={52} borderRadius={999} />
+    ) : (
+        <button
+            type='button'
+            className='sidebar__btn'
+            disabled={
+                isSteam
+                    ? !account ||
+                      !amount ||
+                      steamTotal === null ||
+                      isLoadingSteam
+                    : !canBuy || isLoadingPlace
+            }
+            onClick={handleBuy}
+        >
+            {isSteam
+                ? isLoadingSteam
+                    ? 'Переход...'
+                    : isSteamAmountLoading && steamTotal === null
+                      ? 'Рассчитываем сумму...'
+                      : steamTotal !== null
+                        ? `Оплатить ${steamTotal.toLocaleString('ru-RU')} ₽`
+                        : `Пополнить ${amount.toLocaleString('ru-RU')} ${currencySymbol}`
+                : isLoadingPlace
+                  ? 'Переход к оплате...'
+                  : items.length
+                    ? `Оплатить ${finalTotal.toLocaleString('ru-RU')} ₽`
+                    : 'Выберите позиции'}
+        </button>
+    );
+
+    const termsSection = (
+        <>
+            <p className='sidebar__terms'>
+                Нажимая «Купить», вы принимаете Правила пользования сайтом и
+                Политику конфиденциальности.
+            </p>
+
+            {!isLoading && !isFieldsFilled && items.length > 0 && (
+                <p className='sidebar__hint'>Заполните обязательные поля *</p>
+            )}
+        </>
+    );
+
+    if (isMobile) {
+        return (
+            <div className='sidebar-wrapper sidebar-wrapper--mobile'>
+                <div className='sidebar sidebar--mobile'>
+                    {selectedPositions.length > 0 && (
+                        <CheckoutSelectedItems items={selectedPositions} />
+                    )}
+
+                    {paymentSection}
+
+                    <div className='sidebar__mobile-section'>
+                        <p className='sidebar__section-title'>Промокод</p>
+                        {promoSection}
+                    </div>
+
+                    {!isSteam && (
+                        <div className='sidebar__mobile-section'>
+                            <p className='sidebar__section-title'>
+                                Ваши данные
+                            </p>
+                            {fieldsSection}
+                        </div>
+                    )}
+
+                    {summarySection}
+
+                    {game?.warnings &&
+                        (game.warnings as IWarningItem[]).map((w, i) => (
+                            <CheckoutWarning
+                                key={i}
+                                icon={VARIANT_ICONS[w.variant]}
+                                title={w.title}
+                                text={w.text}
+                                variant={w.variant}
+                            />
+                        ))}
+
+                    {confirmSection}
+                    {actionSection}
+                    {termsSection}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className='sidebar-wrapper'>
+            {paymentSection}
+
+            <div className='sidebar'>
+                {summarySection}
+                {promoSection}
+                {!isSteam && fieldsSection}
+                {confirmSection}
+                {actionSection}
+                {termsSection}
             </div>
         </div>
     );

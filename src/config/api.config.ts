@@ -15,6 +15,9 @@ export const API_URL = {
     // Positions
     position: (url = '') => API_URL.root(`${SERVER_URL}/position/${url}`),
 
+    positionCategory: (string = '') =>
+        `${SERVER_URL}/position-category/${string}`,
+
     // Game Fields
     gameField: (url = '') => API_URL.root(`${SERVER_URL}/game-field/${url}`),
 

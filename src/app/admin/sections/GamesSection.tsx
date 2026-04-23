@@ -20,6 +20,7 @@ import {
     IGameCreate,
     GameType,
     IFaqItem,
+    IWarningItem,
 } from '@/shared/types';
 import { Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -42,6 +43,7 @@ type GameForm = {
     releaseDate: string;
     instructions: string[];
     faq: IFaqItem[];
+    warnings: IWarningItem[];
 };
 
 const EMPTY_FORM: GameForm = {
@@ -61,6 +63,7 @@ const EMPTY_FORM: GameForm = {
     releaseDate: '',
     instructions: [],
     faq: [],
+    warnings: [],
 };
 
 function toForm(g: IGame): GameForm & { id: number } {
@@ -82,6 +85,7 @@ function toForm(g: IGame): GameForm & { id: number } {
         releaseDate: g.releaseDate ?? '',
         instructions: g.instructions ?? [],
         faq: (g.faq as IFaqItem[]) ?? [],
+        warnings: (g.warnings as IWarningItem[]) ?? [],
     };
 }
 
@@ -157,6 +161,89 @@ function FaqEditor({
     );
 }
 
+// ── Warnings Editor ───────────────────────────────────────────────────────────
+function WarningsEditor({
+    value,
+    onChange,
+}: {
+    value: IWarningItem[];
+    onChange: (v: IWarningItem[]) => void;
+}) {
+    const add = () =>
+        onChange([...value, { title: '', text: '', variant: 'alert' }]);
+    const remove = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+    const update = (i: number, field: keyof IWarningItem, val: string) => {
+        const next = [...value];
+        next[i] = { ...next[i], [field]: val };
+        onChange(next);
+    };
+
+    return (
+        <div className='form-group'>
+            <div className='faq-editor__header'>
+                <label className='form-label'>Предупреждения</label>
+                <button
+                    type='button'
+                    className='btn btn--ghost btn--sm'
+                    onClick={add}
+                >
+                    <Plus size={14} />
+                    Добавить
+                </button>
+            </div>
+
+            {value.length === 0 && (
+                <p className='faq-editor__empty'>Предупреждений пока нет</p>
+            )}
+
+            <div className='faq-editor__list'>
+                {value.map((item, i) => (
+                    <div key={i} className='faq-editor__item'>
+                        <div className='faq-editor__item-index'>{i + 1}</div>
+                        <div className='faq-editor__item-fields'>
+                            <input
+                                className='form-input'
+                                placeholder='Заголовок'
+                                value={item.title}
+                                onChange={(e) =>
+                                    update(i, 'title', e.target.value)
+                                }
+                            />
+                            <textarea
+                                className='form-input faq-editor__textarea'
+                                placeholder='Текст'
+                                value={item.text}
+                                rows={2}
+                                onChange={(e) =>
+                                    update(i, 'text', e.target.value)
+                                }
+                            />
+                            <select
+                                className='form-input'
+                                value={item.variant}
+                                onChange={(e) =>
+                                    update(i, 'variant', e.target.value)
+                                }
+                            >
+                                <option value='alert'>Alert (жёлтый)</option>
+                                <option value='danger'>Danger (красный)</option>
+                            </select>
+                        </div>
+                        <button
+                            type='button'
+                            className='btn btn--danger btn--sm faq-editor__remove'
+                            onClick={() => remove(i)}
+                            title='Удалить'
+                        >
+                            <Trash2 size={14} />
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function GamesSection() {
     const router = useRouter();
@@ -191,6 +278,7 @@ export default function GamesSection() {
         releaseDate: form.releaseDate || undefined,
         instructions: form.instructions,
         faq: form.faq.length > 0 ? form.faq : undefined,
+        warnings: form.warnings.length > 0 ? form.warnings : undefined,
     });
 
     const handleCreate = () => {
@@ -290,21 +378,25 @@ export default function GamesSection() {
                 label='Описание'
                 value={form.description}
                 textarea
-                onChange={(v) => setEditing((p) => p && { ...p, image: v })}
+                onChange={(v) => set((p) => ({ ...p, description: v }))}
             />
             <ImageUpload
                 multiple
                 label='Инструкции (фото)'
                 value={form.instructions}
                 folder='instructions'
-                onChange={(v) => setEditing((p) => p && { ...p, image: v })}
+                onChange={(v) =>
+                    set((p) => ({ ...p, instructions: v as string[] }))
+                }
             />
-
             <FaqEditor
                 value={form.faq}
                 onChange={(faq) => set((p) => ({ ...p, faq }))}
             />
-
+            <WarningsEditor
+                value={form.warnings}
+                onChange={(warnings) => set((p) => ({ ...p, warnings }))}
+            />
             <div className='form-check'>
                 <input
                     type='checkbox'

@@ -19,24 +19,24 @@ export default function OrderStatusSteamPage() {
     if (!order) return null;
 
     return (
-        <div className='order-page'>
-            <div className='order-page__bg-wrap'>
+        <div className='steam-order-page'>
+            <div className='steam-order-page__bg-wrap'>
                 <img
                     src={'/steam-bg.png'}
                     alt={'Steam'}
-                    className='order-page__bg'
+                    className='.steam-steam-order-page__bg'
                 />
-                <div className='order-page__bg-overlay' />
+                <div className='steam-order-page__bg-overlay' />
             </div>
 
-            <div className='order-page__grid'>
-                <div className='order-page__left'>
-                    <div className='order-page__info'>
-                        <Link href='/' className='order-page__breadcrumb'>
+            <div className='steam-order-page__grid'>
+                <div className='steam-order-page__left'>
+                    <div className='steam-order-page__info'>
+                        <Link href='/' className='steam-order-page__breadcrumb'>
                             Главная
                         </Link>
 
-                        <h1 className='order-page__title'>Steam</h1>
+                        <h1 className='steam-order-page__title'>Steam</h1>
                     </div>
 
                     <SteamOrderStatusBlock order={order} />

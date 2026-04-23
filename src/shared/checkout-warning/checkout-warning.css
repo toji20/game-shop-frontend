@@ -1,0 +1,30 @@
+.checkout-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.checkout-warning strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 14px;
+}
+
+.checkout-warning svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.checkout-warning--danger {
+    background: #cf4a46;
+    color: #fff;
+}
+
+.checkout-warning--alert {
+    background: #d9c35b;
+    color: #252525;
+}

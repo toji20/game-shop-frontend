@@ -166,6 +166,100 @@ export function useOrderById(id: string) {
     return useMemo(() => ({ order, isLoadingOrder }), [order, isLoadingOrder]);
 }
 
+export function useAnyOrderById(id: string) {
+    const {
+        data: order,
+        isLoading,
+        refetch,
+    } = useQuery({
+        queryKey: ['any-order', id],
+        queryFn: () => orderApiService.getAnyById(id),
+        enabled: !!id,
+    });
+
+    return useMemo(
+        () => ({ order, isLoading, refetch }),
+        [order, isLoading, refetch],
+    );
+}
+
+export function useUpdateSteamOrderStatus(id: string) {
+    const queryClient = useQueryClient();
+
+    const { mutate: updateSteamStatus, isPending: isLoadingUpdate } =
+        useMutation({
+            mutationKey: ['update steam status', id],
+            mutationFn: (status: string) =>
+                orderApiService.updateSteamStatus(id, status),
+            onSuccess() {
+                queryClient.invalidateQueries({ queryKey: ['any-order', id] });
+                toast.success('Статус обновлён');
+            },
+            onError() {
+                toast.error('Ошибка при обновлении статуса');
+            },
+        });
+
+    return useMemo(
+        () => ({ updateSteamStatus, isLoadingUpdate }),
+        [updateSteamStatus, isLoadingUpdate],
+    );
+}
+
+export function useUpdateOrderItemDonateHubStatus(orderId: string) {
+    const queryClient = useQueryClient();
+
+    const { mutate: updateDonateHubStatus, isPending: isLoadingUpdate } =
+        useMutation({
+            mutationKey: ['update order item donatehub status', orderId],
+            mutationFn: ({
+                itemId,
+                status,
+            }: {
+                itemId: string;
+                status: string;
+            }) => orderApiService.updateItemDonateHubStatus(itemId, status),
+            onSuccess() {
+                queryClient.invalidateQueries({
+                    queryKey: ['any-order', orderId],
+                });
+                queryClient.invalidateQueries({ queryKey: ['order', orderId] });
+                toast.success('Статус DonateHub обновлён');
+            },
+            onError() {
+                toast.error('Ошибка при обновлении статуса DonateHub');
+            },
+        });
+
+    return useMemo(
+        () => ({ updateDonateHubStatus, isLoadingUpdate }),
+        [updateDonateHubStatus, isLoadingUpdate],
+    );
+}
+
+export function useUpdateSteamDonateHubStatus(id: string) {
+    const queryClient = useQueryClient();
+
+    const { mutate: updateSteamDonateHubStatus, isPending: isLoadingUpdate } =
+        useMutation({
+            mutationKey: ['update steam donatehub status', id],
+            mutationFn: (status: string) =>
+                orderApiService.updateSteamDonateHubStatus(id, status),
+            onSuccess() {
+                queryClient.invalidateQueries({ queryKey: ['any-order', id] });
+                toast.success('Статус DonateHub обновлён');
+            },
+            onError() {
+                toast.error('Ошибка при обновлении статуса DonateHub');
+            },
+        });
+
+    return useMemo(
+        () => ({ updateSteamDonateHubStatus, isLoadingUpdate }),
+        [updateSteamDonateHubStatus, isLoadingUpdate],
+    );
+}
+
 export function useUpdateOrderStatus(id: string) {
     const queryClient = useQueryClient();
 

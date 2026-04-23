@@ -5,6 +5,7 @@
     border-radius: 20px;
     padding: 30px;
     color: #fff;
+    margin: 0 auto;
 }
 
 /* 🎮 GAME */
@@ -43,7 +44,7 @@
 .order-status__steps::before {
     content: '';
     position: absolute;
-    left: 14px;
+    left: 13px;
     top: 0;
     bottom: 0;
     width: 2px;
@@ -53,7 +54,7 @@
 /* 🟢 progress */
 .order-status__progress {
     position: absolute;
-    left: 14px;
+    left: 13px;
     top: 0;
     width: 2px;
     background: #8aff00;
@@ -71,6 +72,7 @@
 .circle {
     width: 28px;
     height: 28px;
+    min-width: 28px;
     border-radius: 50%;
     background: #2a2a2a;
     display: flex;
@@ -131,16 +133,28 @@
     padding: 10px;
     border-radius: 8px;
     border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 14px;
+}
+
+.order-status__2fa input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
 }
 
 .order-status__2fa button {
     padding: 10px;
     border-radius: 8px;
-    background: #8aff00;
+    background: #7fec02ca;
     border: none;
     cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
+.order-status__2fa button:hover {
+    background: #84f701d9;
+}
 /* code */
 .order-status__code {
     margin-top: 20px;
@@ -162,6 +176,8 @@
     font-size: 22px;
     font-weight: 700;
 }
+
+/* success */
 .order-status__success {
     margin-top: 20px;
     display: flex;
@@ -200,4 +216,18 @@
 
 .order-status__home-btn:hover {
     opacity: 0.85;
+}
+
+/* === MOBILE ADAPTIVE ≤500px === */
+@media (max-width: 500px) {
+    .order-status {
+        width: 100%;
+        border-radius: 16px;
+        padding: 20px 16px;
+    }
+
+    .order-status__total {
+        font-size: 18px;
+        margin-top: 18px;
+    }
 }
