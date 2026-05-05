@@ -4,14 +4,21 @@ import { OrderCard } from './order-card';
 import './profile-page.css';
 import { SteamOrderCard } from './steam-order-card';
 import { ProfilePageSkeleton } from '@/components/ui/profile-skeleton/profile-page-skeleton';
-import { useProfile } from '@/hooks/queries/useUser';
+import { useAvatars } from '@/hooks/queries/useAvatar';
+import { useProfile, useUpdateAvatar } from '@/hooks/queries/useUser';
 import { IOrder, ISteamOrder } from '@/shared/types';
-import { LayoutGrid, User, Copy, Check } from 'lucide-react';
+import {
+    Check,
+    Copy,
+    Image as ImageIcon,
+    LayoutGrid,
+    User,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
-type Tab = 'profile' | 'orders';
+type Tab = 'profile' | 'orders' | 'avatars';
 type AnyOrder =
     | { type: 'game'; data: IOrder }
     | { type: 'steam'; data: ISteamOrder };
@@ -19,19 +26,29 @@ type AnyOrder =
 export default function ProfilePage() {
     const router = useRouter();
     const pathname = usePathname();
-    const { profile } = useProfile();
     const searchParams = useSearchParams();
+
+    const { profile } = useProfile();
+    const { avatars, isLoadingAvatars } = useAvatars();
+    const { updateAvatar, isLoadingAvatar } = useUpdateAvatar();
+
     const [copied, setCopied] = useState(false);
 
     const urlTab = searchParams.get('tab');
-    const activeTab: Tab = urlTab === 'orders' ? 'orders' : 'profile';
+    const activeTab: Tab =
+        urlTab === 'orders'
+            ? 'orders'
+            : urlTab === 'avatars'
+              ? 'avatars'
+              : 'profile';
 
-    const handleSetTab = (t: Tab) => {
-        if (t === 'orders') {
-            router.push(`${pathname}?tab=orders`);
-        } else {
+    const handleSetTab = (tab: Tab) => {
+        if (tab === 'profile') {
             router.push(pathname);
+            return;
         }
+
+        router.push(`${pathname}?tab=${tab}`);
     };
 
     const handleCopyId = () => {
@@ -42,11 +59,12 @@ export default function ProfilePage() {
 
     const allOrders = useMemo((): AnyOrder[] => {
         const game = (profile?.orders ?? []).map(
-            (o): AnyOrder => ({ type: 'game', data: o }),
+            (order): AnyOrder => ({ type: 'game', data: order }),
         );
         const steam = (profile?.steamOrders ?? []).map(
-            (o): AnyOrder => ({ type: 'steam', data: o }),
+            (order): AnyOrder => ({ type: 'steam', data: order }),
         );
+
         return [...game, ...steam].sort(
             (a, b) =>
                 new Date(b.data.createdAt).getTime() -
@@ -54,7 +72,13 @@ export default function ProfilePage() {
         );
     }, [profile?.orders, profile?.steamOrders]);
 
-    if (!profile) return <ProfilePageSkeleton tab={activeTab} />;
+    if (!profile) {
+        return (
+            <ProfilePageSkeleton
+                tab={activeTab === 'avatars' ? undefined : activeTab}
+            />
+        );
+    }
 
     return (
         <div className='profile-page'>
@@ -74,7 +98,9 @@ export default function ProfilePage() {
                             Профиль
                         </span>
                     </div>
+
                     <h1 className='profile-page__title'>Ваш профиль</h1>
+
                     <p className='profile-page__desc'>
                         Здесь хранятся все ваши покупки
                     </p>
@@ -83,12 +109,18 @@ export default function ProfilePage() {
                 <div className='profile-card'>
                     <div className='profile-card__user'>
                         <img
-                            src={profile.picture || '/default-avatar.png'}
+                            src={
+                                profile.avatar?.image ||
+                                profile.picture ||
+                                '/default-avatar.png'
+                            }
                             alt={profile.name}
                             className='profile-card__avatar'
                         />
+
                         <div className='profile-card__info'>
                             <button
+                                type='button'
                                 className='profile-card__id-btn'
                                 onClick={handleCopyId}
                                 title='Скопировать ID'
@@ -99,6 +131,7 @@ export default function ProfilePage() {
                                 <span className='profile-card__id-value'>
                                     {profile.id.slice(0, 16).toUpperCase()}
                                 </span>
+
                                 {copied ? (
                                     <Check
                                         size={13}
@@ -111,24 +144,37 @@ export default function ProfilePage() {
                                     />
                                 )}
                             </button>
+
                             <p className='profile-card__name'>{profile.name}</p>
                         </div>
                     </div>
 
                     <div className='profile-card__tabs'>
                         <button
+                            type='button'
                             className={`profile-card__tab ${activeTab === 'profile' ? 'profile-card__tab--active' : ''}`}
                             onClick={() => handleSetTab('profile')}
                         >
                             <User size={15} />
                             Профиль
                         </button>
+
                         <button
+                            type='button'
                             className={`profile-card__tab ${activeTab === 'orders' ? 'profile-card__tab--active' : ''}`}
                             onClick={() => handleSetTab('orders')}
                         >
                             <LayoutGrid size={15} />
-                            Все покупки
+                            Покупки
+                        </button>
+
+                        <button
+                            type='button'
+                            className={`profile-card__tab ${activeTab === 'avatars' ? 'profile-card__tab--active' : ''}`}
+                            onClick={() => handleSetTab('avatars')}
+                        >
+                            <ImageIcon size={15} />
+                            Аватарки
                         </button>
                     </div>
                 </div>
@@ -138,6 +184,7 @@ export default function ProfilePage() {
                         <h2 className='profile-orders__title'>
                             История покупок
                         </h2>
+
                         <div className='profile-orders__grid'>
                             {!allOrders.length ? (
                                 <p className='profile-orders__empty'>
@@ -171,12 +218,14 @@ export default function ProfilePage() {
                                 {profile.email}
                             </span>
                         </div>
+
                         <div className='profile-info-row'>
                             <span className='profile-info-label'>Имя</span>
                             <span className='profile-info-value'>
                                 {profile.name}
                             </span>
                         </div>
+
                         <div className='profile-info-row'>
                             <span className='profile-info-label'>
                                 Регистрация
@@ -187,6 +236,60 @@ export default function ProfilePage() {
                                 )}
                             </span>
                         </div>
+                    </div>
+                )}
+
+                {activeTab === 'avatars' && (
+                    <div className='profile-avatars'>
+                        <h2 className='profile-avatars__title'>Все аватарки</h2>
+
+                        {isLoadingAvatars ? (
+                            <p className='profile-avatars__empty'>
+                                Загрузка аватарок...
+                            </p>
+                        ) : !avatars?.length ? (
+                            <p className='profile-avatars__empty'>
+                                Аватарок пока нет
+                            </p>
+                        ) : (
+                            <div className='profile-avatars__grid'>
+                                {avatars.map((avatar) => {
+                                    const isSelected =
+                                        profile.avatarId === avatar.id ||
+                                        profile.avatar?.id === avatar.id ||
+                                        profile.avatar?.image === avatar.image;
+
+                                    return (
+                                        <button
+                                            key={avatar.id}
+                                            type='button'
+                                            className={`profile-avatar-card ${isSelected ? 'profile-avatar-card--selected' : ''}`}
+                                            onClick={() =>
+                                                updateAvatar(avatar.id)
+                                            }
+                                            disabled={isLoadingAvatar}
+                                        >
+                                            {isSelected && (
+                                                <span className='profile-avatar-card__badge'>
+                                                    Выбрано
+                                                </span>
+                                            )}
+
+                                            <div className='profile-avatar-card__image-wrap'>
+                                                <img
+                                                    src={
+                                                        avatar.image ||
+                                                        '/default-avatar.png'
+                                                    }
+                                                    alt='Аватар'
+                                                    className='profile-avatar-card__image'
+                                                />
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

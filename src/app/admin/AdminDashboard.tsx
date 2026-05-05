@@ -1,6 +1,7 @@
 'use client';
 
 import AdBannersSection from './sections/AdBannerSection';
+import AvatarSection from './sections/AvatarSection';
 import BannersSection from './sections/BannersSection';
 import CategoriesSection from './sections/CategoriesSection';
 import GamesSection from './sections/GamesSection';
@@ -23,7 +24,8 @@ type Section =
     | 'reviews'
     | 'promoCodes'
     | 'orders'
-    | 'users';
+    | 'users'
+    | 'avatars';
 
 const NAV: { id: Section; label: string; icon: string }[] = [
     { id: 'games', label: 'Игры', icon: '🎮' },
@@ -32,6 +34,7 @@ const NAV: { id: Section; label: string; icon: string }[] = [
     { id: 'banners', label: 'Баннеры', icon: '🖼️' },
     { id: 'side-banners', label: 'Доп баннеры', icon: '📄' },
     { id: 'ad-banner', label: 'Рекламный баннер', icon: '📋' },
+    { id: 'avatars', label: 'Аватары', icon: '👾' },
     { id: 'reviews', label: 'Отзывы', icon: '⭐' },
     { id: 'promoCodes', label: 'Промокоды', icon: '🎟️' },
     { id: 'orders', label: 'Заказы', icon: '📦' },
@@ -70,6 +73,7 @@ export default function AdminDashboard() {
                 {active === 'banners' && <BannersSection />}
                 {active === 'side-banners' && <SideBannersSection />}
                 {active === 'ad-banner' && <AdBannersSection />}
+                {active === 'avatars' && <AvatarSection />}
                 {active === 'reviews' && <ReviewsSection />}
                 {active === 'promoCodes' && <PromoCodesSection />}
                 {active === 'orders' && <OrdersSection />}

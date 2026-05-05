@@ -38,7 +38,7 @@ export function ReviewItem({ review }: ReviewItemProps) {
             <div className='review-item__top'>
                 <div className='review-item__user'>
                     <img
-                        src={review.user?.picture || '/no-user-image.png'}
+                        src={review.user?.avatar?.image || '/no-user-image.png'}
                         alt={authorName}
                         className='review-item__avatar'
                     />

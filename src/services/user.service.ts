@@ -35,6 +35,15 @@ class UserService {
         return data;
     }
 
+    async updateAvatar(avatarId: string) {
+        const { data } = await axiosWithAuth<IUser>({
+            url: API_URL.users('profile/avatar'),
+            method: 'PATCH',
+            data: { avatarId },
+        });
+        return data;
+    }
+
     async updateRole(id: string, role: UserRole) {
         const { data } = await axiosWithAuth<IUser>({
             url: API_URL.users(`${id}/role`),

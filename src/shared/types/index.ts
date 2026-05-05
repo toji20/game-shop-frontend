@@ -9,3 +9,4 @@ export * from './steam-order.interface';
 export * from './statistics.interface';
 export * from './side-banner.interface';
 export * from './position-category.interface';
+export * from './avatar.interface';

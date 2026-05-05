@@ -174,7 +174,7 @@ export function SideBanners() {
             onMouseMove={onMouseMove}
             onMouseUp={stopDragging}
         >
-            <div className='side-banners__track' ref={trackRef}>
+            <div className='side-banners__track'>
                 {doubled.map((item, i) => (
                     <SideBannerItem item={item} key={`${item.id}-${i}`} />
                 ))}

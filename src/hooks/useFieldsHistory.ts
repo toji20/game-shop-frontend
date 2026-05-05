@@ -6,23 +6,24 @@ const MAX_PER_FIELD = 3;
 
 type FieldHistory = Record<string, string[]>;
 
-export function useFieldHistory() {
+export function useFieldHistory(gameId: number) {
+    const storageKey = `${STORAGE_KEY}_${gameId}`;
     const [history, setHistory] = useState<FieldHistory>({});
 
     useEffect(() => {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY);
+            const raw = localStorage.getItem(storageKey);
             // eslint-disable-next-line react-hooks/set-state-in-effect
             if (raw) setHistory(JSON.parse(raw));
         } catch {}
-    }, []);
+    }, [storageKey]);
 
     const saveFields = (
         fields: Record<string, string>,
         gameFields: { id: number; label: string }[],
     ) => {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY);
+            const raw = localStorage.getItem(storageKey);
             const current: FieldHistory = raw ? JSON.parse(raw) : {};
 
             gameFields.forEach((f) => {
@@ -37,7 +38,7 @@ export function useFieldHistory() {
                 current[f.label] = updated;
             });
 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+            localStorage.setItem(storageKey, JSON.stringify(current));
             setHistory(current);
         } catch {}
     };

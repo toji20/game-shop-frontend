@@ -1,7 +1,8 @@
 .order-page {
     display: flex;
-    padding: 120px;
+    padding: 120px 0;
     background-color: rgba(0, 0, 0, 0.519);
+    margin: 0 auto;
 }
 
 .order-page__bg-wrap {
@@ -43,12 +44,10 @@
 .order-page__grid {
     position: relative;
     z-index: 1;
-    max-width: 1460px;
+    max-width: 100%;
     width: 100%;
-    margin: auto;
     display: flex;
     align-items: center;
-    padding: 0 20px;
 }
 
 .order-page__left {
@@ -93,7 +92,7 @@
 
 @media (max-width: 500px) {
     .order-page {
-        padding: 140px 20px 60px;
+        padding: 140px 0px 60px;
     }
 
     .order-page__bg-wrap {

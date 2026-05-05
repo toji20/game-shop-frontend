@@ -131,7 +131,7 @@ export function Buttons() {
                 >
                     {profile.picture ? (
                         <img
-                            src={profile.picture}
+                            src={profile.avatar?.image || './no-user-image'}
                             alt={profile.name}
                             className='btn-avatar'
                         />

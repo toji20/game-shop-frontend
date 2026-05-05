@@ -57,7 +57,7 @@
     left: 13px;
     top: 0;
     width: 2px;
-    background: #8aff00;
+    background: #8cd51f;
     z-index: 1;
     transition: height 0.3s ease;
 }
@@ -84,7 +84,7 @@
 }
 
 .circle.active {
-    background: #8aff00;
+    background: #8cd51f;
     color: #000;
 }
 
@@ -97,7 +97,7 @@
 .circle-inner {
     width: 10px;
     height: 10px;
-    background: #8aff00;
+    background: #8cd51f;
     border-radius: 50%;
 }
 
@@ -194,7 +194,7 @@
 .order-status__success-title {
     font-size: 16px;
     font-weight: 700;
-    color: #8aff00;
+    color: #8cd51f;
 }
 
 .order-status__success-desc {
@@ -206,7 +206,7 @@
     margin-top: 8px;
     padding: 10px 24px;
     border-radius: 99px;
-    background: #8aff00;
+    background: #8cd51f;
     color: #000;
     font-size: 14px;
     font-weight: 700;

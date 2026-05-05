@@ -9,6 +9,9 @@ export const API_URL = {
     // Users
     users: (url = '') => API_URL.root(`${SERVER_URL}/users/${url}`),
 
+    // Avatars
+    avatar: (url = '') => API_URL.root(`${SERVER_URL}/avatar/${url}`),
+
     // Games
     game: (url = '') => API_URL.root(`${SERVER_URL}/game/${url}`),
 

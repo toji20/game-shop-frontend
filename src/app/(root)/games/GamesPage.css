@@ -1,7 +1,24 @@
 .game-page-al {
-    padding-top: 80px;
+    padding-top: 140px;
     flex-direction: column;
-    row-gap: 20px;
+}
+
+@media (max-width: 1025px) {
+    .game-page-al {
+        padding-top: 130px;
+    }
+}
+
+@media (max-width: 821px) {
+    .game-page-al {
+        padding-top: 120px;
+    }
+}
+
+@media (max-width: 650px) {
+    .game-page-al {
+        padding-top: 105px;
+    }
 }
 
 @media (max-width: 500px) {

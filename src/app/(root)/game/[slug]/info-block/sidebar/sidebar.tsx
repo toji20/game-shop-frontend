@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 import { CheckoutSelectedItems } from './checkout-selected-items/checkout-selected-items';
@@ -9,19 +10,21 @@ import {
     useCheckSteam,
     usePlaceSteamOrder,
 } from '@/hooks/queries/useSteamOrder';
+import { useFieldHistory } from '@/hooks/useFieldsHistory';
 import { saveAccountHistory } from '@/lib/steam-history';
 import { CheckoutWarning } from '@/shared/checkout-warning/checkout-warning';
 import { IGame, IWarningItem, PaymentMethod } from '@/shared/types';
 import { useCartStore } from '@/store/cart-store';
 import { useSteamStore } from '@/store/steam-store';
 import { AlertTriangle, CircleAlert, Ticket } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SideBarProps {
     game: IGame | null;
     isLoading?: boolean;
     mode?: 'desktop' | 'mobile';
     onRequestClose?: () => void;
+    onShowInstructions?: () => void;
 }
 
 const PAYMENT_METHODS: { key: PaymentMethod; img: string; title: string }[] = [
@@ -34,40 +37,12 @@ const VARIANT_ICONS = {
     alert: AlertTriangle,
 };
 
-const FIELD_HISTORY_KEY = 'field_history';
-const MAX_PER_FIELD = 3;
-
-type FieldHistory = Record<string, string[]>;
-
-function loadFieldHistory(): FieldHistory {
-    try {
-        const raw = localStorage.getItem(FIELD_HISTORY_KEY);
-        return raw ? JSON.parse(raw) : {};
-    } catch {
-        return {};
-    }
-}
-
-function saveFieldHistory(
-    fields: Record<string, string>,
-    gameFields: { id: number; label: string }[],
-) {
-    try {
-        const current = loadFieldHistory();
-        gameFields.forEach((f) => {
-            const value = fields[String(f.id)]?.trim();
-            if (!value) return;
-            const existing = current[f.label] ?? [];
-            current[f.label] = [
-                value,
-                ...existing.filter((v) => v !== value),
-            ].slice(0, MAX_PER_FIELD);
-        });
-        localStorage.setItem(FIELD_HISTORY_KEY, JSON.stringify(current));
-    } catch {}
-}
-
-export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
+export function SideBar({
+    game,
+    isLoading,
+    mode = 'desktop',
+    onShowInstructions,
+}: SideBarProps) {
     const isSteam = game?.slug?.toLowerCase().includes('steam');
     const isMobile = mode === 'mobile';
 
@@ -89,12 +64,19 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
     const { checkPromo, isCheckingPromo, promoData, promoError, resetPromo } =
         useCheckPromo();
 
+    const { history: fieldHistory, saveFields } = useFieldHistory(
+        game?.id ?? 0,
+    );
+
     const [paymentMethod, setPaymentMethod] =
         useState<PaymentMethod>('bank_card');
     const [promoCode, setPromoCode] = useState('');
     const [confirms, setConfirms] = useState<Record<string, boolean>>({});
-    const [fieldHistory, setFieldHistory] =
-        useState<FieldHistory>(loadFieldHistory);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const rawTotal = total();
     const discount = !isSteam ? (promoData?.discount ?? 0) : 0;
@@ -127,6 +109,13 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
     const currencySymbol =
         currency === 'RUB' ? '₽' : currency === 'KZT' ? '₸' : '$';
 
+    const steamTotalWithDiscount =
+        steamTotal === null
+            ? null
+            : promoData?.discount
+              ? +(steamTotal * (1 - promoData.discount / 100)).toFixed(2)
+              : steamTotal;
+
     const isSteamAmountLoading = isSteam && isChecking;
 
     const requiredFields = game?.fields?.filter((f) => f.required) ?? [];
@@ -144,7 +133,7 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
 
     const handleBuy = () => {
         if (isSteam) {
-            if (!account || !amount || steamTotal === null) return;
+            if (!account || !amount || steamTotalWithDiscount === null) return;
             placeSteamOrder(
                 {
                     account,
@@ -180,8 +169,8 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
             {
                 onSuccess: () => {
                     if (game.fields) {
-                        saveFieldHistory(fields, game.fields);
-                        setFieldHistory(loadFieldHistory());
+                        // saveFields из хука — уже учитывает gameId
+                        saveFields(fields, game.fields);
                     }
                 },
             },
@@ -288,11 +277,10 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
                     <a
                         href='#instructions'
                         className='sidebar__fields-hint'
-                        onClick={() =>
-                            document
-                                .getElementById('game-instructions')
-                                ?.scrollIntoView({ behavior: 'smooth' })
-                        }
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onShowInstructions?.();
+                        }}
                     >
                         Где найти?
                     </a>
@@ -304,6 +292,10 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
                         f.label.toLowerCase().includes('server');
                     const suggestions = fieldHistory[f.label] ?? [];
                     const currentValue = fields[String(f.id)] ?? '';
+                    const canShowSuggestions =
+                        isMounted &&
+                        suggestions.length > 0 &&
+                        currentValue === '';
 
                     return (
                         <div key={f.id} className='sidebar__field'>
@@ -346,26 +338,25 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
                                                 : f.label
                                         }
                                     />
-                                    {suggestions.length > 0 &&
-                                        currentValue === '' && (
-                                            <div className='sidebar__suggestions'>
-                                                {suggestions.map((s) => (
-                                                    <button
-                                                        key={s}
-                                                        type='button'
-                                                        className='sidebar__suggestion'
-                                                        onClick={() =>
-                                                            setField(
-                                                                String(f.id),
-                                                                s,
-                                                            )
-                                                        }
-                                                    >
-                                                        {s}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
+                                    {canShowSuggestions && (
+                                        <div className='sidebar__suggestions'>
+                                            {suggestions.map((s) => (
+                                                <button
+                                                    key={s}
+                                                    type='button'
+                                                    className='sidebar__suggestion'
+                                                    onClick={() =>
+                                                        setField(
+                                                            String(f.id),
+                                                            s,
+                                                        )
+                                                    }
+                                                >
+                                                    {s}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </div>
@@ -384,7 +375,7 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
                         <Skeleton width={80} height={22} />
                     ) : isSteam ? (
                         steamTotal !== null ? (
-                            `${steamTotal.toLocaleString('ru-RU')} ₽`
+                            `${steamTotalWithDiscount!.toLocaleString('ru-RU')} ₽`
                         ) : isChecking ? (
                             <Skeleton width={120} height={22} />
                         ) : (
@@ -472,7 +463,9 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
     );
 
     const confirmSection = !isLoading && requiredFields.length > 0 && (
-        <label className='sidebar__confirm-item'>
+        <label
+            className={`sidebar__confirm-item ${confirms['all'] ? 'sidebar__confirm-item--checked' : ''}`}
+        >
             <input
                 type='checkbox'
                 className='sidebar__confirm-checkbox'
@@ -519,7 +512,7 @@ export function SideBar({ game, isLoading, mode = 'desktop' }: SideBarProps) {
                     : isSteamAmountLoading && steamTotal === null
                       ? 'Рассчитываем сумму...'
                       : steamTotal !== null
-                        ? `Оплатить ${steamTotal.toLocaleString('ru-RU')} ₽`
+                        ? `Оплатить ${steamTotalWithDiscount!.toLocaleString('ru-RU')} ₽`
                         : `Пополнить ${amount.toLocaleString('ru-RU')} ${currencySymbol}`
                 : isLoadingPlace
                   ? 'Переход к оплате...'

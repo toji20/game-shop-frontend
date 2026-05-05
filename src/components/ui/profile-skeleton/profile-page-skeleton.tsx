@@ -70,6 +70,13 @@ export function ProfilePageSkeleton({
                                 borderRadius='4px'
                             />
                         </div>
+                        <div className='profile-card__tab'>
+                            <Skeleton
+                                width='90px'
+                                height='14px'
+                                borderRadius='4px'
+                            />
+                        </div>
                     </div>
                 </div>
 

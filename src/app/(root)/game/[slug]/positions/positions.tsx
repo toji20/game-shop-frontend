@@ -15,9 +15,15 @@ interface PositionsProps {
     items: IPosition[];
     gameId: number;
     gameName?: string;
+    selectedCategory?: number | null;
 }
 
-export function Positions({ items, gameId, gameName }: PositionsProps) {
+export function Positions({
+    items,
+    gameId,
+    gameName,
+    selectedCategory = null,
+}: PositionsProps) {
     const [expanded, setExpanded] = useState(false);
 
     if (!items.length) {
@@ -30,7 +36,13 @@ export function Positions({ items, gameId, gameName }: PositionsProps) {
         );
     }
 
-    const hasMore = items.length > INITIAL_COUNT;
+    const filtered =
+        selectedCategory !== null
+            ? items.filter((item) => item.categoryId === selectedCategory)
+            : items;
+
+    const hasMore = filtered.length > INITIAL_COUNT;
+    const visible = expanded ? filtered : filtered.slice(0, INITIAL_COUNT);
 
     return (
         <div className='positions'>
@@ -38,7 +50,7 @@ export function Positions({ items, gameId, gameName }: PositionsProps) {
                 className={`positions-block-wrap ${!expanded && hasMore ? 'positions-block-wrap--faded' : ''}`}
             >
                 <div className='positions-block'>
-                    {items.map((item) => (
+                    {visible.map((item) => (
                         <PositionItem
                             item={item}
                             key={item.id}
@@ -48,7 +60,6 @@ export function Positions({ items, gameId, gameName }: PositionsProps) {
                     ))}
                 </div>
 
-                {/* Полупрозрачная маска снизу когда свёрнуто */}
                 {!expanded && hasMore && <div className='positions-fade' />}
             </div>
 
@@ -60,7 +71,7 @@ export function Positions({ items, gameId, gameName }: PositionsProps) {
                     <span>
                         {expanded
                             ? 'Свернуть'
-                            : `Показать ещё ${items.length - INITIAL_COUNT}`}
+                            : `Показать ещё ${filtered.length - INITIAL_COUNT}`}
                     </span>
                     <ChevronDown
                         size={16}

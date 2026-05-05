@@ -2,7 +2,6 @@ import { userService } from '@/services/user.service';
 import { UserRole } from '@/shared/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import toast from 'react-hot-toast';
 
 export function useProfile() {
     const { data: profile, isLoading: isLoadingProfile } = useQuery({
@@ -28,6 +27,27 @@ export function useUserSearch(query: string) {
     return useMemo(() => ({ users, isLoading }), [users, isLoading]);
 }
 
+export function useUpdateAvatar() {
+    const queryClient = useQueryClient();
+
+    const { mutate: updateAvatar, isPending: isLoadingAvatar } = useMutation({
+        mutationKey: ['update avatar'],
+        mutationFn: (avatarId: string) => userService.updateAvatar(avatarId),
+        onSuccess() {
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+            console.log('Аватар обновлён');
+        },
+        onError() {
+            console.error('Ошибка при обновлении аватара');
+        },
+    });
+
+    return useMemo(
+        () => ({ updateAvatar, isLoadingAvatar }),
+        [updateAvatar, isLoadingAvatar],
+    );
+}
+
 export function useUpdateUserRole() {
     const queryClient = useQueryClient();
 
@@ -39,10 +59,10 @@ export function useUpdateUserRole() {
             queryClient.invalidateQueries({ queryKey: ['user-search'] });
             queryClient.invalidateQueries({ queryKey: ['profile'] });
             queryClient.invalidateQueries({ queryKey: ['user', variables.id] });
-            toast.success('Роль пользователя обновлена');
+            console.log('Роль пользователя обновлена');
         },
         onError() {
-            toast.error('Ошибка при обновлении роли');
+            console.error('Ошибка при обновлении роли');
         },
     });
 
@@ -63,7 +83,7 @@ export function useToggleFavorite() {
                 queryClient.invalidateQueries({ queryKey: ['profile'] });
             },
             onError() {
-                toast.error('Ошибка при обновлении избранного');
+                console.error('Ошибка при обновлении избранного');
             },
         });
 

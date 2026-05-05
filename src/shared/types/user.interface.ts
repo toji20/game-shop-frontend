@@ -15,6 +15,11 @@ export interface IUser {
     orders?: IOrder[];
     steamOrders?: ISteamOrder[];
     favorites?: IGame[];
+    avatarId?: string | null;
+    avatar?: {
+        id: string;
+        image: string;
+    } | null;
 }
 export interface IUserCreate {
     email: string;

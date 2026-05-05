@@ -1,0 +1,42 @@
+.hero-shell {
+    position: relative;
+    isolation: isolate;
+}
+
+.hero-shell::before,
+.hero-shell::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 44px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.32;
+    filter: blur(20px);
+}
+
+.hero-shell::before {
+    left: 0px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 59, 48, 0.2) 0%,
+        rgba(255, 59, 48, 0.1) 42%,
+        rgba(255, 58, 48, 0.697) 100%
+    );
+}
+
+.hero-shell::after {
+    right: 0px;
+    background: linear-gradient(
+        270deg,
+        rgba(255, 59, 48, 0.2) 0%,
+        rgba(255, 59, 48, 0.1) 42%,
+        rgba(255, 58, 48, 0.697) 100%
+    );
+}
+
+.hero-shell > * {
+    position: relative;
+    z-index: 1;
+}

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @next/next/no-html-link-for-pages */
 'use client';
 
@@ -32,8 +33,19 @@ export function SteamTopUp() {
         useSteamStore();
     const { checkSteam } = useCheckSteam();
 
-    const [accountHistory, setAccountHistory] =
-        useState<string[]>(loadAccountHistory);
+    const [mounted, setMounted] = useState(false);
+    const [accountHistory, setAccountHistory] = useState<string[]>([]);
+
+    useEffect(() => {
+        setMounted(true);
+        setAccountHistory(loadAccountHistory());
+    }, []);
+
+    useEffect(() => {
+        const onStorage = () => setAccountHistory(loadAccountHistory());
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
 
     useEffect(() => {
         if (!account || !amount) return;
@@ -42,13 +54,6 @@ export function SteamTopUp() {
         }, 600);
         return () => clearTimeout(timeout);
     }, [account, amount, currency]);
-
-    // обновлять список когда localStorage меняется (после заказа из sidebar)
-    useEffect(() => {
-        const onStorage = () => setAccountHistory(loadAccountHistory());
-        window.addEventListener('storage', onStorage);
-        return () => window.removeEventListener('storage', onStorage);
-    }, []);
 
     return (
         <div className='steam'>
@@ -80,7 +85,8 @@ export function SteamTopUp() {
                     value={account}
                     onChange={(e) => setAccount(e.target.value)}
                 />
-                {accountHistory.length > 0 && account === '' && (
+                {/* Рендерим suggestions только после монтирования — иначе гидрация падает */}
+                {mounted && accountHistory.length > 0 && account === '' && (
                     <div className='steam__suggestions'>
                         {accountHistory.map((a) => (
                             <button
@@ -102,12 +108,12 @@ export function SteamTopUp() {
                     <input
                         className='steam__input steam__input--amount'
                         type='number'
-                        value={amount}
-                        min={1}
+                        value={amount === 0 ? '' : amount}
+                        min={0}
                         onChange={(e) => {
                             const value = e.target.value;
                             if (value.length > 6) return;
-                            setAmount(Number(value));
+                            setAmount(value === '' ? 0 : Number(value));
                         }}
                     />
                     <div className='steam__currencies'>

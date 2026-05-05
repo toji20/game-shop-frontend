@@ -13,7 +13,6 @@
     display: block;
     text-decoration: none;
     cursor: pointer;
-
     opacity: 0;
     transition: opacity 0.8s ease;
     pointer-events: none;
@@ -70,50 +69,117 @@
     line-height: 1.5;
 }
 
-/* ─── DOTS ───────────────────────────────────────── */
+/* ─── ARROWS ─────────────────────────────────────── */
+.banners__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(30, 30, 30, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        transform 0.2s;
+}
+
+.banners__arrow:hover {
+    background: rgba(50, 50, 50, 0.8);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-50%) scale(1.08);
+}
+
+.banners__arrow--left {
+    left: 50px;
+}
+
+.banners__arrow--right {
+    right: 50px;
+}
+
+/* стрелки только на десктопе */
+@media (max-width: 650px) {
+    .banners__arrow {
+        display: none;
+    }
+}
+
+/* ─── PROGRESS BARS (dots) ───────────────────────── */
 .banners__dots {
     position: absolute;
-    bottom: 80px;
-    right: 80px;
     z-index: 10;
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
 }
 
+/* десктоп — слева снизу, после стрелки */
+@media (min-width: 651px) {
+    .banners__dots {
+        bottom: 68px;
+        left: 84px;
+    }
+}
+
+/* мобиле — по центру снизу */
+@media (max-width: 650px) {
+    .banners__dots {
+        bottom: 78px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .banners__dot {
+        width: 36px;
+        height: 3px;
+    }
+}
+
 .banners__dot {
-    width: 6px;
-    height: 6px;
+    position: relative;
+    width: 76px;
+    height: 4px;
     border-radius: 99px;
     border: none;
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.3);
     cursor: pointer;
     padding: 0;
-    transition:
-        width 0.3s ease,
-        background 0.3s ease;
+    overflow: hidden;
+    transition: background 0.3s ease;
 }
 
 .banners__dot--active {
-    width: 24px;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.3);
 }
-@media (max-width: 500px) {
-    .banners {
-        height: 440px;
-    }
 
-    .banners__dots {
-        bottom: 75px;
-        right: 50%;
-        transform: translateX(50%);
-    }
+/* заполняющаяся полоска */
+.banners__dot-fill {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    height: 100%;
+    background: #fff;
+    border-radius: 99px;
+    transition: width 0.05s linear;
 }
+
+/* ─── SKELETON ───────────────────────────────────── */
 .banners-skeleton {
     width: 100%;
     height: 579px;
-    background: #1a1b1e;
-    /* анимация как у обычного скелетона */
     background: linear-gradient(90deg, #1a1b1e 25%, #24262a 50%, #1a1b1e 75%);
     background-size: 200% 100%;
     animation: banners-shimmer 1.5s infinite;
@@ -128,8 +194,22 @@
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 650px) {
+    .banners {
+        height: 440px;
+    }
+
     .banners-skeleton {
         height: 440px;
+    }
+
+    .banners__dots {
+        bottom: 78px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .banners__dot {
+        width: 36px;
+        height: 3px;
     }
 }

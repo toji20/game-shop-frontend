@@ -88,6 +88,79 @@
     padding: 0 20px 60px;
 }
 
+.reviews-page__notice {
+    margin-bottom: 18px;
+    padding: 20px;
+    border-radius: 18px;
+    background: #1f2329;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+}
+
+.reviews-page__notice-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.reviews-page__notice-title {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.reviews-page__notice-text {
+    max-width: 720px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.reviews-page__notice-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: 16px;
+    padding: 0 18px;
+    border-radius: 12px;
+    background: #fff;
+    color: #111315;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+@media (max-width: 500px) {
+    .reviews-page__notice {
+        margin-bottom: 14px;
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .reviews-page__notice-title {
+        font-size: 20px;
+    }
+
+    .reviews-page__notice-text {
+        font-size: 14px;
+    }
+
+    .reviews-page__notice-btn {
+        width: 100%;
+        margin-top: 14px;
+    }
+}
+
 @media (max-width: 900px) {
     .reviews-page__bg-wrap {
         height: 320px;
@@ -106,10 +179,52 @@
     }
 }
 
+@keyframes shimmer {
+    0% {
+        background-position: -400px 0;
+    }
+    100% {
+        background-position: 400px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #2a2d33 25%, #32363d 50%, #2a2d33 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 8px;
+}
+
+.notice-skeleton {
+    padding: 20px;
+    border-radius: 18px;
+    background: #1f2329;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.notice-skeleton__title {
+    height: 22px;
+    width: 260px;
+    max-width: 100%;
+}
+
+.notice-skeleton__text {
+    height: 14px;
+    width: 100%;
+}
+
+.notice-skeleton__text--short {
+    width: 70%;
+}
+
 @media (max-width: 500px) {
     .reviews-page-wrapper {
         background: #111315;
-        padding-bottom: 90px;
+        padding-bottom: 30px;
     }
 
     .reviews-page__bg-wrap {

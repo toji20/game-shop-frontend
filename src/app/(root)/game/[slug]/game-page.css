@@ -61,6 +61,11 @@
     color: rgba(255, 255, 255, 0.3);
 }
 
+.game-page__breadcrumb--current {
+    color: #fff;
+    font-weight: 600;
+}
+
 .game-page__grid {
     position: relative;
     z-index: 1;
@@ -125,6 +130,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
+    backdrop-filter: blur(10px);
 }
 
 .game-page__tab:hover {
@@ -146,19 +152,113 @@
     width: 100%;
 }
 
+/* Скрыты по умолчанию — показываются на планшете/мобиле */
 .mobile-cart-bar,
 .mobile-checkout-modal {
     display: none;
 }
+
 .positions-item-skeleton {
     height: 154px;
 }
-/* ─── 1200px ─── */
+
+.game-page__title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* Фильтры с горизонтальным скроллом и drag */
+.game-page__pos-filters-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 250px;
+    overflow: hidden;
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.game-page__pos-filters-wrap--skeleton {
+    max-width: 250px;
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.game-page__pos-filters-skeleton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    width: 100%;
+}
+
+.game-page__pos-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+    cursor: grab;
+    min-width: 0;
+    user-select: none;
+}
+
+.game-page__pos-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.game-page__pos-filters.is-dragging {
+    cursor: grabbing;
+}
+
+.game-page__pos-arrow {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.game-page__pos-arrow:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.game-page__pos-arrow:disabled {
+    opacity: 0.2;
+    cursor: default;
+}
+
+.game-page__warnings-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+@media (max-width: 1415px) {
+    .game-page__grid {
+        padding-inline: 80px;
+    }
+}
+
 @media (max-width: 1200px) {
     .game-page__grid {
         padding-inline: 40px;
-        grid-template-columns: minmax(0, 1fr) 360px;
-        gap: 32px;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 25px;
     }
 
     .game-page__title {
@@ -166,112 +266,46 @@
     }
 }
 
-/* ─── 900px ─── */
-@media (max-width: 900px) {
-    .game-page__grid {
-        grid-template-columns: 1fr;
-    }
-
-    .game-page__sidebar {
-        position: static;
-    }
-}
-
-/* ─── 500px (mobile) ─── */
-@media (max-width: 500px) {
+@media (max-width: 950px) {
     .game-page {
         background: #111315;
         padding-bottom: 18px;
     }
 
-    /* Фон: мобильная картинка */
-    .game-page__bg-wrap {
-        height: 360px;
-    }
-
-    .game-page__bg--desktop {
-        display: none;
-    }
-
-    .game-page__bg--mobile {
-        display: block;
-    }
-
-    .game-page__bg-overlay {
-        background: linear-gradient(
-            180deg,
-            rgba(12, 15, 20, 0.18) 0%,
-            rgba(12, 15, 20, 0.28) 22%,
-            rgba(12, 15, 20, 0.7) 72%,
-            #111315 100%
-        );
+    .game-page__left {
+        gap: 10px;
     }
 
     .game-page__grid {
-        padding: 18px 16px 40px;
-        gap: 24px;
-    }
-
-    .game-page__left {
-        gap: 8px;
+        grid-template-columns: 1fr;
+        padding-inline: 24px;
+        padding-bottom: 100px;
     }
 
     .game-page__sidebar {
         display: none;
+        position: static;
     }
 
-    .game-page__info {
-        gap: 12px;
-        padding-top: 150px;
-    }
-
-    .game-page__breadcrumbs {
-        gap: 4px;
-        font-size: 12px;
-    }
-
-    .game-page__breadcrumb {
-        font-size: 12px;
-    }
-
-    .game-page__title {
-        font-size: 41px;
-        line-height: 1.05;
-        font-weight: 600;
-    }
-
-    .game-page__desc {
-        font-size: 14px;
-        line-height: 1.5;
-        max-width: none;
-    }
-
-    .game-page__tabs {
-        gap: 8px;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        padding-bottom: 2px;
-        scrollbar-width: none;
-    }
-
-    .game-page__tabs::-webkit-scrollbar {
+    .game-page__pos-arrow {
         display: none;
     }
 
-    .game-page__tab {
-        flex: 0 0 auto;
-        min-width: max-content;
-        padding: 10px 16px;
-        border-radius: 999px;
-        font-size: 13px;
+    .game-page__pos-filters-wrap {
+        max-width: 100%;
+        width: 100%;
     }
 
-    /* ── Мобильная панель корзины (обычные игры) ── */
+    .game-page__pos-filters {
+        width: 100%;
+        cursor: default;
+    }
+
     .mobile-cart-bar {
         position: fixed;
         left: 12px;
         right: 12px;
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 62px);
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
         z-index: 30;
         display: flex;
         align-items: center;
@@ -284,9 +318,28 @@
         backdrop-filter: blur(18px);
     }
 
-    /* Steam — кнопка на всю ширину */
     .mobile-cart-bar--steam {
         padding: 12px 16px;
+    }
+
+    .mobile-cart-bar__button--steam-continue {
+        background: #fff;
+        color: #000;
+        font-weight: 800;
+        transition:
+            background 0.2s,
+            opacity 0.2s;
+    }
+
+    .mobile-cart-bar__button--steam-continue:not(:disabled):hover {
+        background: #e8e8e8;
+    }
+
+    .mobile-cart-bar__button--steam-continue:disabled {
+        background: rgba(255, 255, 255, 0.727);
+        color: rgba(0, 0, 0, 0.721);
+        cursor: not-allowed;
+        opacity: 1;
     }
 
     .mobile-cart-bar__button--full {
@@ -373,7 +426,6 @@
         cursor: pointer;
     }
 
-    /* ── Модалка оплаты ── */
     .mobile-checkout-modal {
         position: fixed;
         inset: 0;
@@ -406,7 +458,127 @@
         color: #fff;
         cursor: pointer;
     }
+
     .positions-item-skeleton {
-        height: 207px;
+        height: 201px;
+    }
+
+    .game-page__title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .game-page__warnings-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .game-page__warnings-mobile {
+        display: none;
+    }
+    .game-page__pos-filters-wrap--skeleton {
+        margin-top: 10px;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .game-page__pos-filters {
+        width: 100%;
+        cursor: default;
+    }
+}
+
+@media (max-width: 650px) {
+    .game-page {
+        padding-top: 30px;
+    }
+    .mobile-cart-bar {
+        bottom: 65px;
+    }
+}
+
+@media (max-width: 500px) {
+    .game-page__bg-wrap {
+        height: 360px;
+    }
+
+    .game-page__bg--desktop {
+        display: none;
+    }
+
+    .game-page__bg--mobile {
+        display: block;
+    }
+
+    .game-page__bg-overlay {
+        background: linear-gradient(
+            180deg,
+            rgba(12, 15, 20, 0.18) 0%,
+            rgba(12, 15, 20, 0.28) 22%,
+            rgba(12, 15, 20, 0.7) 72%,
+            #111315 100%
+        );
+    }
+
+    .game-page__grid {
+        padding: 18px 16px 40px;
+        gap: 24px;
+    }
+
+    .game-page__left {
+        gap: 0px;
+    }
+
+    .game-page__info {
+        gap: 12px;
+        padding-top: 150px;
+    }
+
+    .game-page__breadcrumbs {
+        gap: 4px;
+        font-size: 12px;
+    }
+
+    .game-page__breadcrumb {
+        font-size: 12px;
+    }
+
+    .game-page__title {
+        font-size: 41px;
+        line-height: 1.05;
+        font-weight: 600;
+    }
+
+    .game-page__desc {
+        font-size: 14px;
+        line-height: 1.5;
+        max-width: none;
+    }
+
+    .game-page__tabs {
+        gap: 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+        margin: 15px 0;
+    }
+
+    .game-page__tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .game-page__tab {
+        flex: 0 0 auto;
+        min-width: max-content;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 13px;
+    }
+
+    .mobile-cart-bar {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 62px);
     }
 }

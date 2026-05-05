@@ -119,6 +119,27 @@
     transition: transform 0.2s ease;
 }
 
+.reviews-spinner {
+    display: flex;
+    justify-content: center;
+    padding: 32px 0;
+}
+
+.reviews-spinner__circle {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #6d7cff;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 @media (max-width: 500px) {
     .reviews-block {
         padding: 14px;

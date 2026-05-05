@@ -83,21 +83,22 @@ export function Catalog({ titleOrSort = true }: CatalogProps) {
                 {!activeGames
                     ? Array.from({ length: 8 }).map((_, i) => (
                           <div key={i} className='catalog-item'>
-                              <Skeleton
-                                  width='100%'
-                                  borderRadius={12}
-                                  className='catalog-item-img-skeleton'
-                              />
-                              <div
-                                  style={{
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      gap: 6,
-                                      marginTop: 15,
-                                  }}
-                              >
-                                  <Skeleton width='70%' height={17} />
-                                  <Skeleton width='45%' height={15} />
+                              <div className='catalog-item-img-wrapper catalog-item-img-wrapper--skeleton'>
+                                  <Skeleton width='100%' height='100%' />
+                              </div>
+                              <div className='catalog-item-info'>
+                                  <Skeleton
+                                      width='70%'
+                                      height={22}
+                                      borderRadius={4}
+                                      className='catalog-skeleton-title'
+                                  />
+                                  <Skeleton
+                                      width='40%'
+                                      height={15}
+                                      borderRadius={4}
+                                      className='catalog-skeleton-info'
+                                  />
                               </div>
                           </div>
                       ))

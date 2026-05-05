@@ -370,6 +370,190 @@
     font-weight: 500;
 }
 
+.profile-avatars__title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.profile-avatars__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+}
+
+.profile-avatars__empty {
+    color: #777;
+    font-size: 14px;
+}
+
+.profile-avatar-card {
+    position: relative;
+    background: #1c1d1f;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-avatar-card:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.12);
+    background: #212328;
+}
+
+.profile-avatar-card:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.profile-avatar-card--selected {
+    border-color: #e53935;
+    box-shadow: 0 0 0 1px rgba(229, 57, 53, 0.35);
+}
+
+.profile-avatar-card__badge {
+    position: absolute;
+    top: -8px;
+    left: 10px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #e53935;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.profile-avatar-card__image-wrap {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #2a2b2e;
+    flex-shrink: 0;
+}
+
+.profile-avatar-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-card__name {
+    font-size: 13px;
+    line-height: 1.3;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+}
+
+@media (max-width: 1100px) {
+    .profile-avatars__grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .profile-avatars__grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .profile-avatars__title {
+        font-size: 24px;
+        margin-bottom: 16px;
+    }
+
+    .profile-avatar-card__image-wrap {
+        width: 82px;
+        height: 82px;
+    }
+}
+
+@media (max-width: 500px) {
+    .profile-avatars__title {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .profile-avatars__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .profile-avatar-card {
+        padding: 12px 10px;
+    }
+
+    .profile-avatar-card__image-wrap {
+        width: 74px;
+        height: 74px;
+    }
+
+    .profile-avatar-card__name {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .profile-orders__grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .profile-page__inner {
+        padding: 100px 20px 40px;
+    }
+    .profile-orders__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .order-card__name {
+        font-size: 13px;
+    }
+
+    .order-card__game {
+        font-size: 12px;
+    }
+
+    .order-card__bottom {
+        gap: 1px;
+    }
+
+    .order-card__date,
+    .order-card__id {
+        font-size: 10px;
+    }
+
+    .order-card__id-btn {
+        padding: 0;
+    }
+
+    .profile-info-block {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .profile-info-row {
+        font-size: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}
+
 /* === MOBILE ADAPTIVE ≤500px === */
 @media (max-width: 500px) {
     .profile-page__bg-wrap {
@@ -424,7 +608,7 @@
         flex: 1;
         justify-content: center;
         font-size: 13px;
-        padding: 14px 10px;
+        padding: 14px 8px;
     }
 
     .profile-orders__title {

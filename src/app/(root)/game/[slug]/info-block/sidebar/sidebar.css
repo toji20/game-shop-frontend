@@ -260,8 +260,15 @@
     align-items: flex-start;
     gap: 10px;
     cursor: pointer;
+    background-color: #ffffff18;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.25s ease;
 }
 
+.sidebar__confirm-item--checked {
+    background-color: #1a3d2299;
+}
 .sidebar__confirm-checkbox {
     appearance: none;
     -webkit-appearance: none;
@@ -302,7 +309,7 @@
 }
 
 .sidebar__confirm-label--unchecked {
-    color: #f87171;
+    color: #faf8f83d;
 }
 
 .sidebar__confirm-label--checked {

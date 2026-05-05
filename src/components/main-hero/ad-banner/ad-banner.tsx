@@ -41,7 +41,37 @@ export function AdBanner() {
                     <div className='ad-banner-skeleton' />
                 </div>
                 <div className='ad-banner-news ad-banner-news--desktop'>
-                    <div className='ad-banner-news__skeleton' />
+                    <div className='ad-banner-news ad-banner-news--desktop'>
+                        <div className='ad-banner-news__content'>
+                            <h3 className='ad-banner-news__title'>
+                                Конкурсы и новости
+                            </h3>
+                            <p className='ad-banner-news__text'>
+                                Подпишитесь на TG и VK и забирай донат
+                                бесплатно!
+                            </p>
+
+                            <div className='ad-banner-news__socials'>
+                                <Link
+                                    href='https://vk.com'
+                                    target='_blank'
+                                    className='ad-banner-news__social'
+                                    aria-label='VK'
+                                >
+                                    <img src='/vk-icon.svg' alt='VK' />
+                                </Link>
+
+                                <Link
+                                    href='https://t.me'
+                                    target='_blank'
+                                    className='ad-banner-news__social'
+                                    aria-label='Telegram'
+                                >
+                                    <img src='/tg-icon.svg' alt='Telegram' />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -96,7 +126,7 @@ export function AdBanner() {
                             className='ad-banner-news__social'
                             aria-label='VK'
                         >
-                            <img src='/vk-icon.png' alt='VK' />
+                            <img src='/vk-icon.svg' alt='VK' />
                         </Link>
 
                         <Link
@@ -105,7 +135,7 @@ export function AdBanner() {
                             className='ad-banner-news__social'
                             aria-label='Telegram'
                         >
-                            <img src='/tg-icon.png' alt='Telegram' />
+                            <img src='/tg-icon.svg' alt='Telegram' />
                         </Link>
                     </div>
                 </div>

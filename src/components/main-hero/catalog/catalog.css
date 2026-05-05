@@ -1,9 +1,9 @@
 .catalog {
-    --catalog-side-pad: 32px;
-    max-width: 1460px;
+    --catalog-side-pad: 33px;
+    max-width: 1478px;
     width: 100%;
     margin: 0 auto 60px;
-    padding: 35px var(--catalog-side-pad);
+    padding: 33px var(--catalog-side-pad);
     border-radius: 32px;
     background: #ffffff0d;
 }
@@ -15,12 +15,12 @@
     gap: 16px;
     margin-bottom: 20px;
     flex-wrap: wrap;
-    padding-left: 20px;
+    padding-left: 25px;
 }
 
 .catalog-title {
-    font-size: 21px;
-    font-weight: 600;
+    font-size: 32px;
+    font-weight: 700;
     color: #fff;
     display: flex;
     align-items: center;
@@ -46,7 +46,7 @@
 }
 
 .catalog-sort-btn {
-    padding: 8px 16px;
+    padding: 10px 18px;
     border-radius: 99px;
     border: 1px solid #3a3b3e;
     background: transparent;
@@ -75,87 +75,106 @@
 
 .catalog-items {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    row-gap: 30px;
+    column-gap: 16px;
 }
 
 .catalog-item {
-    flex-shrink: 0;
+    display: block;
     min-width: 0;
+    text-decoration: none;
 }
 
 .catalog-item-img-wrapper {
     position: relative;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     width: 100%;
-    aspect-ratio: 4 / 2;
+    aspect-ratio: 4 / 2.17;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #1d1e22;
 }
 
 .catalog-item-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 12px;
     display: block;
     pointer-events: none;
+    transition:
+        transform 0.45s ease,
+        filter 0.3s ease;
 }
 
-.catalog-item-rating,
-.catalog-item-age-limit {
+.catalog-item-overlay {
     position: absolute;
-    bottom: 8px;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(0, 0, 0, 0.55);
-    border-radius: 16px;
-    padding: 4px 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #fff;
-    transition: all 0.3s;
-}
-
-.catalog-item-rating {
-    right: 8px;
-}
-
-.catalog-item-age-limit {
-    left: 8px;
-}
-
-.catalog-item-star {
-    color: #f5c518;
-    fill: #f5c518;
-    flex-shrink: 0;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 45%,
+        rgba(0, 0, 0, 0.08) 100%
+    );
+    pointer-events: none;
 }
 
 .catalog-item-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-}
-
-.catalog-item-info-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
+    gap: 6px;
+    padding-inline: 2px;
 }
 
 .catalog-item-info-title {
     color: #fff;
     font-weight: 500;
+    font-size: 22px;
+    line-height: 1.2;
+    transition: color 0.25s ease;
+}
+
+.catalog-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    color: #9e9ea6;
     font-size: 15px;
-    transition: all 0.3s;
+    line-height: 1.2;
+}
+
+.catalog-item-rating-value {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.catalog-item-star-inline {
+    color: #f5c518;
+    fill: #f5c518;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.catalog-item-meta-separator {
+    color: #7c7d84;
+    font-weight: 600;
+}
+
+.catalog-item-info-genre {
+    color: #8d8f97;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .catalog-item-info-release-date {
-    color: #bababa;
-    font-weight: 400;
-    font-size: 14px;
-    transition: all 0.3s;
+    display: none;
+}
+
+.catalog-item-info-meta {
+    display: none;
 }
 
 .catalog-item-rating-mobile {
@@ -172,19 +191,23 @@
     fill: #f5c518;
 }
 
-.catalog-item:hover .catalog-item-info-title,
-.catalog-item:hover .catalog-item-info-release-date {
-    color: #969494;
+.catalog-item:hover .catalog-item-img {
+    transform: scale(1.035);
+    filter: brightness(1.04);
 }
 
-.catalog-item:hover .catalog-item-rating,
-.catalog-item:hover .catalog-item-age-limit {
-    background: rgba(0, 0, 0, 0.745);
+.catalog-item:hover .catalog-item-info-title {
+    color: #d8d8de;
+}
+
+.catalog-item-img-wrapper--skeleton {
+    overflow: hidden;
 }
 
 .catalog-item-img-skeleton {
-    aspect-ratio: 4 / 2.3;
+    aspect-ratio: 4 / 2.08;
     height: auto !important;
+    border-radius: 22px !important;
 }
 
 @media (max-width: 1200px) {
@@ -200,12 +223,16 @@
         gap: 18px;
     }
 
-    .catalog-item-info-title {
-        font-size: 14px;
+    .catalog-item-img-wrapper {
+        border-radius: 18px;
     }
 
-    .catalog-item-info-release-date {
-        font-size: 13px;
+    .catalog-item-info-title {
+        font-size: 16px;
+    }
+
+    .catalog-item-meta {
+        font-size: 14px;
     }
 }
 
@@ -255,36 +282,46 @@
 
     .catalog-item-img-wrapper {
         margin-bottom: 8px;
+        border-radius: 14px;
     }
 
     .catalog-item-info {
-        gap: 2px;
+        gap: 4px;
     }
 
     .catalog-item-info-title {
         font-size: 14px;
     }
 
-    .catalog-item-info-release-date {
+    .catalog-item-meta {
         font-size: 12px;
+        gap: 5px;
     }
 
-    .catalog-item-rating,
-    .catalog-item-age-limit {
-        font-size: 11px;
-        padding: 2px 6px;
+    .catalog-item-star-inline {
+        width: 14px;
+        height: 14px;
+    }
+
+    .catalog-skeleton-title {
+        height: 13px !important;
+        margin-bottom: 3px;
+    }
+    .catalog-skeleton-info {
+        height: 15px !important;
     }
 }
 
 @media (max-width: 500px) {
     .catalog {
         --catalog-side-pad: 12px;
-        padding: 22px 12px 30px;
+        padding: 22px 8px 30px;
         border-radius: 17px;
         margin-bottom: 24px;
     }
 
     .catalog-header {
+        padding-left: 10px;
         gap: 10px;
         margin-bottom: 20px;
     }
@@ -313,6 +350,7 @@
     .catalog-item-img-wrapper {
         margin-bottom: 6px;
         aspect-ratio: 4 / 2.3;
+        border-radius: 8px;
     }
 
     .catalog-item-img {
@@ -320,19 +358,23 @@
         border: 0.5px solid #ffffff1e;
     }
 
+    .catalog-item-overlay {
+        display: none;
+    }
+
     .catalog-item-info {
         gap: 0;
     }
 
-    .catalog-item-rating {
-        display: none;
-    }
-
-    .catalog-item-age-limit {
+    .catalog-item-meta {
         display: none;
     }
 
     .catalog-item-rating-mobile {
+        display: flex;
+    }
+
+    .catalog-item-info-meta {
         display: flex;
     }
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { ReviewAuthModal } from './review-auth-modal/review-auth-modal';
 import { ReviewItem } from './review-item/review-item';
 import { ReviewFormModal } from './review-modal/review-form-modal';
 import './reviews.css';
@@ -9,9 +10,10 @@ import {
     useReviewsPaginated,
     useReviewStats,
 } from '@/hooks/queries/useReview';
+import { useProfile } from '@/hooks/queries/useUser';
 import { IGame, IReviewCreate } from '@/shared/types';
 import { ChevronRight, Star } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface ReviewsProps {
@@ -20,6 +22,9 @@ interface ReviewsProps {
 
 export function Reviews({ game }: ReviewsProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+    const { profile, isLoadingProfile } = useProfile();
 
     const gameReviews = useReviewsPaginated(game?.id ?? 0, 10);
     const allReviews = useAllReviewsPaginated(10);
@@ -30,6 +35,17 @@ export function Reviews({ game }: ReviewsProps) {
         : allReviews;
 
     const { createReview, isLoadingCreate } = useCreateReview(game?.id ?? 0);
+
+    const handleOpenReview = () => {
+        if (isLoadingProfile) return;
+
+        if (!profile) {
+            setIsAuthModalOpen(true);
+            return;
+        }
+
+        setIsModalOpen(true);
+    };
 
     const handleSubmitReview = async (payload: IReviewCreate) => {
         if (!game) return;
@@ -46,12 +62,12 @@ export function Reviews({ game }: ReviewsProps) {
     };
 
     const avgRating = stats?.avgRating || 0;
+
     return (
         <>
-            {/* ⭐ БЛОК СТАТИСТИКИ */}
             <div className='reviews-summary'>
                 <div className='reviews-summary__rating'>
-                    <Star size={18} />
+                    <Star size={18} fill={'#facc15'} />
                     <span className='reviews-summary__value'>
                         {(game?.id && game?.avgRating?.toFixed(1)) ||
                             avgRating.toFixed(1)}
@@ -74,7 +90,8 @@ export function Reviews({ game }: ReviewsProps) {
                         <button
                             type='button'
                             className='reviews-block__add-btn'
-                            onClick={() => setIsModalOpen(true)}
+                            onClick={handleOpenReview}
+                            disabled={isLoadingProfile}
                         >
                             + Оставить отзыв
                         </button>
@@ -82,9 +99,15 @@ export function Reviews({ game }: ReviewsProps) {
                 </div>
 
                 <div className='reviews-block__list'>
-                    {reviews?.map((review) => (
-                        <ReviewItem key={review.id} review={review} />
-                    ))}
+                    {isLoading ? (
+                        <div className='reviews-spinner'>
+                            <div className='reviews-spinner__circle' />
+                        </div>
+                    ) : (
+                        reviews?.map((review) => (
+                            <ReviewItem key={review.id} review={review} />
+                        ))
+                    )}
                 </div>
 
                 {!isLoading && hasMore && (
@@ -104,17 +127,24 @@ export function Reviews({ game }: ReviewsProps) {
             </section>
 
             {game && (
-                <ReviewFormModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    gameName={game.name}
-                    gameCategory={game.category?.title || ''}
-                    gameImage={
-                        game.bgMobile || game.bgDesktop || game.icon || ''
-                    }
-                    onSubmit={handleSubmitReview}
-                    isLoading={isLoadingCreate}
-                />
+                <>
+                    <ReviewFormModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        gameName={game.name}
+                        gameCategory={game.category?.title || ''}
+                        gameImage={
+                            game.bgMobile || game.bgDesktop || game.icon || ''
+                        }
+                        onSubmit={handleSubmitReview}
+                        isLoading={isLoadingCreate}
+                    />
+
+                    <ReviewAuthModal
+                        isOpen={isAuthModalOpen}
+                        onClose={() => setIsAuthModalOpen(false)}
+                    />
+                </>
             )}
         </>
     );

@@ -8,7 +8,7 @@
 .footer__inner {
     max-width: 1460px;
     margin: auto;
-    height: 80vh;
+    min-height: 80vh;
     padding: 48px 40px 24px;
 }
 
@@ -135,10 +135,79 @@
     color: #3a3b3e;
 }
 
-/* Адаптив */
+/* ─── TABLET ───────────────────────────────────── */
+@media (max-width: 1024px) and (min-width: 501px) {
+    .footer__inner {
+        min-height: auto;
+        padding: 36px 24px 22px;
+    }
+
+    .footer__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px 24px;
+        padding-bottom: 28px;
+    }
+
+    .footer__brand {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding-top: 4px;
+    }
+
+    .footer__socials {
+        align-items: flex-end;
+    }
+
+    .footer__section-title {
+        margin-bottom: 14px;
+        font-size: 12px;
+    }
+
+    .footer__link {
+        font-size: 13px;
+    }
+
+    .footer__action {
+        padding-bottom: 22px;
+    }
+
+    .footer__ask-btn {
+        font-size: 13px;
+        padding: 10px 18px;
+    }
+
+    .footer__bottom {
+        padding-top: 16px;
+    }
+}
+
+/* ─── SMALL TABLET ─────────────────────────────── */
+@media (max-width: 768px) and (min-width: 501px) {
+    .footer__inner {
+        padding: 32px 18px 20px;
+    }
+
+    .footer__grid {
+        gap: 24px 18px;
+    }
+
+    .footer__brand {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .footer__socials {
+        align-items: flex-start;
+    }
+}
+
+/* ─── MOBILE ───────────────────────────────────── */
 @media (max-width: 500px) {
     .footer__inner {
-        height: auto;
+        min-height: auto;
         padding: 32px 16px 20px;
     }
 
@@ -148,16 +217,39 @@
         padding-bottom: 28px;
     }
 
-    /* Бренд занимает всю ширину и выравнивается по левому краю */
     .footer__brand {
         grid-column: 1 / -1;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+        gap: 16px;
+    }
+
+    .footer__logo {
+        max-width: 110px;
+        height: auto;
     }
 
     .footer__socials {
         align-items: flex-end;
+    }
+
+    .footer__socials-title {
+        font-size: 11px;
+    }
+
+    .footer__social-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .footer__section-title {
+        font-size: 12px;
+        margin-bottom: 12px;
+    }
+
+    .footer__link {
+        font-size: 12px;
     }
 
     .footer__action {
@@ -171,7 +263,12 @@
         padding: 10px 16px;
     }
 
+    .footer__bottom {
+        padding-top: 16px;
+    }
+
     .footer__copyright {
         font-size: 11px;
+        line-height: 1.4;
     }
 }

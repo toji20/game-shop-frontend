@@ -6,6 +6,14 @@
     align-items: start;
 }
 
+.positions-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
 .positions-block-wrap {
     position: relative;
     width: 100%;
@@ -58,6 +66,7 @@
         background 0.2s,
         border-color 0.2s,
         color 0.2s;
+    backdrop-filter: blur(10px);
 }
 
 .positions-more-btn:hover {
@@ -75,17 +84,89 @@
     transform: rotate(180deg);
 }
 
-@media (max-width: 900px) {
+.positions-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.positions-filter-btn {
+    padding: 8px 16px;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: transparent;
+    color: #bababa;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+}
+
+.positions-filter-btn:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #fff;
+}
+
+.positions-filter-btn--active {
+    background: #ff3b30;
+    color: #fff;
+    border-color: #ff3b30;
+}
+
+@media (max-width: 1200px) {
+    .positions-block {
+        padding-top: 18px;
+    }
+}
+
+@media (max-width: 950px) {
+    .positions-block {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding-top: 18px;
+    }
+
+    .positions-block-wrap--faded {
+        max-height: 480px;
+    }
+}
+
+/* ─── 600px: 2 колонки ─── */
+@media (max-width: 600px) {
     .positions-block {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .positions-block-wrap--faded {
-        max-height: 720px;
+        max-height: 508px;
     }
 }
 
 @media (max-width: 500px) {
+    .positions-header {
+        margin-bottom: 12px;
+    }
+
+    .positions-filters {
+        gap: 6px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+        width: 100%;
+    }
+
+    .positions-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .positions-filter-btn {
+        font-size: 15px;
+        padding: 8px 16px;
+        flex-shrink: 0;
+    }
+
     .positions-block {
         gap: 12px;
     }

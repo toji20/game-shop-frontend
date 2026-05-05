@@ -3,16 +3,20 @@
 import './order.css';
 import { OrderStatusBlock } from '@/components/order/order-status';
 import { orderApiService, orderService } from '@/services/order.service';
+import { IOrder } from '@/shared/types';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 
-export default function OrderPage() {
-    const params = useParams<{ id: string }>();
+interface OrderPageProps {
+    id: string;
+    initialOrder: IOrder | null;
+}
 
+export default function OrderPage({ id, initialOrder }: OrderPageProps) {
     const { data: order } = useQuery({
-        queryKey: ['order', params.id],
-        queryFn: () => orderApiService.getById(params.id),
+        queryKey: ['order', id],
+        queryFn: () => orderApiService.getById(id),
+        initialData: initialOrder ?? undefined,
         refetchInterval: 3000,
     });
 

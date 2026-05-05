@@ -82,6 +82,7 @@ export interface IGame {
     isPublic: boolean;
     categoryId: string | null;
     category?: ICategory;
+    positionCategories?: IPositionCategory[];
     fields?: IGameField[];
     servers?: IGameServer[];
     positions?: IPosition[];

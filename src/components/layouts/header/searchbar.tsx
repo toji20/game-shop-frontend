@@ -1,56 +1,62 @@
 'use client';
 
 import { PUBLIC_URL } from '@/config/url.config';
-import { useGames } from '@/hooks/queries/useGame';
+import { useGamesActive } from '@/hooks/queries/useGame';
 import { Search } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 
 interface SearchBarProps {
     onClose?: () => void;
     onOpen?: () => void;
     isOpen?: boolean;
+    triggerRef?: RefObject<HTMLButtonElement | null>;
 }
 
-export function SearchBar({ onClose, onOpen, isOpen = false }: SearchBarProps) {
+export function SearchBar({
+    onClose,
+    onOpen,
+    isOpen = false,
+    triggerRef,
+}: SearchBarProps) {
     const [query, setQuery] = useState('');
-
     const inputRef = useRef<HTMLInputElement>(null);
     const wrapRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
-    const { games } = useGames();
+    const { activeGames } = useGamesActive();
 
     const filtered =
         query.trim().length >= 1
-            ? (games ?? [])
+            ? (activeGames ?? [])
                   .filter((g) =>
                       g.name.toLowerCase().includes(query.toLowerCase()),
                   )
                   .slice(0, 8)
-            : (games ?? []).slice(0, 6);
+            : (activeGames ?? []).slice(0, 6);
 
-    // автофокус (только десктоп)
     useEffect(() => {
         if (isOpen && window.innerWidth > 500) {
-            const t = setTimeout(() => inputRef.current?.focus(), 200);
+            const t = setTimeout(() => inputRef.current?.focus(), 120);
             return () => clearTimeout(t);
         }
     }, [isOpen]);
 
-    // закрытие по клику вне
     useEffect(() => {
         const handler = (e: MouseEvent) => {
-            const target = e.target as Element;
-            if (wrapRef.current?.contains(target)) return;
-            if (target.closest?.('[data-search-toggle]')) return;
+            const target = e.target as Node;
+
+            if (wrapRef.current && wrapRef.current.contains(target)) return;
+
+            if (triggerRef?.current && triggerRef.current.contains(target))
+                return;
+
             onClose?.();
         };
 
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
-    }, [onClose]);
+    }, [onClose, triggerRef]);
 
     const handleSelect = (slug: string) => {
         setQuery('');
@@ -71,9 +77,6 @@ export function SearchBar({ onClose, onOpen, isOpen = false }: SearchBarProps) {
                         setQuery(e.target.value);
                         onOpen?.();
                     }}
-                    onFocus={() => {
-                        onOpen?.();
-                    }}
                 />
             </div>
 
@@ -86,15 +89,12 @@ export function SearchBar({ onClose, onOpen, isOpen = false }: SearchBarProps) {
                             <div
                                 key={g.slug}
                                 className='searchbar__item'
-                                // mousedown — срабатывает до blur инпута,
-                                // preventDefault не даёт инпуту терять фокус
-                                // и гарантирует переход до закрытия дропдауна
                                 onMouseDown={(e) => {
                                     e.preventDefault();
                                     handleSelect(g.slug);
                                 }}
                             >
-                                {g.icon?.[0] ? (
+                                {g.icon ? (
                                     <img
                                         src={g.icon}
                                         alt={g.name}

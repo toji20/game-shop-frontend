@@ -2,17 +2,24 @@
 
 import './steam-order.css';
 import { SteamOrderStatusBlock } from '@/components/order/steam-order-status';
-import { orderApiService, orderService } from '@/services/order.service';
+import { orderApiService } from '@/services/order.service';
+import { ISteamOrder } from '@/shared/types';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 
-export default function OrderStatusSteamPage() {
-    const params = useParams<{ id: string }>();
+interface SteamOrderPageProps {
+    id: string;
+    initialOrder: ISteamOrder | null;
+}
 
+export default function SteamOrderPage({
+    id,
+    initialOrder,
+}: SteamOrderPageProps) {
     const { data: order } = useQuery({
-        queryKey: ['steam order', params.id],
-        queryFn: () => orderApiService.getByIdSteamOrder(params.id),
+        queryKey: ['steam order', id],
+        queryFn: () => orderApiService.getByIdSteamOrder(id),
+        initialData: initialOrder ?? undefined,
         refetchInterval: 3000,
     });
 
@@ -22,9 +29,14 @@ export default function OrderStatusSteamPage() {
         <div className='steam-order-page'>
             <div className='steam-order-page__bg-wrap'>
                 <img
-                    src={'/steam-bg.png'}
-                    alt={'Steam'}
-                    className='.steam-steam-order-page__bg'
+                    src='/steam-bg.png'
+                    alt='Steam'
+                    className='steam-order-page__bg steam-order-page__bg--desktop'
+                />
+                <img
+                    src='/steam-bg-mob.png'
+                    alt='Steam'
+                    className='steam-order-page__bg steam-order-page__bg--mobile'
                 />
                 <div className='steam-order-page__bg-overlay' />
             </div>

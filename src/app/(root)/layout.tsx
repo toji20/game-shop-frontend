@@ -7,11 +7,9 @@ export default function Layout({ children }: PropsWithChildren) {
         <div className='bg-[#14151B] min-h-screen'>
             <Suspense
                 fallback={
-                    <div
-                        style={{
-                            height: '58px',
-                        }}
-                    />
+                    <>
+                        <Header />
+                    </>
                 }
             >
                 <Header />

@@ -19,27 +19,26 @@ export function CatalogItem({ item }: CatalogItemProps) {
                     className='catalog-item-img'
                 />
 
-                {/* возраст (исчезает на мобилке) */}
-                <div className='catalog-item-age-limit'>
-                    <span>{item.ageLimit}</span>
-                </div>
-
-                {/* рейтинг (только десктоп) */}
-                <div className='catalog-item-rating'>
-                    <Star className='catalog-item-star' size={14} />
-                    <span>{item.avgRating}</span>
-                </div>
+                <div className='catalog-item-overlay' />
             </div>
 
             <div className='catalog-item-info'>
                 <h4 className='catalog-item-info-title'>{item.name}</h4>
 
-                {/* ДЕСКТОП дата (вернули обратно) */}
-                <p className='catalog-item-info-release-date'>
-                    {item.releaseDate}
-                </p>
+                <div className='catalog-item-meta'>
+                    <span className='catalog-item-rating-value'>
+                        {item.avgRating ?? '—'}
+                    </span>
 
-                {/* МОБИЛЬНЫЙ вариант */}
+                    <Star className='catalog-item-star-inline' size={16} />
+
+                    <span className='catalog-item-meta-separator'>/</span>
+
+                    <span className='catalog-item-info-genre'>
+                        {item.genre || item.releaseDate || 'Без жанра'}
+                    </span>
+                </div>
+
                 <div className='catalog-item-info-meta'>
                     <span className='catalog-item-rating-mobile'>
                         <Star size={12} />
