@@ -510,8 +510,8 @@ header {
     box-shadow:
         0 18px 42px rgba(0, 0, 0, 0.36),
         0 0 0 4px rgba(255, 255, 255, 0.05);
-    min-width: 108px;
-    max-height: 60px;
+    min-width: 98px;
+    max-height: 58px;
     transform: scale(1);
     opacity: 1;
     transition:
@@ -519,6 +519,10 @@ header {
         opacity 0.2s ease,
         border-radius 0.26s ease;
     will-change: transform, opacity;
+}
+
+.support-menu__trigger-closed:hover {
+    transform: scale(1.05);
 }
 
 .support-menu__trigger-label {

@@ -2,14 +2,19 @@
 
 import { SupportMenu } from './support-menu';
 import { PUBLIC_URL } from '@/config/url.config';
-import { BookOpen, Home, MessageCircle } from 'lucide-react';
+import { BookOpen, Gamepad2, Home, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const nav = [
-    { title: 'Главная', url: PUBLIC_URL.home(), icon: Home },
-    { title: 'Каталог', url: PUBLIC_URL.games(), icon: BookOpen },
-    { title: 'Отзывы', url: PUBLIC_URL.reviews(), icon: MessageCircle },
+    { title: 'Главная', url: PUBLIC_URL.home(), icon: Home, size: 22 },
+    { title: 'Каталог', url: PUBLIC_URL.games(), icon: Gamepad2, size: 25 },
+    {
+        title: 'Отзывы',
+        url: PUBLIC_URL.reviews(),
+        icon: MessageCircle,
+        size: 22,
+    },
 ];
 
 export function MobileNav() {
@@ -27,7 +32,7 @@ export function MobileNav() {
                         href={item.url}
                         className={`mobile-nav__item ${isActive ? 'mobile-nav__item--active' : ''}`}
                     >
-                        <Icon size={22} />
+                        <Icon size={item.size} />
                         <span>{item.title}</span>
                     </Link>
                 );
