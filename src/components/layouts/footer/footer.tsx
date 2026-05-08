@@ -71,7 +71,7 @@ export function Footer() {
                     <div className='footer__brand'>
                         <div className='footer__logo'>
                             <Image
-                                src='/zaneshop-logo.png'
+                                src='/zaneshop-logo-2x.png'
                                 alt='ROV'
                                 width={170}
                                 height={42}

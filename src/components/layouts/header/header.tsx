@@ -105,7 +105,7 @@ export function Header() {
             <header className='header'>
                 <div className='header-block header-block--desktop'>
                     <Image
-                        src='/zaneshop-logo.png'
+                        src='/zaneshop-logo-2x.png'
                         alt='rov'
                         width={210}
                         height={70}
@@ -124,7 +124,7 @@ export function Header() {
 
                 <div className='header-block header-block--mobile'>
                     <Image
-                        src='/zaneshop-logo.png'
+                        src='/zaneshop-logo-2x.png'
                         alt='rov'
                         width={110}
                         height={38}
