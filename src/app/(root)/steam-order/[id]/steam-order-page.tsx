@@ -29,12 +29,12 @@ export default function SteamOrderPage({
         <div className='steam-order-page'>
             <div className='steam-order-page__bg-wrap'>
                 <img
-                    src='/steam-bg.png'
+                    src='https://s3.twcstorage.ru/741177d0-6f55-44da-8dfe-8f593447297f/steam-bg.png'
                     alt='Steam'
                     className='steam-order-page__bg steam-order-page__bg--desktop'
                 />
                 <img
-                    src='/steam-bg-mob.png'
+                    src='https://s3.twcstorage.ru/741177d0-6f55-44da-8dfe-8f593447297f/steam-bg-mob.png'
                     alt='Steam'
                     className='steam-order-page__bg steam-order-page__bg--mobile'
                 />

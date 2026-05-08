@@ -83,7 +83,11 @@ export default function ProfilePage() {
     return (
         <div className='profile-page'>
             <div className='profile-page__bg-wrap'>
-                <img src='/steam-bg.png' alt='' className='profile-page__bg' />
+                <img
+                    src='https://s3.twcstorage.ru/741177d0-6f55-44da-8dfe-8f593447297f/steam-bg.png'
+                    alt=''
+                    className='profile-page__bg'
+                />
                 <div className='profile-page__bg-overlay' />
             </div>
 

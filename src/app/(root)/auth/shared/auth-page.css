@@ -11,7 +11,8 @@
 .auth-page__bg {
     position: fixed;
     inset: 0;
-    background: url('/auth-bg.png') center / cover no-repeat;
+    background: url('https://s3.twcstorage.ru/741177d0-6f55-44da-8dfe-8f593447297f/auth-bg.png')
+        center / cover no-repeat;
     z-index: 0;
 }
 
