@@ -272,7 +272,7 @@
 .sidebar__confirm-checkbox {
     appearance: none;
     -webkit-appearance: none;
-    width: 16px;
+    width: 17px;
     height: 16px;
     min-width: 16px;
     border-radius: 2px;
@@ -291,8 +291,8 @@
 .sidebar__confirm-checkbox:checked::after {
     content: '';
     position: absolute;
-    left: 4.37px;
-    top: 1.2px;
+    left: 4.8px;
+    top: 0px;
     width: 6px;
     height: 10px;
     border: 2px solid #4ade80;

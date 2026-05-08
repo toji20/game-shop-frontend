@@ -105,10 +105,10 @@ export function Header() {
             <header className='header'>
                 <div className='header-block header-block--desktop'>
                     <Image
-                        src='/rov-logo.png'
+                        src='/zaneshop-logo.png'
                         alt='rov'
-                        width={160}
-                        height={40}
+                        width={210}
+                        height={70}
                         priority
                         className='header-logo'
                     />
@@ -124,10 +124,10 @@ export function Header() {
 
                 <div className='header-block header-block--mobile'>
                     <Image
-                        src='/rov-logo.png'
+                        src='/zaneshop-logo.png'
                         alt='rov'
-                        width={130}
-                        height={34}
+                        width={110}
+                        height={38}
                         priority
                         className='header-logo'
                     />

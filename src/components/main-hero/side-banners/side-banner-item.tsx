@@ -10,11 +10,18 @@ interface SideBannerItemProps {
 
 export function SideBannerItem({ item }: SideBannerItemProps) {
     return (
-        <Link href={item.link} className='side-banner-item'>
+        <Link
+            href={item.link}
+            className='side-banner-item'
+            draggable={false}
+            onDragStart={(e) => e.preventDefault()}
+        >
             <img
                 src={item.image}
-                alt={item.image}
+                alt='Баннер'
                 className='side-banner-item-img'
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
             />
         </Link>
     );

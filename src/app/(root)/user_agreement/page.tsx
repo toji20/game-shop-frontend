@@ -1,4 +1,4 @@
-import TermsPage from './terms-page';
+import UserAgreementPage from './user-agreement-page';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
     return (
         <div className='bg-[#0000007e]'>
-            <TermsPage />
+            <UserAgreementPage />
         </div>
     );
 }

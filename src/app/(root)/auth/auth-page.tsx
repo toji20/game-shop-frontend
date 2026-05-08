@@ -194,7 +194,7 @@ export default function AuthPage() {
 
                 <p className='auth-card__terms'>
                     Продолжая, вы принимаете условия{' '}
-                    <a href='/terms'>соглашения</a> и{' '}
+                    <a href='/user_agreement'>соглашения</a> и{' '}
                     <a href='/privacy'>политику конфиденциальности</a>
                 </p>
             </div>

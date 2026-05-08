@@ -10,7 +10,7 @@ export default function NotFound() {
             <div className='not-found'>
                 <div className='not-found__content'>
                     <div className='not-found__code'>
-                        <img src='./not-found.png' alt='' />
+                        <img src='/not-found.png' alt='' />
                     </div>
 
                     <h1 className='not-found__title'>СТРАНИЦА НЕ НАЙДЕНА</h1>

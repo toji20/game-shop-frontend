@@ -1,4 +1,5 @@
 import GamePage from './game-page';
+import NotFound from '@/app/not-found';
 import { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -14,11 +15,10 @@ export async function generateMetadata({
     }
 
     return {
-        title: `${game.title} — ZaneShop`,
+        title: `${game.slug} — ZaneShop`,
         description: game.description,
         openGraph: {
-            title: `${game.title} — ZaneShop`,
-            description: game.description,
+            title: `${game.slug} — ZaneShop`,
             url: `https://zaneshop.ru/game/${slug}`,
             siteName: 'ZaneShop',
             images: [

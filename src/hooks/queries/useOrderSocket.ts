@@ -6,7 +6,8 @@ export function useOrderSocket() {
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        const socket = io(process.env.NEXT_PUBLIC_SERVER_URL!, {
+        const socket = io('http://localhost:5000', {
+            path: '/api/socket.io',
             transports: ['websocket'],
         });
 

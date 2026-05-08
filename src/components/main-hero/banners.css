@@ -144,14 +144,14 @@
     }
     .banners__dot {
         width: 36px;
-        height: 3px;
+        height: 5px;
     }
 }
 
 .banners__dot {
     position: relative;
     width: 76px;
-    height: 4px;
+    height: 6px;
     border-radius: 99px;
     border: none;
     background: rgba(255, 255, 255, 0.3);
@@ -210,6 +210,6 @@
     }
     .banners__dot {
         width: 36px;
-        height: 3px;
+        height: 4.5px;
     }
 }

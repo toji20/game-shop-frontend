@@ -1,11 +1,11 @@
-.terms {
+.data {
     max-width: 860px;
     margin: 0 auto;
     padding: 100px 24px 80px;
     color: #ffffff;
 }
 
-.terms__title {
+.data__title {
     font-size: 20px;
     font-weight: 800;
     color: #ffffff;
@@ -15,7 +15,7 @@
     line-height: 1.4;
 }
 
-.terms__subtitle {
+.data__subtitle {
     font-size: 16px;
     font-weight: 800;
     color: #ffffff;
@@ -27,11 +27,11 @@
     border-bottom: 1px solid #2c2d32;
 }
 
-.terms__section {
+.data__section {
     margin-bottom: 36px;
 }
 
-.terms__section-title {
+.data__section-title {
     font-size: 15px;
     font-weight: 800;
     color: #ffffff;
@@ -40,18 +40,18 @@
     margin-bottom: 16px;
 }
 
-.terms__paragraph {
+.data__paragraph {
     font-size: 14px;
     color: #d4d4d4;
     line-height: 1.8;
     margin-bottom: 14px;
 }
 
-.terms__paragraph:last-child {
+.data__paragraph:last-child {
     margin-bottom: 0;
 }
 
-.terms__num {
+.data__num {
     color: #888;
     margin-right: 4px;
 }

@@ -4,142 +4,109 @@ import { SideBannerItem } from './side-banner-item';
 import './side-banner.css';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
 import { useSideBanner } from '@/hooks/queries/useSideBanner';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const SPEED = 0.4;
-const ITEM_WIDTH = 327 + 25;
+const ITEM_WIDTH_DESKTOP = 320 + 25;
+const ITEM_WIDTH_MOBILE = 270 + 25;
 
 export function SideBanners() {
     const { sideBanners } = useSideBanner();
     const items = sideBanners ?? [];
-    const doubled = [...items, ...items, ...items];
-    const loopWidth = items.length * ITEM_WIDTH;
-    const trackRef = useRef<HTMLDivElement>(null);
+    const tripled = [...items, ...items, ...items];
+
     const wrapRef = useRef<HTMLDivElement>(null);
 
-    const offsetRef = useRef(0);
-    const rafRef = useRef<number>(0);
+    const isDraggingRef = useRef(false);
+    const startXRef = useRef(0);
+    const startScrollLeftRef = useRef(0);
+    const movedRef = useRef(false);
 
-    const isPaused = useRef(false);
+    const [isDragging, setIsDragging] = useState(false);
 
-    // 🖱️ drag (fixed)
-    const isDragging = useRef(false);
-    const startX = useRef(0);
-    const startOffset = useRef(0);
-    const hasMoved = useRef(false);
+    const getItemWidth = () =>
+        typeof window !== 'undefined' && window.innerWidth <= 500
+            ? ITEM_WIDTH_MOBILE
+            : ITEM_WIDTH_DESKTOP;
 
-    // 👆 touch
-    const isTouching = useRef(false);
-    const touchStartX = useRef(0);
-    const touchStartOffset = useRef(0);
+    const getLoopWidth = () => items.length * getItemWidth();
 
-    // 🎬 animation
-    useEffect(() => {
-        if (!items.length) return;
-
-        const animate = () => {
-            if (
-                !isPaused.current &&
-                !isDragging.current &&
-                !isTouching.current
-            ) {
-                offsetRef.current += SPEED;
-
-                if (offsetRef.current >= loopWidth) {
-                    offsetRef.current -= loopWidth;
-                }
-            }
-
-            if (trackRef.current) {
-                trackRef.current.style.transform = `translateX(-${offsetRef.current}px)`;
-            }
-
-            rafRef.current = requestAnimationFrame(animate);
-        };
-
-        rafRef.current = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(rafRef.current);
-    }, [items.length, loopWidth]);
-
-    // 🖱️ wheel
-    useEffect(() => {
+    const normalizeScroll = () => {
         const el = wrapRef.current;
-        if (!el) return;
-
-        const onWheel = (e: WheelEvent) => {
-            e.preventDefault();
-            offsetRef.current += e.deltaY * 0.5;
-
-            offsetRef.current =
-                ((offsetRef.current % loopWidth) + loopWidth) % loopWidth;
-        };
-
-        el.addEventListener('wheel', onWheel, { passive: false });
-        return () => el.removeEventListener('wheel', onWheel);
-    }, [loopWidth]);
-
-    // 👆 touch
-    useEffect(() => {
-        const el = wrapRef.current;
-        if (!el) return;
-
-        const onTouchStart = (e: TouchEvent) => {
-            isTouching.current = true;
-            touchStartX.current = e.touches[0].clientX;
-            touchStartOffset.current = offsetRef.current;
-        };
-
-        const onTouchMove = (e: TouchEvent) => {
-            if (!isTouching.current) return;
-
-            const diff = touchStartX.current - e.touches[0].clientX;
-            let next = touchStartOffset.current + diff;
-
-            next = ((next % loopWidth) + loopWidth) % loopWidth;
-            offsetRef.current = next;
-        };
-
-        const onTouchEnd = () => {
-            isTouching.current = false;
-        };
-
-        el.addEventListener('touchstart', onTouchStart, { passive: true });
-        el.addEventListener('touchmove', onTouchMove, { passive: true });
-        el.addEventListener('touchend', onTouchEnd);
-
-        return () => {
-            el.removeEventListener('touchstart', onTouchStart);
-            el.removeEventListener('touchmove', onTouchMove);
-            el.removeEventListener('touchend', onTouchEnd);
-        };
-    }, [loopWidth]);
-
-    // 🖱️ drag (FIXED LIKE PopularGames)
-    const onMouseDown = (e: React.MouseEvent) => {
-        isDragging.current = true;
-        hasMoved.current = false;
-
-        startX.current = e.clientX;
-        startOffset.current = offsetRef.current;
-
-        wrapRef.current?.classList.add('is-dragging');
+        if (!el || !items.length) return;
+        const loopWidth = getLoopWidth();
+        if (el.scrollLeft < loopWidth * 0.5) {
+            el.scrollLeft += loopWidth;
+        } else if (el.scrollLeft > loopWidth * 1.5) {
+            el.scrollLeft -= loopWidth;
+        }
     };
 
-    const onMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging.current) return;
+    useEffect(() => {
+        const el = wrapRef.current;
+        if (!el || !items.length) return;
+        el.scrollLeft = getLoopWidth();
+    }, [items.length]);
 
-        const delta = e.clientX - startX.current;
+    useEffect(() => {
+        const el = wrapRef.current;
+        if (!el || !items.length) return;
+
+        const handleScroll = () => normalizeScroll();
+        const handleWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            el.scrollLeft += e.deltaY * 0.8;
+            normalizeScroll();
+        };
+
+        el.addEventListener('scroll', handleScroll, { passive: true });
+        el.addEventListener('wheel', handleWheel, { passive: false });
+        return () => {
+            el.removeEventListener('scroll', handleScroll);
+            el.removeEventListener('wheel', handleWheel);
+        };
+    }, [items.length]);
+
+    useEffect(() => {
+        const handleMouseUp = () => {
+            isDraggingRef.current = false;
+            setIsDragging(false);
+        };
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => window.removeEventListener('mouseup', handleMouseUp);
+    }, []);
+
+    const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        const el = wrapRef.current;
+        if (!el) return;
+        isDraggingRef.current = true;
+        movedRef.current = false;
+        // ← isDragging (state) НЕ выставляем здесь
+        startXRef.current = e.clientX;
+        startScrollLeftRef.current = el.scrollLeft;
+    };
+
+    const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const el = wrapRef.current;
+        if (!el || !isDraggingRef.current) return;
+
+        const delta = e.clientX - startXRef.current;
 
         if (Math.abs(delta) > 4) {
-            hasMoved.current = true;
+            movedRef.current = true;
+            // ← Только здесь включаем курсор grabbing и блокируем pointer-events
+            setIsDragging(true);
         }
 
-        offsetRef.current = startOffset.current - delta * 1.2;
+        el.scrollLeft = startScrollLeftRef.current - delta;
+        normalizeScroll();
     };
 
-    const stopDragging = () => {
-        isDragging.current = false;
-        wrapRef.current?.classList.remove('is-dragging');
+    const onClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (movedRef.current) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        movedRef.current = false;
     };
 
     if (!sideBanners) {
@@ -164,18 +131,13 @@ export function SideBanners() {
     return (
         <div
             ref={wrapRef}
-            className='side-banners'
-            onMouseEnter={() => (isPaused.current = true)}
-            onMouseLeave={() => {
-                isPaused.current = false;
-                stopDragging();
-            }}
+            className={`side-banners ${isDragging ? 'is-dragging' : ''}`}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
-            onMouseUp={stopDragging}
+            onClickCapture={onClickCapture}
         >
             <div className='side-banners__track'>
-                {doubled.map((item, i) => (
+                {tripled.map((item, i) => (
                     <SideBannerItem item={item} key={`${item.id}-${i}`} />
                 ))}
             </div>

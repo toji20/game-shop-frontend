@@ -5,6 +5,7 @@ import { Faq } from './info-block/faq/faq';
 import { Instructions } from './info-block/instructions/instructions';
 import { SideBar } from './info-block/sidebar/sidebar';
 import { Positions } from './positions/positions';
+import NotFound from '@/app/not-found';
 import { SteamTopUp } from '@/components/steam/steam-topup';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
@@ -17,7 +18,8 @@ import { useSteamStore } from '@/store/steam-store';
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, CircleAlert, X } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 type Tab = 'instructions' | 'reviews' | 'faq';
 
@@ -35,7 +37,6 @@ interface GamePageProps {
 
 export default function GamePage({ slug, initialGame }: GamePageProps) {
     const [tab, setTab] = useState<Tab>('instructions');
-    const [offset, setOffset] = useState(130);
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
     const [isSteamCheckoutOpen, setIsSteamCheckoutOpen] = useState(false);
     const [selectedPositionCategory, setSelectedPositionCategory] = useState<
@@ -43,6 +44,7 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
     >(null);
 
     const isSteam = slug.toLowerCase().includes('steam');
+    const path = usePathname();
 
     const { items, total } = useCartStore();
 
@@ -74,18 +76,25 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
         };
     }, []);
 
+    const sidebarRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
+        let ticking = false;
         const handleScroll = () => {
-            setOffset(Math.max(90, 130 - window.scrollY * 0.3));
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const top = Math.max(90, 130 - window.scrollY * 0.3);
+                    if (sidebarRef.current) {
+                        sidebarRef.current.style.top = `${top}px`;
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [slug]);
-
     useEffect(() => {
         const isOpen = isCheckoutOpen || isSteamCheckoutOpen;
         if (!isOpen) {
@@ -115,6 +124,14 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                 ?.scrollIntoView({ behavior: 'smooth' });
         }, 50);
     };
+
+    if (
+        game?.isActive === false ||
+        game?.isPublic === false ||
+        `/game/${game?.slug}` !== path
+    ) {
+        return <NotFound />;
+    }
 
     if (!game) {
         return (
@@ -345,7 +362,8 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
 
                     <div
                         className='game-page__sidebar'
-                        style={{ top: `${offset}px` }}
+                        ref={sidebarRef}
+                        style={{ top: '130px' }}
                     >
                         <SideBar
                             game={game}

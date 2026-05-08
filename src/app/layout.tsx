@@ -27,6 +27,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
+    icons: '/z-logo.png',
 };
 
 export default function RootLayout({

@@ -18,8 +18,7 @@ const sections = [
     {
         title: 'Информация',
         links: [
-            { label: 'Пользовательское соглашение', href: '/terms' },
-            { label: 'Политика конфиденциальности', href: '/privacy' },
+            { label: 'Пользовательское соглашение', href: '/user_agreement' },
             { label: 'Политика обработки данных', href: '/data' },
             { label: 'Политика возвратов', href: '/refunds' },
             { label: 'Акции и предложения', href: '/offers' },
@@ -72,10 +71,10 @@ export function Footer() {
                     <div className='footer__brand'>
                         <div className='footer__logo'>
                             <Image
-                                src='/rov-logo.png'
+                                src='/zaneshop-logo.png'
                                 alt='ROV'
-                                width={120}
-                                height={32}
+                                width={170}
+                                height={42}
                             />
                         </div>
                         <div className='footer__socials'>

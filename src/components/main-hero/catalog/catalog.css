@@ -64,9 +64,10 @@
 }
 
 .catalog-sort-btn--active {
-    background: #ff3b30;
+    background: linear-gradient(135deg, #b31217 0%, #e52d27 50%, #ff416c 100%);
     color: #fff;
-    border-color: #ff3b30;
+    border-color: #ff416c;
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.35);
 }
 
 .catalog-sort--standalone {
@@ -309,6 +310,10 @@
     }
     .catalog-skeleton-info {
         height: 15px !important;
+    }
+
+    .catalog-sort-btn--active {
+        box-shadow: 0 1px 3px rgba(255, 59, 48, 0.35);
     }
 }
 
