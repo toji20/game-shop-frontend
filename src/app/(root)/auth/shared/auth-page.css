@@ -102,14 +102,23 @@
     color: #000;
 }
 
-.auth-card__btn--vk {
-    background: #0077ff;
+.auth-card__btn--yandex {
+    background: #fc3f1d;
     color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .auth-card__btn--google {
-    background: #4285f4;
-    color: #fff;
+    background: #fff;
+    color: #3c4043;
+    border: 1px solid #dadce0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .auth-card__btn-icon {
