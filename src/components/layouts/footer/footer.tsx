@@ -8,11 +8,10 @@ const sections = [
     {
         title: 'Разделы',
         links: [
-            { label: 'Главная', href: '/', bold: true },
+            { label: 'Главная', href: '/' },
             { label: 'Игры', href: '/games' },
             { label: 'Отзывы', href: '/reviews' },
-            { label: 'Промокоды', href: '/promo' },
-            { label: 'Поддержка', href: '/support' },
+            { label: 'Поддержка', href: 'mailto:support@zaneshop.ru' },
         ],
     },
     {
@@ -23,20 +22,19 @@ const sections = [
             { label: 'Политика возвратов', href: '/refunds' },
             { label: 'Акции и предложения', href: '/offers' },
             {
-                label: 'Сотрудничество: @Company.com',
-                href: 'mailto:company@company.com',
+                label: 'Сотрудничество: support@zaneshop.ru',
+                href: 'mailto:support@zaneshop.ru',
             },
         ],
     },
     {
         title: 'Связаться с нами',
         links: [
-            { label: 'По вопросам рекламы', href: '/ads' },
-            { label: 'Контакты', href: '/contacts' },
-            { label: 'Поддержка клиентов', href: '/support' },
+            { label: 'Контакты', href: 'mailto:support@zaneshop.ru' },
+            { label: 'Поддержка клиентов', href: 'mailto:support@zaneshop.ru' },
             {
-                label: 'Сотрудничество: @Company.com',
-                href: 'mailto:company@company.com',
+                label: 'Сотрудничество: support@zaneshop.ru',
+                href: 'mailto:support@zaneshop.ru',
             },
         ],
     },
@@ -57,7 +55,7 @@ export function Footer() {
                                     <li key={link.label}>
                                         <Link
                                             href={link.href}
-                                            className={`footer__link ${link.bold ? 'footer__link--bold' : ''}`}
+                                            className={`footer__link`}
                                         >
                                             {link.label}
                                         </Link>
@@ -123,7 +121,10 @@ export function Footer() {
 
                 {/* Кнопка */}
                 <div className='footer__action'>
-                    <a href='/support' className='footer__ask-btn'>
+                    <a
+                        href='mailto:support@zaneshop.ru'
+                        className='footer__ask-btn'
+                    >
                         <Send size={15} />
                         Задать вопрос
                     </a>

@@ -34,7 +34,7 @@ const SUPPORT_LINKS = [
     },
     {
         title: 'Email',
-        href: 'mailto:support@example.com',
+        href: 'mailto:support@zaneshop.ru',
         className: 'support-menu__social-btn--mail',
         content: (
             <img
