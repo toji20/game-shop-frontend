@@ -4,7 +4,7 @@ import { PopularGames } from '@/components/main-hero/popular-games/popular-games
 
 export default function GamesPage() {
     return (
-        <div className='game-page-al px-4'>
+        <div className='game-page-al px-2'>
             <PopularGames hasTitle={true} />
             <Catalog titleOrSort={false} />
         </div>
