@@ -5,32 +5,35 @@
     grid-template-columns: minmax(0, 1fr) 557px;
     gap: 28px;
     align-items: stretch;
-    max-height: 128px;
+    height: 128px;
 }
 
 .ad-banner {
     position: relative;
     min-width: 0;
+    height: 100%;
 }
 
 .ad-banner--main {
     display: flex;
     flex-direction: column;
-    justify-content: stretch;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 12px;
 }
 
 .ad-banner-link {
     display: block;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    border-radius: 12px;
 }
 
 .ad-banner-img,
 .ad-banner-skeleton {
     width: 100%;
     height: 100%;
-    max-height: 128px;
-    aspect-ratio: 6 / 1;
     object-fit: cover;
     border-radius: 12px;
     display: block;
@@ -79,21 +82,13 @@
 
 .ad-banner-news {
     position: relative;
-    max-height: 128px;
+    height: 100%;
     border-radius: 18px;
     overflow: hidden;
-    background:
-        radial-gradient(
-            circle at top right,
-            rgba(103, 87, 175, 0.22),
-            transparent 40%
-        ),
-        radial-gradient(
-            circle at bottom left,
-            rgba(255, 255, 255, 0.05),
-            transparent 32%
-        ),
-        #2c2a39;
+    background: url('https://s3.twcstorage.ru/741177d0-6f55-44da-8dfe-8f593447297f/news-banner.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
 .ad-banner-news::before {
@@ -114,7 +109,6 @@
     position: relative;
     z-index: 1;
     height: 100%;
-    min-height: 126px;
     border-radius: 18px;
 }
 
@@ -142,7 +136,7 @@
 }
 
 .ad-banner-news__socials {
-    margin-top: -35px;
+    margin-top: auto;
     display: flex;
     justify-content: flex-end;
     gap: 12px;
@@ -159,6 +153,7 @@
     transition:
         transform 0.2s ease,
         opacity 0.2s ease;
+    margin-top: -40px;
 }
 
 .ad-banner-news__social:hover {
@@ -188,12 +183,94 @@
     }
 }
 
+/* Hardcoded main banner */
+.ad-banner-hardcoded {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.ad-banner-hardcoded__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.ad-banner-hardcoded__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 0 44px;
+    overflow: hidden;
+}
+
+.ad-banner-hardcoded__text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ad-banner-hardcoded__title {
+    margin: 0;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.ad-banner-hardcoded__subtitle {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.ad-banner-hardcoded__phone {
+    height: 128px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+    margin-top: -10px;
+    pointer-events: none;
+}
+
+@media (max-width: 1200px) {
+    .ad-banner-layout {
+        grid-template-columns: minmax(0, 1fr) 357px;
+    }
+    .ad-banner-hardcoded__title {
+        font-size: 18px;
+    }
+
+    .ad-banner-hardcoded__subtitle {
+        font-size: 13px;
+    }
+
+    .ad-banner-hardcoded__phone {
+        height: 140px;
+    }
+}
+
 @media (max-width: 980px) {
     .ad-banner-layout {
         grid-template-columns: 1fr;
         gap: 0;
         margin-top: 28px;
         margin-bottom: 26px;
+        height: 150px;
     }
 
     .ad-banner-news--desktop {
@@ -201,24 +278,34 @@
     }
 }
 
+@media (max-width: 600px) {
+    .ad-banner-hardcoded__content {
+        padding: 0 0 0 24px;
+    }
+
+    .ad-banner-hardcoded__title {
+        font-size: 16px;
+        white-space: normal;
+        max-width: 200px;
+    }
+
+    .ad-banner-hardcoded__subtitle {
+        font-size: 12px;
+        white-space: normal;
+        max-width: 190px;
+    }
+
+    .ad-banner-hardcoded__phone {
+        height: 130px;
+        margin-top: -10px;
+    }
+}
+
 @media (max-width: 500px) {
     .ad-banner-layout {
         margin-top: 20px;
-        margin-bottom: 46px;
-    }
-
-    .ad-banner-img,
-    .ad-banner-skeleton {
-        min-height: 150px;
-        aspect-ratio: unset;
-        border-radius: 12px;
-    }
-
-    .ad-banner-news,
-    .ad-banner-news__content,
-    .ad-banner-news__skeleton {
-        min-height: 150px;
-        border-radius: 12px;
+        margin-bottom: 26px;
+        height: 150px;
     }
 
     .ad-banner-dots {
@@ -229,5 +316,21 @@
     .ad-banner-dot {
         width: 3px;
         height: 20px;
+    }
+}
+
+@media (max-width: 400px) {
+    .ad-banner-hardcoded__title {
+        font-size: 14px;
+        max-width: 160px;
+    }
+
+    .ad-banner-hardcoded__subtitle {
+        font-size: 11px;
+        max-width: 155px;
+    }
+
+    .ad-banner-hardcoded__phone {
+        height: 110px;
     }
 }
