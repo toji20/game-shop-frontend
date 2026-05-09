@@ -503,15 +503,15 @@ header {
 .support-menu__trigger-closed {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 8px 8px 8px 12px;
+    gap: 4px;
+    padding: 9px 9px 9px 13px;
     border-radius: 999px;
     background: #fff;
     box-shadow:
         0 18px 42px rgba(0, 0, 0, 0.36),
         0 0 0 4px rgba(255, 255, 255, 0.05);
-    min-width: 98px;
-    max-height: 58px;
+    max-width: 101px;
+    max-height: 66px;
     transform: scale(1);
     opacity: 1;
     transition:
@@ -527,7 +527,7 @@ header {
 
 .support-menu__trigger-label {
     color: #1f2328;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 800;
     line-height: 1;
     transition: opacity 0.16s ease;
@@ -537,8 +537,8 @@ header {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: #ffd447;
     color: #111;

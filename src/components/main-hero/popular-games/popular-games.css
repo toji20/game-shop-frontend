@@ -26,11 +26,12 @@
     overflow-x: auto;
     overflow-y: hidden;
     padding: 0 20px 8px var(--popular-shift-left);
-    touch-action: pan-x;
+    touch-action: pan-x pan-y pinch-zoom; /* ← добавить pan-y */
     scrollbar-width: none;
     scroll-behavior: smooth;
     cursor: grab;
     transition: padding-left 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-overflow-scrolling: touch; /* ← инерционный скролл на iOS */
 }
 
 .popular-games-scroll--scrolled {

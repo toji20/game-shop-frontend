@@ -52,17 +52,10 @@ export function SideBanners() {
         if (!el || !items.length) return;
 
         const handleScroll = () => normalizeScroll();
-        const handleWheel = (e: WheelEvent) => {
-            e.preventDefault();
-            el.scrollLeft += e.deltaY * 0.8;
-            normalizeScroll();
-        };
 
         el.addEventListener('scroll', handleScroll, { passive: true });
-        el.addEventListener('wheel', handleWheel, { passive: false });
         return () => {
             el.removeEventListener('scroll', handleScroll);
-            el.removeEventListener('wheel', handleWheel);
         };
     }, [items.length]);
 
@@ -80,7 +73,6 @@ export function SideBanners() {
         if (!el) return;
         isDraggingRef.current = true;
         movedRef.current = false;
-        // ← isDragging (state) НЕ выставляем здесь
         startXRef.current = e.clientX;
         startScrollLeftRef.current = el.scrollLeft;
     };
@@ -93,7 +85,6 @@ export function SideBanners() {
 
         if (Math.abs(delta) > 4) {
             movedRef.current = true;
-            // ← Только здесь включаем курсор grabbing и блокируем pointer-events
             setIsDragging(true);
         }
 

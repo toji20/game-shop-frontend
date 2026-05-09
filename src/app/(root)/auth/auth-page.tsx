@@ -88,7 +88,8 @@ export default function AuthPage() {
 
                 {step === 'email' ? (
                     <p className='auth-card__desc'>
-                        Введите email — мы отправим код для входа
+                        Введите email — мы отправим код для входа (если раннее
+                        регистрировались через Google в нашем сервисе)
                     </p>
                 ) : (
                     <p className='auth-card__desc'>
@@ -218,7 +219,7 @@ export default function AuthPage() {
                 <p className='auth-card__terms'>
                     Продолжая, вы принимаете условия{' '}
                     <a href='/user_agreement'>соглашения</a> и{' '}
-                    <a href='/privacy'>политику конфиденциальности</a>
+                    <a href='/data'>политику обработки данных</a>
                 </p>
             </div>
         </div>

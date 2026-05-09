@@ -1,20 +1,29 @@
 import { useEffect, useRef, useState } from 'react';
 
+type DragDirection = 'horizontal' | 'vertical' | null;
+
 export function useHorizontalScroll() {
     const scrollRef = useRef<HTMLDivElement>(null);
+
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
 
     const startX = useRef(0);
+    const startY = useRef(0);
     const startScrollLeft = useRef(0);
+
     const isMouseDown = useRef(false);
     const hasMoved = useRef(false);
+
+    const dragDirection = useRef<DragDirection>(null);
 
     const updateArrows = () => {
         const el = scrollRef.current;
         if (!el) return;
+
         const maxScrollLeft = el.scrollWidth - el.clientWidth;
+
         setCanScrollLeft(el.scrollLeft > 4);
         setCanScrollRight(el.scrollLeft < maxScrollLeft - 4);
     };
@@ -22,7 +31,9 @@ export function useHorizontalScroll() {
     const scrollByAmount = (direction: 'left' | 'right') => {
         const el = scrollRef.current;
         if (!el) return;
+
         const amount = Math.max(el.clientWidth * 0.8, 260);
+
         el.scrollBy({
             left: direction === 'left' ? -amount : amount,
             behavior: 'smooth',
@@ -32,7 +43,12 @@ export function useHorizontalScroll() {
     const resetScroll = () => {
         const el = scrollRef.current;
         if (!el) return;
-        el.scrollTo({ left: 0, behavior: 'auto' });
+
+        el.scrollTo({
+            left: 0,
+            behavior: 'auto',
+        });
+
         updateArrows();
     };
 
@@ -42,25 +58,19 @@ export function useHorizontalScroll() {
 
         updateArrows();
 
-        const onWheel = (e: WheelEvent) => {
-            if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-            e.preventDefault();
-            el.scrollLeft += e.deltaY;
-            updateArrows();
-        };
         const onDragStart = (e: DragEvent) => e.preventDefault();
         const onScroll = () => updateArrows();
         const onResize = () => updateArrows();
 
-        el.addEventListener('wheel', onWheel, { passive: false });
         el.addEventListener('dragstart', onDragStart);
         el.addEventListener('scroll', onScroll);
+
         window.addEventListener('resize', onResize);
 
         return () => {
-            el.removeEventListener('wheel', onWheel);
             el.removeEventListener('dragstart', onDragStart);
             el.removeEventListener('scroll', onScroll);
+
             window.removeEventListener('resize', onResize);
         };
     }, []);
@@ -68,22 +78,54 @@ export function useHorizontalScroll() {
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
             const el = scrollRef.current;
+
             if (!isMouseDown.current || !el) return;
 
-            const delta = e.clientX - startX.current;
-            if (Math.abs(delta) > 8) {
-                hasMoved.current = true;
-                if (!isDragging) setIsDragging(true);
+            const deltaX = e.clientX - startX.current;
+            const deltaY = e.clientY - startY.current;
+
+            // Определяем направление только один раз
+            if (!dragDirection.current) {
+                if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                    dragDirection.current = 'vertical';
+                    return;
+                }
+
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    dragDirection.current = 'horizontal';
+                }
             }
+
+            // Если пользователь скроллит вертикально — выходим
+            if (dragDirection.current === 'vertical') {
+                return;
+            }
+
+            if (Math.abs(deltaX) > 8) {
+                hasMoved.current = true;
+
+                if (!isDragging) {
+                    setIsDragging(true);
+                }
+            }
+
             if (!hasMoved.current) return;
 
-            el.scrollLeft = startScrollLeft.current - delta;
+            e.preventDefault();
+
+            el.scrollLeft = startScrollLeft.current - deltaX;
+
             updateArrows();
         };
 
         const handleMouseUp = () => {
             isMouseDown.current = false;
-            if (isDragging) setIsDragging(false);
+            dragDirection.current = null;
+
+            if (isDragging) {
+                setIsDragging(false);
+            }
+
             window.setTimeout(() => {
                 hasMoved.current = false;
             }, 0);
@@ -100,9 +142,14 @@ export function useHorizontalScroll() {
 
     const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.button !== 0 || !scrollRef.current) return;
+
         isMouseDown.current = true;
         hasMoved.current = false;
+        dragDirection.current = null;
+
         startX.current = e.clientX;
+        startY.current = e.clientY;
+
         startScrollLeft.current = scrollRef.current.scrollLeft;
     };
 

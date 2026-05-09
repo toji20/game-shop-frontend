@@ -35,7 +35,7 @@ export function CatalogItem({ item }: CatalogItemProps) {
                     <span className='catalog-item-meta-separator'>/</span>
 
                     <span className='catalog-item-info-genre'>
-                        {item.genre || item.releaseDate || 'Без жанра'}
+                        {item.releaseDate}
                     </span>
                 </div>
 

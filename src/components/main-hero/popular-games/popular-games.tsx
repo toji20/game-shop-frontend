@@ -16,6 +16,7 @@ interface Props {
 export function PopularGames({ hasTitle = true }: Props) {
     const { popularGames } = useGamesPopular(12);
     const { categories } = useCategories();
+
     const [selectedCategory, setSelectedCategory] = useState<string | null>(
         null,
     );
@@ -48,15 +49,24 @@ export function PopularGames({ hasTitle = true }: Props) {
 
                 <div className='popular-games-filters'>
                     <button
-                        className={`popular-games-filter-btn ${selectedCategory === null ? 'popular-games-filter-btn--active' : ''}`}
+                        className={`popular-games-filter-btn ${
+                            selectedCategory === null
+                                ? 'popular-games-filter-btn--active'
+                                : ''
+                        }`}
                         onClick={() => setSelectedCategory(null)}
                     >
                         Все
                     </button>
+
                     {categories?.map((c) => (
                         <button
                             key={c.id}
-                            className={`popular-games-filter-btn ${selectedCategory === c.id ? 'popular-games-filter-btn--active' : ''}`}
+                            className={`popular-games-filter-btn ${
+                                selectedCategory === c.id
+                                    ? 'popular-games-filter-btn--active'
+                                    : ''
+                            }`}
                             onClick={() =>
                                 setSelectedCategory(
                                     selectedCategory === c.id ? null : c.id,
@@ -91,10 +101,12 @@ export function PopularGames({ hasTitle = true }: Props) {
                 </button>
 
                 <div
-                    className={`popular-games-scroll ${isDragging ? 'is-dragging' : ''} ${canScrollLeft ? 'popular-games-scroll--scrolled' : ''}`}
                     ref={scrollRef}
                     onMouseDown={onMouseDown}
                     onClickCapture={onClickCapture}
+                    className={`popular-games-scroll ${
+                        isDragging ? 'is-dragging' : ''
+                    } ${canScrollLeft ? 'popular-games-scroll--scrolled' : ''}`}
                 >
                     <div className='popular-games-items'>
                         {!popularGames
@@ -107,8 +119,8 @@ export function PopularGames({ hasTitle = true }: Props) {
                                               borderRadius={12}
                                           />
                                       </div>
+
                                       <div className='popular-game-item-info'>
-                                          {' '}
                                           <Skeleton
                                               width='75%'
                                               height={25}
