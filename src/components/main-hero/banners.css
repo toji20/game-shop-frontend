@@ -196,11 +196,11 @@
 
 @media (max-width: 650px) {
     .banners {
-        height: 440px;
+        height: 500px;
     }
 
     .banners-skeleton {
-        height: 440px;
+        height: 500px;
     }
 
     .banners__dots {
