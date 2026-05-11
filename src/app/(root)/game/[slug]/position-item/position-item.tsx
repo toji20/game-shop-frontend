@@ -43,7 +43,7 @@ export function PositionItem({ item, gameId, gameName }: PositionItemProps) {
                             </span>
                         )}
                         <span className='position-item-price'>
-                            от {hasDiscount ? item.finalPrice : item.myPrice} ₽
+                            {hasDiscount ? item.finalPrice : item.myPrice} ₽
                         </span>
                     </div>
                 </div>
