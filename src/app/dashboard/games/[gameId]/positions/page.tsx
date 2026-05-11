@@ -272,8 +272,8 @@ export default function PositionsPage({}: Props) {
                             <th className='col-img'></th>
                             <th>Название</th>
                             <th>Категория</th>
-                            <th>Цена (сайт)</th>
-                            <th>Закупка</th>
+                            <th>Цена</th>
+                            <th>Финальная цена</th>
                             <th>Скидка</th>
                             <th>Статус</th>
                             <th className='col-id'>ID</th>
@@ -312,15 +312,15 @@ export default function PositionsPage({}: Props) {
                                         {p.category?.name || '—'}
                                     </td>
                                     <td className='td-price'>
-                                        {p.price != null
-                                            ? `${Number(p.price).toLocaleString('ru-RU')} ₽`
-                                            : '—'}
-                                    </td>
-                                    <td className='td-price'>
                                         {Number(p.myPrice).toLocaleString(
                                             'ru-RU',
                                         )}{' '}
                                         ₽
+                                    </td>
+                                    <td className='td-price'>
+                                        {p.finalPrice != null
+                                            ? `${Number(p.finalPrice).toLocaleString('ru-RU')} ₽`
+                                            : '—'}
                                     </td>
                                     <td>
                                         {p.discount ? (
