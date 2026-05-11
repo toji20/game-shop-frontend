@@ -32,6 +32,7 @@ type EditState = {
     gameId: number;
     name: string;
     myPrice: string;
+    discount: string;
     image: string;
     isActive: boolean;
     isPublic: boolean;
@@ -44,6 +45,7 @@ function toEdit(p: IPosition): EditState {
         gameId: Number(p.gameId),
         name: p.name,
         myPrice: p.myPrice?.toString() ?? '',
+        discount: p.discount?.toString() ?? '',
         image: p.image ?? '',
         isActive: p.isActive,
         isPublic: p.isPublic ?? true,
@@ -54,6 +56,7 @@ function toEdit(p: IPosition): EditState {
 const EMPTY_FORM = {
     name: '',
     myPrice: '',
+    discount: '',
     image: '',
     isActive: true,
     isPublic: true,
@@ -105,6 +108,9 @@ export default function PositionsPage({}: Props) {
             {
                 name: newForm.name,
                 myPrice: Number(newForm.myPrice),
+                discount: newForm.discount
+                    ? Number(newForm.discount)
+                    : undefined,
                 image: newForm.image || undefined,
                 isActive: newForm.isActive,
                 isPublic: newForm.isPublic,
@@ -128,6 +134,7 @@ export default function PositionsPage({}: Props) {
         const dto: IPositionUpdate = {
             name: editing.name,
             myPrice: Number(editing.myPrice),
+            discount: editing.discount ? Number(editing.discount) : undefined,
             image: editing.image || undefined,
             isActive: editing.isActive,
             isPublic: editing.isPublic,
@@ -164,6 +171,7 @@ export default function PositionsPage({}: Props) {
             },
         );
     };
+
     return (
         <div className='dashboard__content'>
             <Link href='/admin' className='back-link'>
@@ -266,6 +274,7 @@ export default function PositionsPage({}: Props) {
                             <th>Категория</th>
                             <th>Цена (сайт)</th>
                             <th>Закупка</th>
+                            <th>Скидка</th>
                             <th>Статус</th>
                             <th className='col-id'>ID</th>
                             <th className='col-actions'>Действия</th>
@@ -273,10 +282,10 @@ export default function PositionsPage({}: Props) {
                     </thead>
                     <tbody>
                         {isLoadingPositions ? (
-                            <SkeletonRows rows={4} cols={8} />
+                            <SkeletonRows rows={4} cols={9} />
                         ) : !positions?.length ? (
                             <tr>
-                                <td colSpan={8} className='table-empty'>
+                                <td colSpan={9} className='table-empty'>
                                     Нет позиций
                                 </td>
                             </tr>
@@ -312,6 +321,15 @@ export default function PositionsPage({}: Props) {
                                             'ru-RU',
                                         )}{' '}
                                         ₽
+                                    </td>
+                                    <td>
+                                        {p.discount ? (
+                                            <span className='badge badge--green'>
+                                                {p.discount}%
+                                            </span>
+                                        ) : (
+                                            <span className='td-muted'>—</span>
+                                        )}
                                     </td>
                                     <td>
                                         {p.isActive ? (
@@ -374,6 +392,28 @@ export default function PositionsPage({}: Props) {
                                 value={newForm.myPrice}
                                 onChange={(v) =>
                                     setNewForm((p) => ({ ...p, myPrice: v }))
+                                }
+                            />
+                            <Field
+                                label='Скидка (%)'
+                                type='number'
+                                value={newForm.discount}
+                                onChange={(v) =>
+                                    setNewForm((p) => ({
+                                        ...p,
+                                        discount:
+                                            v === ''
+                                                ? ''
+                                                : String(
+                                                      Math.min(
+                                                          100,
+                                                          Math.max(
+                                                              0,
+                                                              Number(v),
+                                                          ),
+                                                      ),
+                                                  ),
+                                    }))
                                 }
                             />
                         </div>
@@ -479,6 +519,31 @@ export default function PositionsPage({}: Props) {
                                 value={editing.myPrice}
                                 onChange={(v) =>
                                     setEditing((p) => p && { ...p, myPrice: v })
+                                }
+                            />
+                            <Field
+                                label='Скидка (%)'
+                                type='number'
+                                value={editing.discount}
+                                onChange={(v) =>
+                                    setEditing(
+                                        (p) =>
+                                            p && {
+                                                ...p,
+                                                discount:
+                                                    v === ''
+                                                        ? ''
+                                                        : String(
+                                                              Math.min(
+                                                                  100,
+                                                                  Math.max(
+                                                                      0,
+                                                                      Number(v),
+                                                                  ),
+                                                              ),
+                                                          ),
+                                            },
+                                    )
                                 }
                             />
                         </div>
