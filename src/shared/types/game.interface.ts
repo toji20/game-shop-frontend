@@ -1,5 +1,4 @@
 import { ICategory } from './category.interface';
-import { OrderType } from './order.interface';
 import { IPositionCategory } from './position-category.interface';
 import { IReview } from './review.interface';
 

@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function PopularGames({ hasTitle = true }: Props) {
-    const { popularGames } = useGamesPopular(12);
+    const { popularGames } = useGamesPopular(18);
     const { categories } = useCategories();
 
     const [selectedCategory, setSelectedCategory] = useState<string | null>(

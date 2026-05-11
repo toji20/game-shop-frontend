@@ -22,27 +22,29 @@ export function AdBanner() {
     const { adBanners, isLoadingAdBanner } = useAdBanner();
     const [activeIndex, setActiveIndex] = useState(0);
 
-    const activeBanners = useMemo(
-        () => adBanners?.filter((item) => item.isActive !== false) ?? [],
+    const allBanners = useMemo(
+        () => [
+            HARDCODED_BANNER,
+            ...(adBanners?.filter((item) => item.isActive !== false) ?? []),
+        ],
         [adBanners],
     );
 
     useEffect(() => {
-        if (!activeBanners.length) return;
-        if (activeIndex > activeBanners.length - 1) {
+        if (activeIndex > allBanners.length - 1) {
             setActiveIndex(0);
         }
-    }, [activeBanners, activeIndex]);
+    }, [allBanners.length, activeIndex]);
 
     useEffect(() => {
-        if (activeBanners.length <= 1) return;
+        if (allBanners.length <= 1) return;
 
         const timer = window.setInterval(() => {
-            setActiveIndex((prev) => (prev + 1) % activeBanners.length);
+            setActiveIndex((prev) => (prev + 1) % allBanners.length);
         }, AUTOPLAY_DELAY);
 
         return () => window.clearInterval(timer);
-    }, [activeBanners.length]);
+    }, [allBanners.length]);
 
     const newsBannerJSX = (
         <div className='ad-banner-news ad-banner-news--desktop'>
@@ -84,8 +86,6 @@ export function AdBanner() {
         );
     }
 
-    // Все баннеры: хардкод первым + динамические
-    const allBanners = [HARDCODED_BANNER, ...activeBanners];
     const currentBanner = allBanners[activeIndex];
     const isHardcoded = activeIndex === 0;
 
@@ -129,7 +129,14 @@ export function AdBanner() {
                 </Link>
 
                 {allBanners.length > 1 && (
-                    <div className='ad-banner-dots'>
+                    <div
+                        className='ad-banner-dots'
+                        style={
+                            {
+                                '--dot-height': `${Math.max(10, Math.min(26, Math.floor(88 / allBanners.length) - 8))}px`,
+                            } as React.CSSProperties
+                        }
+                    >
                         {allBanners.map((item, index) => (
                             <button
                                 key={item.id}

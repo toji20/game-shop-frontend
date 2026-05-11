@@ -52,13 +52,15 @@
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     z-index: 2;
+    /* максимальная высота контейнера — не выходим за баннер */
+    max-height: 90px;
 }
 
 .ad-banner-dot {
     width: 4px;
-    height: 26px;
+    height: var(--dot-height, 26px);
     border: none;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.28);
@@ -68,8 +70,8 @@
         background 0.2s ease,
         transform 0.2s ease,
         opacity 0.2s ease;
+    flex-shrink: 0;
 }
-
 .ad-banner-dot:hover {
     background: rgba(255, 255, 255, 0.55);
     transform: scaleX(1.08);
@@ -310,12 +312,14 @@
 
     .ad-banner-dots {
         left: 12px;
-        gap: 6px;
+        gap: 4px;
+        max-height: 80px;
     }
 
     .ad-banner-dot {
         width: 3px;
-        height: 20px;
+        /* на мобиле чуть меньше */
+        height: calc(var(--dot-height, 20px) * 0.8);
     }
 }
 

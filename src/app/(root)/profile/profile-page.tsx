@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type Tab = 'profile' | 'orders' | 'avatars';
 type AnyOrder =
@@ -27,6 +27,14 @@ export default function ProfilePage() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const token = searchParams.get('token');
+        if (token) {
+            localStorage.setItem('accessToken', token);
+            router.replace(pathname);
+        }
+    }, []);
 
     const { profile } = useProfile();
     const { avatars, isLoadingAvatars } = useAvatars();
