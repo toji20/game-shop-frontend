@@ -55,3 +55,9 @@
     color: #888;
     margin-right: 4px;
 }
+
+@media (max-width: 650px) {
+    .user-agreement {
+        padding-top: 130px;
+    }
+}

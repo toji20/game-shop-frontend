@@ -83,8 +83,7 @@ export default function UserAgreementPage() {
                     признаётся внесение Принципалом данных, необходимых для
                     перевода средств правообладателю Игры, и нажатие кнопки
                     «Перейти к оплате», либо совершение оплаты через платёжную
-                    систему ЮКасса с использованием СБП или иных поддерживаемых
-                    способов.
+                    систему.
                 </p>
                 <p className='user-agreement__paragraph'>
                     <span className='user-agreement__num'>2.2.</span> Если
@@ -148,10 +147,8 @@ export default function UserAgreementPage() {
                 </h2>
                 <p className='user-agreement__paragraph'>
                     <span className='user-agreement__num'>4.1.</span> Оплата
-                    осуществляется Принципалом предварительно через интерфейс
-                    Сервиса с использованием платёжной системы ЮКасса, включая
-                    Систему быстрых платежей (СБП) и иные поддерживаемые
-                    способы.
+                    осуществляется Принципалом предварительно через Систему
+                    быстрых платежей (СБП) и иные поддерживаемые способы.
                 </p>
                 <p className='user-agreement__paragraph'>
                     <span className='user-agreement__num'>4.2.</span> Стоимость
