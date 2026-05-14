@@ -35,7 +35,7 @@ class UserService {
         return data;
     }
 
-    async updateAvatar(avatarId: string) {
+    async updateAvatar(avatarId: string | null) {
         const { data } = await axiosWithAuth<IUser>({
             url: API_URL.users('profile/avatar'),
             method: 'PATCH',

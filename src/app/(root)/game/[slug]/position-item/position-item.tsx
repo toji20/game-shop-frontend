@@ -39,7 +39,7 @@ export function PositionItem({ item, gameId, gameName }: PositionItemProps) {
                     <div className='position-item-info-prices'>
                         {hasDiscount && (
                             <span className='position-item-old-price'>
-                                от {item.myPrice} ₽
+                                {item.myPrice} ₽
                             </span>
                         )}
                         <span className='position-item-price'>

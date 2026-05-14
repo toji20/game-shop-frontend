@@ -277,7 +277,11 @@ export default function ProfilePage() {
                                             type='button'
                                             className={`profile-avatar-card ${isSelected ? 'profile-avatar-card--selected' : ''}`}
                                             onClick={() =>
-                                                updateAvatar(avatar.id)
+                                                updateAvatar(
+                                                    isSelected
+                                                        ? null
+                                                        : avatar.id,
+                                                )
                                             }
                                             disabled={isLoadingAvatar}
                                         >

@@ -32,7 +32,8 @@ export function useUpdateAvatar() {
 
     const { mutate: updateAvatar, isPending: isLoadingAvatar } = useMutation({
         mutationKey: ['update avatar'],
-        mutationFn: (avatarId: string) => userService.updateAvatar(avatarId),
+        mutationFn: (avatarId: string | null) =>
+            userService.updateAvatar(avatarId),
         onSuccess() {
             queryClient.invalidateQueries({ queryKey: ['profile'] });
             console.log('Аватар обновлён');

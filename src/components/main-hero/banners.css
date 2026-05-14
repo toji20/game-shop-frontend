@@ -131,7 +131,7 @@
 @media (min-width: 651px) {
     .banners__dots {
         bottom: 150px;
-        left: 94px;
+        left: 114px;
     }
 }
 
@@ -204,7 +204,7 @@
     }
 
     .banners__dots {
-        bottom: 92px;
+        bottom: 65px;
         left: 50%;
         transform: translateX(-50%);
     }
