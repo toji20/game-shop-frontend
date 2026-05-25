@@ -43,12 +43,14 @@
 /* ── Slots ── */
 .side-banners__slot {
     position: absolute;
+    /* ИСПРАВЛЕНО: убран z-index 0s (вызывал layout на каждом кадре),
+       убран filter из transition (дорогой на мобиле) */
     transition:
         transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        filter 0.5s ease,
-        z-index 0s;
-    will-change: transform, opacity, filter;
+        opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* ИСПРАВЛЕНО: will-change только для transform+opacity, без filter —
+       GPU layer дешевле, не жрёт видеопамять на каждом слоте */
+    will-change: transform, opacity;
 }
 
 /* Active — center, biggest, fully sharp */
@@ -56,7 +58,6 @@
     z-index: 5;
     transform: translateX(0) scale(1) translateY(0px);
     opacity: 1;
-    filter: brightness(1);
     cursor: default;
     visibility: visible;
 }
@@ -65,8 +66,9 @@
 .side-banners__slot--prev {
     z-index: 4;
     transform: translateX(calc(-50% - 160px)) scale(0.82) translateY(12px);
-    opacity: 1;
-    filter: brightness(0.6);
+    /* ИСПРАВЛЕНО: вместо filter: brightness(0.6) используем opacity —
+       opacity compositing бесплатный, filter форсирует repaint */
+    opacity: 0.55;
     cursor: pointer;
     visibility: visible;
 }
@@ -75,8 +77,7 @@
 .side-banners__slot--next {
     z-index: 4;
     transform: translateX(calc(50% + 160px)) scale(0.82) translateY(12px);
-    opacity: 1;
-    filter: brightness(0.6);
+    opacity: 0.55;
     cursor: pointer;
     visibility: visible;
 }
@@ -85,40 +86,41 @@
 .side-banners__slot--prev2 {
     z-index: 3;
     transform: translateX(calc(-50% - 380px)) scale(0.72) translateY(18px);
-    opacity: 0.5;
-    filter: brightness(0.45);
+    opacity: 0.3;
     cursor: pointer;
     visibility: visible;
+    /* ИСПРАВЛЕНО: дальние слоты не нуждаются в will-change */
+    will-change: auto;
 }
 
 /* Next2 — far right */
 .side-banners__slot--next2 {
     z-index: 3;
     transform: translateX(calc(50% + 380px)) scale(0.72) translateY(18px);
-    opacity: 0.5;
-    filter: brightness(0.45);
+    opacity: 0.3;
     cursor: pointer;
     visibility: visible;
+    will-change: auto;
 }
 
 /* Prev3 — extra far left */
 .side-banners__slot--prev3 {
     z-index: 2;
     transform: translateX(calc(-50% - 600px)) scale(0.62) translateY(24px);
-    opacity: 0.3;
-    filter: brightness(0.35);
+    opacity: 0.15;
     cursor: pointer;
     visibility: visible;
+    will-change: auto;
 }
 
 /* Next3 — extra far right */
 .side-banners__slot--next3 {
     z-index: 2;
     transform: translateX(calc(50% + 600px)) scale(0.62) translateY(24px);
-    opacity: 0.3;
-    filter: brightness(0.35);
+    opacity: 0.15;
     cursor: pointer;
     visibility: visible;
+    will-change: auto;
 }
 
 /* Hiding state — плавное исчезновение */
@@ -126,6 +128,7 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    will-change: auto;
 }
 
 /* ── Banner Item ── */
@@ -222,6 +225,7 @@
         visibility: hidden;
         pointer-events: none;
         transform: scale(0);
+        will-change: auto;
     }
 }
 
