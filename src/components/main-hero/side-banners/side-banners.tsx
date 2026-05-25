@@ -12,25 +12,17 @@ export function SideBanners() {
 
     const [activeIndex, setActiveIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
     const [prevIndex, setPrevIndex] = useState<number | null>(null);
-
-    // ИСПРАВЛЕНО: isDragging переведён в state чтобы вызывать ре-рендер
-    // (ref не реактивный — className с ref не обновлялся на продакшне)
-    const [isDragging, setIsDragging] = useState(false);
 
     const isDraggingRef = useRef(false);
     const startXRef = useRef(0);
     const movedRef = useRef(false);
-    const dragOffsetRef = useRef(0);
     const autoplayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const stageRef = useRef<HTMLDivElement>(null);
 
     const count = items.length;
 
-    const getIndex = useCallback(
-        (i: number) => ((i % count) + count) % count,
-        [count],
-    );
+    const getIndex = (i: number) => ((i % count) + count) % count;
 
     const goTo = useCallback(
         (index: number) => {
@@ -43,7 +35,7 @@ export function SideBanners() {
                 setPrevIndex(null);
             }, 550);
         },
-        [isAnimating, count, activeIndex, getIndex],
+        [isAnimating, count, activeIndex],
     );
 
     const prev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo]);
@@ -63,59 +55,10 @@ export function SideBanners() {
         };
     }, [activeIndex, resetAutoplay]);
 
-    // ИСПРАВЛЕНО: нативные touch-листенеры с passive: false
-    // React по умолчанию вешает листенеры без passive, что блокирует scroll
-    // и вызывает дёрганье на мобиле. Нативные листенеры дают полный контроль.
-    useEffect(() => {
-        const stage = stageRef.current;
-        if (!stage) return;
-
-        const handleTouchStart = (e: TouchEvent) => {
-            startXRef.current = e.touches[0].clientX;
-            movedRef.current = false;
-            dragOffsetRef.current = 0;
-        };
-
-        const handleTouchMove = (e: TouchEvent) => {
-            const delta = e.touches[0].clientX - startXRef.current;
-            if (Math.abs(delta) > 8) {
-                movedRef.current = true;
-                // Предотвращаем горизонтальный скролл страницы
-                e.preventDefault();
-            }
-            dragOffsetRef.current = delta;
-        };
-
-        const handleTouchEnd = () => {
-            const offset = dragOffsetRef.current;
-            if (offset < -50) next();
-            else if (offset > 50) prev();
-            dragOffsetRef.current = 0;
-            movedRef.current = false;
-        };
-
-        // passive: false нужен чтобы e.preventDefault() работал в touchmove
-        stage.addEventListener('touchstart', handleTouchStart, {
-            passive: true,
-        });
-        stage.addEventListener('touchmove', handleTouchMove, {
-            passive: false,
-        });
-        stage.addEventListener('touchend', handleTouchEnd);
-
-        return () => {
-            stage.removeEventListener('touchstart', handleTouchStart);
-            stage.removeEventListener('touchmove', handleTouchMove);
-            stage.removeEventListener('touchend', handleTouchEnd);
-        };
-    }, [next, prev]);
-
     const onMouseDown = (e: React.MouseEvent) => {
         isDraggingRef.current = true;
-        setIsDragging(true); // ИСПРАВЛЕНО: обновляем state для ре-рендера
         movedRef.current = false;
         startXRef.current = e.clientX;
-        dragOffsetRef.current = 0;
     };
 
     const onMouseMove = (e: React.MouseEvent) => {
@@ -123,21 +66,36 @@ export function SideBanners() {
         const delta = e.clientX - startXRef.current;
         if (Math.abs(delta) > 4) {
             movedRef.current = true;
-            dragOffsetRef.current = delta;
+            setDragOffset(delta);
         }
     };
 
     const onMouseUp = () => {
         if (!isDraggingRef.current) return;
         isDraggingRef.current = false;
-        setIsDragging(false); // ИСПРАВЛЕНО
         if (movedRef.current) {
-            const offset = dragOffsetRef.current;
-            if (offset < -50) next();
-            else if (offset > 50) prev();
+            if (dragOffset < -50) next();
+            else if (dragOffset > 50) prev();
         }
-        dragOffsetRef.current = 0;
+        setDragOffset(0);
         movedRef.current = false;
+    };
+
+    const onTouchStart = (e: React.TouchEvent) => {
+        startXRef.current = e.touches[0].clientX;
+        movedRef.current = false;
+    };
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        const delta = e.touches[0].clientX - startXRef.current;
+        if (Math.abs(delta) > 8) movedRef.current = true;
+        setDragOffset(delta);
+    };
+
+    const onTouchEnd = () => {
+        if (dragOffset < -50) next();
+        else if (dragOffset > 50) prev();
+        setDragOffset(0);
     };
 
     const onClickCapture = (e: React.MouseEvent) => {
@@ -339,6 +297,7 @@ export function SideBanners() {
                 },
             ];
 
+            // Добавляем старые элементы если они отличаются от новых
             prevSlots.forEach((oldSlot) => {
                 if (
                     !mainSlots.some(
@@ -360,14 +319,15 @@ export function SideBanners() {
     return (
         <div className='side-banners'>
             <div
-                ref={stageRef}
-                // ИСПРАВЛЕНО: используем isDragging (state) вместо isDraggingRef.current (ref)
-                className={`side-banners__stage${isDragging ? ' is-dragging' : ''}`}
+                // eslint-disable-next-line react-hooks/refs
+                className={`side-banners__stage${isDraggingRef.current ? ' is-dragging' : ''}`}
                 onMouseDown={onMouseDown}
                 onMouseMove={onMouseMove}
                 onMouseUp={onMouseUp}
                 onMouseLeave={onMouseUp}
-                // Touch-события убраны отсюда — обрабатываются нативно в useEffect
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
                 onClickCapture={onClickCapture}
             >
                 {slots.map(({ item, position, idx, isHiding }) => (
