@@ -23,6 +23,7 @@ export function SideBanners() {
         align: 'center',
         skipSnaps: false,
         duration: 25,
+        slidesToScroll: 1,
     });
 
     useEffect(() => {
@@ -46,17 +47,21 @@ export function SideBanners() {
         emblaApi.on('pointerDown', onPointerDown);
         emblaApi.on('pointerUp', onPointerUp);
 
-        requestAnimationFrame(() => {
+        // важный фикс: дождаться layout
+        const timeout = setTimeout(() => {
+            emblaApi.reInit();
             emblaApi.scrollTo(0, true);
-        });
-
-        onSelect();
-        startAutoplay();
+            onSelect();
+            startAutoplay();
+        }, 50);
 
         return () => {
+            clearTimeout(timeout);
+
             emblaApi.off('select', onSelect);
             emblaApi.off('pointerDown', onPointerDown);
             emblaApi.off('pointerUp', onPointerUp);
+
             stopAutoplay();
         };
     }, [emblaApi]);
@@ -67,6 +72,8 @@ export function SideBanners() {
         stopAutoplay();
 
         autoplayRef.current = setInterval(() => {
+            if (!emblaApi) return;
+
             const selected = emblaApi.selectedScrollSnap();
             const last = items.length - 1;
 
