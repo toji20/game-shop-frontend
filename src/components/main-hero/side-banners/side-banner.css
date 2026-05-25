@@ -1,258 +1,144 @@
-/* ── Side Banners ── */
 .side-banners {
     position: relative;
     width: 100%;
     max-width: 1600px;
     margin: -70px auto 0;
-    user-select: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 18px;
+    user-select: none;
     box-sizing: border-box;
 }
 
-.side-banners--loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 220px;
-}
-
-/* ── Stage ── */
-.side-banners__stage {
-    position: relative;
+/* VIEWPORT */
+.side-banners__viewport {
     width: 100%;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: grab;
     overflow: hidden;
+    cursor: grab;
 }
 
-.side-banners__stage.is-dragging {
+.side-banners__viewport.is-dragging {
     cursor: grabbing;
 }
 
-.side-banners__stage.is-dragging .side-banner-item,
-.side-banners__stage.is-dragging .side-banner-item * {
-    pointer-events: none;
+/* CONTAINER */
+.side-banners__container {
+    display: flex;
+    align-items: stretch; /* важно: убирает вертикальные смещения */
+    padding: 20px 0;
+    touch-action: pan-y;
 }
 
-/* ── Slots ── */
-.side-banners__slot {
-    position: absolute;
-    /* ИСПРАВЛЕНО: убран z-index 0s (вызывал layout на каждом кадре),
-       убран filter из transition (дорогой на мобиле) */
-    transition:
-        transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    /* ИСПРАВЛЕНО: will-change только для transform+opacity, без filter —
-       GPU layer дешевле, не жрёт видеопамять на каждом слоте */
-    will-change: transform, opacity;
+/* SLIDE */
+.side-banners__slide {
+    flex: 0 0 362px;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+
+    filter: brightness(0.4);
+
+    transition: filter 0.45s ease;
+    will-change: filter;
 }
 
-/* Active — center, biggest, fully sharp */
-.side-banners__slot--active {
+/* INNER WRAPPER (ВАЖНО) */
+.side-banners__inner {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    transform: translateY(12px);
+    transition: transform 0.45s ease;
+}
+
+.side-banners__inner.is-active {
+    transform: translateY(0) scale(1.1);
     z-index: 5;
-    transform: translateX(0) scale(1) translateY(0px);
-    opacity: 1;
-    cursor: default;
-    visibility: visible;
 }
 
-/* Prev — left peek */
-.side-banners__slot--prev {
-    z-index: 4;
-    transform: translateX(calc(-50% - 160px)) scale(0.82) translateY(12px);
-    /* ИСПРАВЛЕНО: вместо filter: brightness(0.6) используем opacity —
-       opacity compositing бесплатный, filter форсирует repaint */
-    opacity: 0.55;
-    cursor: pointer;
-    visibility: visible;
-}
-
-/* Next — right peek */
-.side-banners__slot--next {
-    z-index: 4;
-    transform: translateX(calc(50% + 160px)) scale(0.82) translateY(12px);
-    opacity: 0.55;
-    cursor: pointer;
-    visibility: visible;
-}
-
-/* Prev2 — far left */
-.side-banners__slot--prev2 {
-    z-index: 3;
-    transform: translateX(calc(-50% - 380px)) scale(0.72) translateY(18px);
-    opacity: 0.3;
-    cursor: pointer;
-    visibility: visible;
-    /* ИСПРАВЛЕНО: дальние слоты не нуждаются в will-change */
-    will-change: auto;
-}
-
-/* Next2 — far right */
-.side-banners__slot--next2 {
-    z-index: 3;
-    transform: translateX(calc(50% + 380px)) scale(0.72) translateY(18px);
-    opacity: 0.3;
-    cursor: pointer;
-    visibility: visible;
-    will-change: auto;
-}
-
-/* Prev3 — extra far left */
-.side-banners__slot--prev3 {
-    z-index: 2;
-    transform: translateX(calc(-50% - 600px)) scale(0.62) translateY(24px);
-    opacity: 0.15;
-    cursor: pointer;
-    visibility: visible;
-    will-change: auto;
-}
-
-/* Next3 — extra far right */
-.side-banners__slot--next3 {
-    z-index: 2;
-    transform: translateX(calc(50% + 600px)) scale(0.62) translateY(24px);
-    opacity: 0.15;
-    cursor: pointer;
-    visibility: visible;
-    will-change: auto;
-}
-
-/* Hiding state — плавное исчезновение */
-.side-banners__slot--hiding {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    will-change: auto;
-}
-
-/* ── Banner Item ── */
+/* ITEM */
 .side-banner-item {
-    display: block;
+    width: 330px;
+    height: 175px;
     border-radius: 16px;
-    flex-shrink: 0;
-    width: 360px;
-    height: 195px;
     overflow: hidden;
-    transition: box-shadow 0.4s ease;
+    flex-shrink: 0;
 }
 
 .side-banner-item-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    pointer-events: none;
     display: block;
     border-radius: 16px;
-    transition: transform 0.4s ease;
+    pointer-events: none;
+    transition: transform 0.35s ease;
 }
 
-.side-banner-item--active .side-banner-item-img:hover {
+.side-banners__slide--active {
+    opacity: 1;
+    filter: brightness(1.1);
+    z-index: 5;
+}
+
+/* hover только у активного */
+.side-banners__inner.is-active .side-banner-item-img:hover {
     transform: scale(1.03);
 }
 
-/* ── Dots ── */
+/* DOTS */
 .side-banners__dots {
     display: flex;
     gap: 8px;
-    align-items: center;
-    z-index: 10;
 }
 
 .side-banners__dot {
     width: 6px;
     height: 6px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
     border: none;
-    padding: 0;
+    background: rgba(255, 255, 255, 0.25);
     cursor: pointer;
     transition:
-        width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-        background 0.3s ease,
-        border-radius 0.3s ease;
+        width 0.3s ease,
+        background 0.3s ease;
 }
 
 .side-banners__dot--active {
     width: 22px;
-    border-radius: 3px;
     background: rgba(255, 255, 255, 0.9);
 }
 
-.side-banners__dot:hover:not(.side-banners__dot--active) {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-.side-banners__slot .skeleton {
-    display: block;
-}
-
-/* ── Responsive ── */
-@media (max-width: 1200px) {
+/* TABLET */
+@media (max-width: 650px) {
     .side-banners {
-        max-width: 100%;
+        margin: -50px auto 0;
     }
 
-    .side-banners__slot--prev3,
-    .side-banners__slot--next3 {
-        display: none;
-    }
-}
-
-@media (max-width: 768px) {
-    .side-banners {
-        margin-top: -50px;
+    .side-banners__container {
+        gap: 0px;
     }
 
-    .side-banners__slot--prev {
-        transform: translateX(calc(-50% - 120px)) scale(0.8) translateY(12px);
-    }
-
-    .side-banners__slot--next {
-        transform: translateX(calc(50% + 120px)) scale(0.8) translateY(12px);
-    }
-
-    .side-banners__slot--prev2,
-    .side-banners__slot--next2,
-    .side-banners__slot--prev3,
-    .side-banners__slot--next3 {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transform: scale(0);
-        will-change: auto;
-    }
-}
-
-@media (max-width: 500px) {
-    .side-banners {
-        gap: 14px;
-    }
-
-    .side-banners__stage {
-        height: 185px;
+    .side-banners__slide {
+        flex: 0 0 312px;
     }
 
     .side-banner-item {
-        width: 270px;
-        height: 156px;
+        width: 280px;
+        height: 155px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 500px) {
+    .side-banners__slide {
+        flex: 0 0 268px;
     }
 
-    .side-banners__slot--prev {
-        transform: translateX(calc(-50% - 100px)) scale(0.78) translateY(10px);
-    }
-
-    .side-banners__slot--next {
-        transform: translateX(calc(50% + 100px)) scale(0.78) translateY(10px);
-    }
-
-    .side-banners--loading .skeleton {
-        width: 270px !important;
-        height: 156px !important;
+    .side-banner-item {
+        width: 246px;
+        height: 142px;
     }
 }
