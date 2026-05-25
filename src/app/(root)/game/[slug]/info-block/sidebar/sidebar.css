@@ -291,7 +291,7 @@
 .sidebar__confirm-checkbox:checked::after {
     content: '';
     position: absolute;
-    left: 4.8px;
+    left: 4px;
     top: 0px;
     width: 6px;
     height: 10px;
