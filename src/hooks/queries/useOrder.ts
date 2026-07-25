@@ -22,10 +22,11 @@ export function usePlaceOrder() {
             queryClient.invalidateQueries({
                 queryKey: ['manual-orders'],
             });
-            if (data.payment?.confirmation?.confirmation_url) {
-                // Редирект на оплату YooKassa
-                window.location.href =
-                    data.payment.confirmation.confirmation_url;
+            // У Т-Банка ссылка на оплату — плоское поле PaymentURL в ответе
+            // Init, а не data.payment.confirmation.confirmation_url, как было
+            // у ЮKassa.
+            if (data.payment?.PaymentURL) {
+                window.location.href = data.payment.PaymentURL;
             }
         },
         onError() {

@@ -23,6 +23,9 @@ export type DonateHubStatus =
     | 'IN_QUEUE'
     | 'PROGRESS'
     | 'WAIT';
+// Т-Банк сам показывает выбор способа оплаты (карта/СБП/T-Pay) на своей
+// платёжной форме — это поле теперь влияет только на расчёт комиссии на
+// бэкенде (см. commissionRate в order.service.ts), а не выбирает виджет.
 export type PaymentMethod = 'bank_card' | 'sbp';
 
 // ─── OrderItem ────────────────────────────────────────────────────────────────
@@ -94,23 +97,24 @@ export interface IOrderCreate {
 
 // ─── Ответ при создании заказа ────────────────────────────────────────────────
 
-export interface IYooKassaConfirmation {
-    type: string;
-    confirmation_url: string;
-}
-
-export interface IYooKassaPayment {
-    id: string;
-    status: string;
-    amount: { value: string; currency: string };
-    confirmation: IYooKassaConfirmation;
-    description: string;
-    created_at: string;
+// Форма ответа метода Init эквайринга Т-Банка (см. tbank.service.ts на бэкенде).
+// PaymentURL — ссылка, на которую нужно редиректить пользователя для оплаты.
+export interface ITBankPayment {
+    Success: boolean;
+    ErrorCode: string;
+    TerminalKey: string;
+    Status: string;
+    PaymentId: string;
+    OrderId: string;
+    Amount: number; // в копейках
+    PaymentURL?: string;
+    Message?: string;
+    Details?: string;
 }
 
 export interface IOrderCreateResponse {
     order: IOrder;
-    payment: IYooKassaPayment | null; // null для MANUAL заказов
+    payment: ITBankPayment | null; // null для MANUAL заказов
 }
 
 // ─── Manual Order управление ──────────────────────────────────────────────────
