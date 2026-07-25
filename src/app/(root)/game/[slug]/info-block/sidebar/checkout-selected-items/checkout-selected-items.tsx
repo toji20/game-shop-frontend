@@ -1,8 +1,8 @@
 import './checkout-selected-items.css';
-import { IPosition } from '@/shared/types';
+import { IGiftApiProduct } from '@/shared/types/giftapi-product.interface';
 
 interface CheckoutSelectedItemsProps {
-    items: IPosition[];
+    items: IGiftApiProduct[];
 }
 
 export function CheckoutSelectedItems({ items }: CheckoutSelectedItemsProps) {
@@ -12,8 +12,8 @@ export function CheckoutSelectedItems({ items }: CheckoutSelectedItemsProps) {
 
             <div className='checkout-selected-items__list'>
                 {items.map((item) => {
-                    const actualPrice = Number(item.finalPrice ?? item.myPrice);
-                    const oldPrice = Number(item.myPrice);
+                    const actualPrice = Number(item.finalPrice ?? item.price);
+                    const oldPrice = Number(item.price);
                     const hasDiscount = Number(item.discount) > 0;
 
                     return (

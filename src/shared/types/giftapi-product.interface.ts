@@ -3,6 +3,25 @@ import { IPositionCategory } from './position-category.interface';
 
 export type GiftApiOrderType = 'AUTO' | 'MANUAL';
 
+export interface IGiftApiFieldValidation {
+    regex?: string;
+}
+
+export interface IGiftApiField {
+    code: string;
+    name: string;
+    type: string;
+    required: boolean;
+    validation?: IGiftApiFieldValidation;
+    description?: string;
+}
+
+export interface IGiftApiProductAttributes {
+    fields?: IGiftApiField[];
+    skuAttributes?: Record<string, any>;
+    [key: string]: any;
+}
+
 export interface IFaqItem {
     question: string;
     answer: string;
@@ -58,7 +77,7 @@ export interface IGiftApiProduct {
     stock: number;
     maxPerOrder: number;
 
-    attributes?: Record<string, any>;
+    attributes?: IGiftApiProductAttributes;
 
     image?: string | null;
 

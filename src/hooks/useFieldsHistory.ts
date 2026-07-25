@@ -20,14 +20,14 @@ export function useFieldHistory(gameId: number) {
 
     const saveFields = (
         fields: Record<string, string>,
-        gameFields: { id: number; label: string }[],
+        gameFields: { id: string; label: string }[],
     ) => {
         try {
             const raw = localStorage.getItem(storageKey);
             const current: FieldHistory = raw ? JSON.parse(raw) : {};
 
             gameFields.forEach((f) => {
-                const value = fields[String(f.id)]?.trim();
+                const value = fields[f.id]?.trim();
                 if (!value) return;
 
                 const existing = current[f.label] ?? [];

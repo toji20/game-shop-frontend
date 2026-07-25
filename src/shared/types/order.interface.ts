@@ -29,8 +29,9 @@ export type PaymentMethod = 'bank_card' | 'sbp';
 export interface IOrderItem {
     id: string;
     orderId: string;
-    gameId: number;
-    positionId: number;
+    gameId: number | null;
+    positionId: number | null;
+    giftapiProductId: string | null;
     quantity: number;
     price: number;
     fields: Record<string, string> | null;
@@ -43,9 +44,18 @@ export interface IOrderItem {
     updatedAt: string;
 }
 
+// Элемент заказа для создания. Поддерживает два варианта каталога:
+// 1) старый — Position (gameId + positionId)
+// 2) новый — GiftAPI (giftapiProductId)
+// Оба варианта используют одинаковые quantity/price/fields.
 export interface IOrderItemCreate {
-    gameId: number;
-    positionId: number;
+    // ── legacy Position ──
+    gameId?: number;
+    positionId?: number;
+
+    // ── GiftAPI ──
+    giftapiProductId?: string;
+
     quantity: number;
     price: number;
     fields?: Record<string, string>;
