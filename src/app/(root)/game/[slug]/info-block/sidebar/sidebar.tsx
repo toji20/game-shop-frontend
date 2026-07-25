@@ -14,7 +14,6 @@ import { useFieldHistory } from '@/hooks/useFieldsHistory';
 import { saveAccountHistory } from '@/lib/steam-history';
 import { CheckoutWarning } from '@/shared/checkout-warning/checkout-warning';
 import { IGame, IWarningItem, PaymentMethod } from '@/shared/types';
-import { IGiftApiField } from '@/shared/types/giftapi-product.interface';
 import { useCartStore } from '@/store/cart-store';
 import { useSteamStore } from '@/store/steam-store';
 import { AlertTriangle, CircleAlert, Ticket } from 'lucide-react';
@@ -36,6 +35,15 @@ const PAYMENT_METHODS: { key: PaymentMethod; img: string; title: string }[] = [
 const VARIANT_ICONS = {
     danger: CircleAlert,
     alert: AlertTriangle,
+};
+
+// Единый вид поля для рендера, независимо от того, откуда оно взялось:
+// из классического GameField (AUTO-игры) или из attributes.fields
+// конкретного GiftAPI-товара (все остальные типы игр).
+type DisplayField = {
+    key: string;
+    label: string;
+    required: boolean;
 };
 
 export function SideBar({
@@ -123,13 +131,24 @@ export function SideBar({
     // заранее, ещё до того, как пользователь что-то выбрал/добавил в корзину.
     const allGameProducts = game?.giftApiProducts ?? [];
 
-    // ── Поля заказа берём из attributes.fields товаров GiftAPI.
-    // Пока корзина пуста — используем ВСЕ товары игры (чтобы поля были видны
-    // заранее). Как только что-то выбрано — сужаем до полей реально
-    // выбранных товаров, т.к. у разных товаров могут быть разные наборы полей.
-    // Объединяем по code, required = true, если хотя бы один товар этого требует.
-    const productFields: IGiftApiField[] = useMemo(() => {
-        const map = new Map<string, IGiftApiField>();
+    // ── Источник полей заказа зависит от типа игры:
+    //  - AUTO   -> attributes.fields конкретных товаров GiftAPI в корзине
+    //              (эти поля уходят в GiftAPI при автоматической отправке заказа);
+    //  - MANUAL -> классические game.fields — их видит оператор и вводит
+    //              вручную при обработке заказа, GiftAPI не участвует.
+    // Оба варианта приводятся к единому виду { key, label, required }.
+    const isAutoGame = game?.type === 'AUTO';
+
+    const displayFields: DisplayField[] = useMemo(() => {
+        if (!isAutoGame) {
+            return (game?.fields ?? []).map((f) => ({
+                key: String(f.id),
+                label: f.label,
+                required: f.required,
+            }));
+        }
+
+        const map = new Map<string, DisplayField>();
 
         const sourceProducts =
             selectedProducts.length > 0 ? selectedProducts : allGameProducts;
@@ -140,23 +159,23 @@ export function SideBar({
             productFieldList.forEach((field) => {
                 const existing = map.get(field.code);
 
-                if (!existing) {
-                    map.set(field.code, field);
-                    return;
-                }
-
-                if (field.required && !existing.required) {
-                    map.set(field.code, field);
+                if (!existing || (field.required && !existing.required)) {
+                    map.set(field.code, {
+                        key: field.code,
+                        label: field.name,
+                        required: field.required,
+                    });
                 }
             });
         });
 
         return Array.from(map.values());
-    }, [selectedProducts, allGameProducts]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAutoGame, game?.fields, selectedProducts, allGameProducts]);
 
-    const requiredFields = productFields.filter((f) => f.required);
+    const requiredFields = displayFields.filter((f) => f.required);
     const isFieldsFilled = requiredFields.every(
-        (f) => (fields[f.code] ?? '').trim().length > 0,
+        (f) => (fields[f.key] ?? '').trim().length > 0,
     );
     const allConfirmed = requiredFields.length === 0 || !!confirms['all'];
     const canBuy = items.length > 0 && isFieldsFilled && allConfirmed;
@@ -204,15 +223,15 @@ export function SideBar({
             },
             {
                 onSuccess: () => {
-                    if (productFields.length > 0) {
-                        // saveFields из хука — сохраняем историю значений по code полей.
+                    if (displayFields.length > 0) {
+                        // saveFields из хука — сохраняем историю значений по key полей.
                         // Хук исторически ждал GameField[] ({id, label}), поэтому
-                        // приводим IGiftApiField[] к совместимому виду.
+                        // приводим DisplayField[] к совместимому виду.
                         saveFields(
                             fields,
-                            productFields.map((f) => ({
-                                id: f.code,
-                                label: f.name,
+                            displayFields.map((f) => ({
+                                id: f.key,
+                                label: f.label,
                             })),
                         );
                     }
@@ -328,21 +347,20 @@ export function SideBar({
                 </a>
             </div>
 
-            {productFields.length > 0 ? (
-                productFields.map((f) => {
+            {displayFields.length > 0 ? (
+                displayFields.map((f) => {
                     const isServerField =
-                        f.name.toLowerCase().includes('сервер') ||
-                        f.name.toLowerCase().includes('server') ||
-                        f.code.toLowerCase().includes('server');
-                    const suggestions = fieldHistory[f.name] ?? [];
-                    const currentValue = fields[f.code] ?? '';
+                        f.label.toLowerCase().includes('сервер') ||
+                        f.label.toLowerCase().includes('server');
+                    const suggestions = fieldHistory[f.label] ?? [];
+                    const currentValue = fields[f.key] ?? '';
                     const canShowSuggestions =
                         isMounted &&
                         suggestions.length > 0 &&
                         currentValue === '';
 
                     return (
-                        <div key={f.code} className='sidebar__field'>
+                        <div key={f.key} className='sidebar__field'>
                             {isServerField &&
                             game?.servers &&
                             game.servers.length > 0 ? (
@@ -350,11 +368,11 @@ export function SideBar({
                                     className='sidebar__field-input sidebar__field-select'
                                     value={currentValue}
                                     onChange={(e) =>
-                                        setField(f.code, e.target.value)
+                                        setField(f.key, e.target.value)
                                     }
                                 >
                                     <option value='' disabled>
-                                        {f.required ? `${f.name} *` : f.name}
+                                        {f.required ? `${f.label} *` : f.label}
                                     </option>
                                     {game.servers.map((s) => (
                                         <option
@@ -371,10 +389,12 @@ export function SideBar({
                                         className='sidebar__field-input'
                                         value={currentValue}
                                         onChange={(e) =>
-                                            setField(f.code, e.target.value)
+                                            setField(f.key, e.target.value)
                                         }
                                         placeholder={
-                                            f.required ? `${f.name} *` : f.name
+                                            f.required
+                                                ? `${f.label} *`
+                                                : f.label
                                         }
                                     />
                                     {canShowSuggestions && (
@@ -385,7 +405,7 @@ export function SideBar({
                                                     type='button'
                                                     className='sidebar__suggestion'
                                                     onClick={() =>
-                                                        setField(f.code, s)
+                                                        setField(f.key, s)
                                                     }
                                                 >
                                                     {s}
@@ -521,8 +541,8 @@ export function SideBar({
             >
                 Я подтверждаю, что указал верные данные:{' '}
                 {requiredFields.map((f, i) => (
-                    <span key={f.code}>
-                        <b>{f.name.toLowerCase()}</b>
+                    <span key={f.key}>
+                        <b>{f.label.toLowerCase()}</b>
                         {i < requiredFields.length - 1 ? ', ' : ''}
                     </span>
                 ))}

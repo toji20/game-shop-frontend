@@ -1,5 +1,6 @@
 import { IGame } from './game.interface';
 import { IPosition } from './game.interface';
+import { IGiftApiProduct } from './giftapi-product.interface';
 import { IUser } from './user.interface';
 
 export type OrderStatus =
@@ -40,6 +41,11 @@ export interface IOrderItem {
     donateHubError: string | null;
     game?: IGame;
     position?: IPosition;
+    // GiftAPI-товар этой позиции заказа (бэкенд подгружает его через
+    // include: { giftapiProduct: { include: { game: true } } }).
+    // giftapiProduct.game — игра, к которой привязан товар (может быть null,
+    // если товар ни к какой игре не привязан).
+    giftapiProduct?: IGiftApiProduct;
     createdAt: string;
     updatedAt: string;
 }

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IGame } from './game.interface';
 import { IPositionCategory } from './position-category.interface';
 
 export type GiftApiOrderType = 'AUTO' | 'MANUAL';
@@ -80,6 +81,7 @@ export interface IGiftApiProduct {
     attributes?: IGiftApiProductAttributes;
 
     image?: string | null;
+    game: IGame;
 
     isActive: boolean;
     isPublic: boolean;

@@ -21,7 +21,8 @@ export default function OrderPage({ id, initialOrder }: OrderPageProps) {
     });
 
     const item = order?.items?.[0];
-    const game = item?.position?.game;
+
+    const game = item?.position?.game ?? item?.giftapiProduct?.game;
 
     if (!order || !game) return null;
 

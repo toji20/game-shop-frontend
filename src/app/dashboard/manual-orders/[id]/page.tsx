@@ -100,22 +100,34 @@ export default function ManualOrderPage() {
                         style={{ width: '100%' }}
                     >
                         <p className='order-card__section-title'>Позиции</p>
-                        {order.items.map((item) => (
-                            <div key={item.id} className='order-card__item'>
-                                <div className='order-card__item-info'>
-                                    <span className='order-card__item-name'>
-                                        {item.game?.name} —{' '}
-                                        {item.position?.name}
-                                    </span>
-                                    <span className='order-card__item-qty'>
-                                        × {item.quantity}
-                                    </span>
-                                </div>
-                                {item.fields &&
-                                    Object.keys(item.fields).length > 0 && (
-                                        <div className='order-card__fields'>
-                                            {Object.entries(item.fields).map(
-                                                ([key, val]) => (
+                        {order.items.map((item) => {
+                            const productName =
+                                item.giftapiProduct?.name ??
+                                item.position?.name ??
+                                'Товар';
+
+                            const gameName =
+                                item.game?.name ??
+                                item.giftapiProduct?.game?.name;
+
+                            return (
+                                <div key={item.id} className='order-card__item'>
+                                    <div className='order-card__item-info'>
+                                        <span className='order-card__item-name'>
+                                            {gameName
+                                                ? `${gameName} — ${productName}`
+                                                : productName}
+                                        </span>
+                                        <span className='order-card__item-qty'>
+                                            × {item.quantity}
+                                        </span>
+                                    </div>
+                                    {item.fields &&
+                                        Object.keys(item.fields).length > 0 && (
+                                            <div className='order-card__fields'>
+                                                {Object.entries(
+                                                    item.fields,
+                                                ).map(([key, val]) => (
                                                     <div
                                                         key={key}
                                                         className='order-card__field'
@@ -127,12 +139,12 @@ export default function ManualOrderPage() {
                                                             {val}
                                                         </span>
                                                     </div>
-                                                ),
-                                            )}
-                                        </div>
-                                    )}
-                            </div>
-                        ))}
+                                                ))}
+                                            </div>
+                                        )}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
