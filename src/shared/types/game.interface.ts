@@ -1,4 +1,5 @@
 import { ICategory } from './category.interface';
+import { IGiftApiProduct } from './giftapi-product.interface';
 import { IPositionCategory } from './position-category.interface';
 import { IReview } from './review.interface';
 
@@ -85,6 +86,7 @@ export interface IGame {
     fields?: IGameField[];
     servers?: IGameServer[];
     positions?: IPosition[];
+    giftApiProducts?: IGiftApiProduct[];
     reviews?: IReview[];
     ageLimit: string;
     genre: string;

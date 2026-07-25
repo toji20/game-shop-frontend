@@ -5,6 +5,7 @@ import AvatarSection from './sections/AvatarSection';
 import BannersSection from './sections/BannersSection';
 import CategoriesSection from './sections/CategoriesSection';
 import GamesSection from './sections/GamesSection';
+import GiftApiProductsSection from './sections/GiftApiProductsSection';
 import OrdersSection from './sections/OrderSection';
 import PositionCategoriesSection from './sections/PositionCategorySection';
 import PromoCodesSection from './sections/PromoCodesSection';
@@ -16,6 +17,7 @@ import { useState } from 'react';
 
 type Section =
     | 'games'
+    | 'giftapi-products'
     | 'categories'
     | 'position-categories'
     | 'banners'
@@ -29,6 +31,7 @@ type Section =
 
 const NAV: { id: Section; label: string; icon: string }[] = [
     { id: 'games', label: 'Игры', icon: '🎮' },
+    { id: 'giftapi-products', label: 'Гифтапи продукты', icon: '🎁' },
     { id: 'categories', label: 'Категории', icon: '📂' },
     { id: 'position-categories', label: 'Категории позиций', icon: '🧩' },
     { id: 'banners', label: 'Баннеры', icon: '🖼️' },
@@ -66,6 +69,7 @@ export default function AdminDashboard() {
 
             <main className='dashboard__content'>
                 {active === 'games' && <GamesSection />}
+                {active === 'giftapi-products' && <GiftApiProductsSection />}
                 {active === 'categories' && <CategoriesSection />}
                 {active === 'position-categories' && (
                     <PositionCategoriesSection />

@@ -86,5 +86,7 @@ export const DASHBOARD_URL = {
     userById: (id: string) => DASHBOARD_URL.root(`/users/${id}`),
 
     gamePositions: (id: number) => `/dashboard/games/${id}/positions`,
+    gameGiftApiProducts: (gameId: number) =>
+        `/dashboard/games/${gameId}/giftapi-products`,
     gameFields: (id: number) => `/dashboard/games/${id}/fields`,
 };

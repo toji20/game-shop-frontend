@@ -512,13 +512,13 @@ export default function GamesSection() {
                                                 className='btn btn--ghost btn--sm'
                                                 onClick={() =>
                                                     router.push(
-                                                        DASHBOARD_URL.gamePositions(
+                                                        DASHBOARD_URL.gameGiftApiProducts(
                                                             g.id,
                                                         ),
                                                     )
                                                 }
                                             >
-                                                Позиции
+                                                Гифтапи товары
                                             </button>
                                             <button
                                                 className='btn btn--ghost btn--sm'

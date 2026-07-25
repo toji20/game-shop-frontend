@@ -3,7 +3,7 @@
 import { PositionItem } from '../position-item/position-item';
 import './positions.css';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
-import { IPosition } from '@/shared/types';
+import { IGiftApiProduct } from '@/shared/types/giftapi-product.interface';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
@@ -12,7 +12,7 @@ const COLS = 3;
 const INITIAL_COUNT = INITIAL_ROWS * COLS;
 
 interface PositionsProps {
-    items: IPosition[];
+    items: IGiftApiProduct[];
     gameId: number;
     gameName?: string;
     selectedCategory?: number | null;
@@ -38,7 +38,9 @@ export function Positions({
 
     const filtered =
         selectedCategory !== null
-            ? items.filter((item) => item.categoryId === selectedCategory)
+            ? items.filter(
+                  (item) => item.positionCategoryId === selectedCategory,
+              )
             : items;
 
     const hasMore = filtered.length > INITIAL_COUNT;
@@ -47,13 +49,15 @@ export function Positions({
     return (
         <div className='positions'>
             <div
-                className={`positions-block-wrap ${!expanded && hasMore ? 'positions-block-wrap--faded' : ''}`}
+                className={`positions-block-wrap ${
+                    !expanded && hasMore ? 'positions-block-wrap--faded' : ''
+                }`}
             >
                 <div className='positions-block'>
                     {visible.map((item) => (
                         <PositionItem
-                            item={item}
                             key={item.id}
+                            item={item}
                             gameId={gameId}
                             gameName={gameName}
                         />
@@ -65,7 +69,9 @@ export function Positions({
 
             {hasMore && (
                 <button
-                    className={`positions-more-btn ${expanded ? 'positions-more-btn--expanded' : ''}`}
+                    className={`positions-more-btn ${
+                        expanded ? 'positions-more-btn--expanded' : ''
+                    }`}
                     onClick={() => setExpanded((v) => !v)}
                 >
                     <span>
@@ -73,6 +79,7 @@ export function Positions({
                             ? 'Свернуть'
                             : `Показать ещё ${filtered.length - INITIAL_COUNT}`}
                     </span>
+
                     <ChevronDown
                         size={16}
                         className='positions-more-btn__icon'

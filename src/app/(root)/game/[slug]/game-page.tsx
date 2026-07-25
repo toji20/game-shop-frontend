@@ -195,9 +195,9 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
     }
 
     const hasFaq = Array.isArray(game.faq) && game.faq.length > 0;
-    const selectedItem = items[0]?.position;
+    const selectedItem = items[0]?.product;
     const selectedPrice = selectedItem
-        ? Number(selectedItem.finalPrice ?? selectedItem.myPrice)
+        ? Number(selectedItem.finalPrice ?? selectedItem.price)
         : 0;
     const hasDiscount = selectedItem && Number(selectedItem.discount) > 0;
     const mobileBarLabel =
@@ -208,8 +208,8 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
 
     const categoriesWithItems =
         game.positionCategories?.filter((category) =>
-            (game.positions ?? []).some(
-                (position) => position.categoryId === category.id,
+            (game.giftApiProducts ?? []).some(
+                (position) => position.positionCategoryId === category.id,
             ),
         ) ?? [];
 
@@ -305,7 +305,7 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                             <SteamTopUp />
                         ) : (
                             <Positions
-                                items={game.positions ?? []}
+                                items={game.giftApiProducts ?? []}
                                 gameId={game.id}
                                 gameName={game.name}
                                 selectedCategory={selectedPositionCategory}
