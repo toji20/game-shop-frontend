@@ -17,6 +17,7 @@ import {
 import { usePositionCategoryByGame } from '@/hooks/queries/usePositionCategory';
 import ImageUpload from '@/shared/ImageUpload';
 import {
+    IGiftApiField,
     IGiftApiProduct,
     IGiftApiProductUpdate,
 } from '@/shared/types/giftapi-product.interface';
@@ -35,6 +36,9 @@ type EditState = {
     isPublic: boolean;
     gameId: string;
     positionCategoryId: string;
+    // Поля, которые заполняет покупатель при заказе (attributes.fields из GiftAPI).
+    // Только для отображения — редактируются на стороне GiftAPI, не здесь.
+    fields: IGiftApiField[];
 };
 
 function toEdit(p: IGiftApiProduct): EditState {
@@ -53,6 +57,7 @@ function toEdit(p: IGiftApiProduct): EditState {
         positionCategoryId: p.positionCategoryId
             ? String(p.positionCategoryId)
             : '',
+        fields: p.attributes?.fields ?? [],
     };
 }
 
@@ -673,6 +678,37 @@ export default function GiftApiProductsSection() {
                                         </option>
                                     ))}
                                 </select>
+                            </div>
+                        )}
+
+                        {/* Поля, которые заполняет покупатель при заказе.
+                            Приходят из GiftAPI (attributes.fields), здесь только
+                            просмотр — редактировать их нельзя, это не наши данные. */}
+                        {editing.fields.length > 0 && (
+                            <div className='form-group'>
+                                <label className='form-label'>
+                                    Поля для заполнения покупателем
+                                </label>
+                                <div className='admin-readonly-fields'>
+                                    {editing.fields.map((f) => (
+                                        <div
+                                            key={f.code}
+                                            className='admin-readonly-fields__item'
+                                        >
+                                            <span className='admin-readonly-fields__name'>
+                                                {f.name}
+                                            </span>
+                                            <span className='admin-readonly-fields__code'>
+                                                {f.code}
+                                            </span>
+                                            {f.required && (
+                                                <span className='badge badge--red'>
+                                                    Обязательное
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
 

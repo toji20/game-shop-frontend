@@ -539,6 +539,36 @@
     margin-top: 2px;
 }
 
+/* ── GiftAPI product fields (read-only, в модалке редактирования) ── */
+.admin-readonly-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-readonly-fields__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 11px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+}
+
+.admin-readonly-fields__name {
+    font-size: 0.84rem;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.admin-readonly-fields__code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
 /* ── Orders search ── */
 .orders-search {
     display: flex;
