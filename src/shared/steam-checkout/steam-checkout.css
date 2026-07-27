@@ -1,0 +1,206 @@
+.steam-checkout {
+    background: #17181c;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.steam-checkout__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.steam-checkout__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+}
+
+.steam-checkout__title {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.steam-checkout__desc {
+    color: #9a9aa2;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.steam-checkout__label {
+    color: #9a9aa2;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.steam-checkout__input {
+    width: 100%;
+    background: #232427;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: #fff;
+    font-size: 15px;
+}
+
+.steam-checkout__amount-row {
+    display: flex;
+    gap: 8px;
+}
+
+.steam-checkout__input--amount {
+    flex: 1;
+}
+
+.steam-checkout__currency-toggle {
+    display: flex;
+    background: #232427;
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.steam-checkout__currency-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    color: #9a9aa2;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.steam-checkout__currency-btn--active {
+    background: #fff;
+    color: #17181c;
+}
+
+.steam-checkout__quick-amounts {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.steam-checkout__quick-btn {
+    background: #232427;
+    color: #9a9aa2;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+}
+
+.steam-checkout-sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.steam-checkout-sidebar__payment {
+    display: flex;
+    gap: 8px;
+}
+
+.steam-checkout-sidebar__payment-btn {
+    flex: 1;
+    background: #232427;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #9a9aa2;
+}
+
+.steam-checkout-sidebar__payment-btn--active {
+    background: #fff;
+    color: #17181c;
+}
+
+.steam-checkout-sidebar {
+    background: #17181c;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.steam-checkout-sidebar__total-row {
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.steam-checkout-sidebar__row {
+    display: flex;
+    justify-content: space-between;
+    color: #9a9aa2;
+    font-size: 14px;
+}
+
+.steam-checkout-sidebar__promo {
+    display: flex;
+    gap: 8px;
+}
+
+.steam-checkout-sidebar__promo-input-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #232427;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.steam-checkout-sidebar__promo-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    outline: none;
+}
+
+.steam-checkout-sidebar__buy-btn {
+    background: #fff;
+    color: #17181c;
+    border-radius: 999px;
+    padding: 16px;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.steam-checkout-sidebar__buy-btn:disabled {
+    opacity: 0.5;
+}
+
+.steam-checkout-sidebar__terms {
+    color: #6b6b72;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.5;
+}
+.steam-checkout__amount-hint {
+    color: #6b6b72;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.steam-checkout__amount-hint--error {
+    color: #f87171;
+}
+
+.steam-checkout__input--error {
+    outline: 1px solid #f87171;
+}
+
+.steam-checkout__quick-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

@@ -6,15 +6,16 @@ import { Instructions } from './info-block/instructions/instructions';
 import { SideBar } from './info-block/sidebar/sidebar';
 import { Positions } from './positions/positions';
 import NotFound from '@/app/not-found';
-import { SteamTopUp } from '@/components/steam/steam-topup';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
+import { useApproxExchangeRates } from '@/hooks/useApproxExchangeRates';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import { gameService } from '@/services/game.service';
 import { CheckoutWarning } from '@/shared/checkout-warning/checkout-warning';
 import { Reviews } from '@/shared/reviews/reviews';
+import { SteamCheckoutForm } from '@/shared/steam-checkout/steam-checkout-form';
+import { SteamCheckoutSidebar } from '@/shared/steam-checkout/steam-checkout-sidebar';
 import { IGame, IWarningItem } from '@/shared/types';
 import { useCartStore } from '@/store/cart-store';
-import { useSteamStore } from '@/store/steam-store';
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, CircleAlert, X } from 'lucide-react';
 import Link from 'next/link';
@@ -38,24 +39,19 @@ interface GamePageProps {
 export default function GamePage({ slug, initialGame }: GamePageProps) {
     const [tab, setTab] = useState<Tab>('instructions');
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-    const [isSteamCheckoutOpen, setIsSteamCheckoutOpen] = useState(false);
     const [selectedPositionCategory, setSelectedPositionCategory] = useState<
         number | null
     >(null);
 
-    const isSteam = slug.toLowerCase().includes('steam');
     const path = usePathname();
 
     const { items, total } = useCartStore();
 
-    const { checkResult, paymentMethod: steamPaymentMethod } = useSteamStore();
-    const steamTotal =
-        checkResult == null
-            ? null
-            : steamPaymentMethod === 'sbp'
-              ? checkResult.totalRubSbp
-              : checkResult.totalRubCard;
-    const isSteamReady = steamTotal !== null;
+    // Курс ЦБ нужен только для товаров с denominationType='custom'
+    // (например, пополнение Steam на произвольную сумму) — для отображения
+    // ПРИБЛИЗИТЕЛЬНОЙ суммы на фронте до оформления заказа. Дёшево вызывать
+    // всегда, даже если на странице нет такого товара — просто не используется.
+    useApproxExchangeRates();
 
     const { data: game, isLoading } = useQuery<IGame | null>({
         queryKey: ['get game', slug],
@@ -96,8 +92,7 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
     useEffect(() => {
-        const isOpen = isCheckoutOpen || isSteamCheckoutOpen;
-        if (!isOpen) {
+        if (!isCheckoutOpen) {
             document.body.style.overflow = '';
             return;
         }
@@ -105,7 +100,7 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
         return () => {
             document.body.style.overflow = '';
         };
-    }, [isCheckoutOpen, isSteamCheckoutOpen]);
+    }, [isCheckoutOpen]);
 
     useEffect(() => {
         if (!items.length) {
@@ -143,41 +138,35 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                                 <Skeleton width={120} height={14} />
                                 <div className='game-page__title-row'>
                                     <Skeleton width={300} height={40} />
-                                    {!isSteam && (
-                                        <div className='game-page__pos-filters-wrap game-page__pos-filters-wrap--skeleton'>
-                                            <div className='game-page__pos-filters-skeleton'>
-                                                {FILTER_SKELETON_WIDTHS.map(
-                                                    (width, index) => (
-                                                        <Skeleton
-                                                            key={index}
-                                                            width={width}
-                                                            height={36}
-                                                            borderRadius={999}
-                                                        />
-                                                    ),
-                                                )}
-                                            </div>
+                                    <div className='game-page__pos-filters-wrap game-page__pos-filters-wrap--skeleton'>
+                                        <div className='game-page__pos-filters-skeleton'>
+                                            {FILTER_SKELETON_WIDTHS.map(
+                                                (width, index) => (
+                                                    <Skeleton
+                                                        key={index}
+                                                        width={width}
+                                                        height={36}
+                                                        borderRadius={999}
+                                                    />
+                                                ),
+                                            )}
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
                             </div>
-                            {!isSteam ? (
-                                <div className='positions-block'>
-                                    {Array.from({ length: 6 }).map((_, i) => (
-                                        <div
-                                            className='positions-item-skeleton'
-                                            key={i}
-                                        >
-                                            <Skeleton
-                                                height='100%'
-                                                borderRadius={12}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <SteamTopUp />
-                            )}
+                            <div className='positions-block'>
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                    <div
+                                        className='positions-item-skeleton'
+                                        key={i}
+                                    >
+                                        <Skeleton
+                                            height='100%'
+                                            borderRadius={12}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                             <Skeleton height={40} width={200} />
                             <Skeleton height={366} />
                         </div>
@@ -212,6 +201,8 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                 (position) => position.positionCategoryId === category.id,
             ),
         ) ?? [];
+
+    const isSteamGame = game.slug === 'steam';
 
     const hasPositionCategories = categoriesWithItems.length > 0;
 
@@ -255,7 +246,7 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                                     {game.name}
                                 </h1>
 
-                                {!isSteam && hasPositionCategories && (
+                                {hasPositionCategories && (
                                     <div className='game-page__pos-filters-wrap'>
                                         <div
                                             className='game-page__pos-filters'
@@ -301,8 +292,8 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                             )}
                         </div>
 
-                        {isSteam ? (
-                            <SteamTopUp />
+                        {isSteamGame ? (
+                            <SteamCheckoutForm game={game} />
                         ) : (
                             <Positions
                                 items={game.giftApiProducts ?? []}
@@ -365,16 +356,20 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                         ref={sidebarRef}
                         style={{ top: '130px' }}
                     >
-                        <SideBar
-                            game={game}
-                            isLoading={isLoading}
-                            onShowInstructions={handleShowInstructions}
-                        />
+                        {isSteamGame ? (
+                            <SteamCheckoutSidebar game={game} />
+                        ) : (
+                            <SideBar
+                                game={game}
+                                isLoading={isLoading}
+                                onShowInstructions={handleShowInstructions}
+                            />
+                        )}
                     </div>
                 </div>
             </div>
 
-            {!isSteam && items.length > 0 && selectedItem && (
+            {items.length > 0 && selectedItem && (
                 <div className='mobile-cart-bar'>
                     <div className='mobile-cart-bar__item'>
                         <img
@@ -415,18 +410,6 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                 </div>
             )}
 
-            {isSteam && (
-                <div className='mobile-cart-bar mobile-cart-bar--steam'>
-                    <button
-                        className='mobile-cart-bar__button mobile-cart-bar__button--full mobile-cart-bar__button--steam-continue'
-                        disabled={!isSteamReady}
-                        onClick={() => setIsSteamCheckoutOpen(true)}
-                    >
-                        {isSteamReady ? 'Продолжить' : 'Рассчитываем сумму...'}
-                    </button>
-                </div>
-            )}
-
             {isCheckoutOpen && (
                 <div
                     className='mobile-checkout-modal'
@@ -439,33 +422,6 @@ export default function GamePage({ slug, initialGame }: GamePageProps) {
                         <button
                             className='mobile-checkout-modal__close'
                             onClick={() => setIsCheckoutOpen(false)}
-                            aria-label='Закрыть окно оплаты'
-                        >
-                            <X size={20} />
-                        </button>
-                        <SideBar
-                            game={game}
-                            isLoading={isLoading}
-                            mode='mobile'
-                            onRequestClose={() => setIsCheckoutOpen(false)}
-                            onShowInstructions={handleShowInstructions}
-                        />
-                    </div>
-                </div>
-            )}
-
-            {isSteamCheckoutOpen && (
-                <div
-                    className='mobile-checkout-modal'
-                    onClick={() => setIsSteamCheckoutOpen(false)}
-                >
-                    <div
-                        className='mobile-checkout-modal__dialog'
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            className='mobile-checkout-modal__close'
-                            onClick={() => setIsSteamCheckoutOpen(false)}
                             aria-label='Закрыть окно оплаты'
                         >
                             <X size={20} />

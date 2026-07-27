@@ -6,16 +6,11 @@ import './sidebar.css';
 import { Skeleton } from '@/components/ui/skeleton/skeleton';
 import { usePlaceOrder } from '@/hooks/queries/useOrder';
 import { useCheckPromo } from '@/hooks/queries/usePromo';
-import {
-    useCheckSteam,
-    usePlaceSteamOrder,
-} from '@/hooks/queries/useSteamOrder';
 import { useFieldHistory } from '@/hooks/useFieldsHistory';
-import { saveAccountHistory } from '@/lib/steam-history';
 import { CheckoutWarning } from '@/shared/checkout-warning/checkout-warning';
 import { IGame, IWarningItem, PaymentMethod } from '@/shared/types';
+import { IGiftApiFieldValidation } from '@/shared/types/giftapi-product.interface';
 import { useCartStore } from '@/store/cart-store';
-import { useSteamStore } from '@/store/steam-store';
 import { AlertTriangle, CircleAlert, Ticket } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -37,13 +32,21 @@ const VARIANT_ICONS = {
     alert: AlertTriangle,
 };
 
+// Комиссия сервиса за пополнение товаров с произвольной суммой (например,
+// Steam-кошелёк) — используется здесь ТОЛЬКО для отображения примерного %.
+// Совпадает с GIFTAPI_CUSTOM_TOPUP_COMMISSION на бэкенде (order.service.ts).
+const APPROX_CUSTOM_TOPUP_COMMISSION_PERCENT = 4;
+
 // Единый вид поля для рендера, независимо от того, откуда оно взялось:
-// из классического GameField (AUTO-игры) или из attributes.fields
-// конкретного GiftAPI-товара (все остальные типы игр).
+// из классического GameField (MANUAL-игры) или из attributes.fields
+// конкретного GiftAPI-товара (AUTO-игры, включая пополнение на произвольную
+// сумму вроде Steam — там же лежит поле "amount").
 type DisplayField = {
     key: string;
     label: string;
     required: boolean;
+    fieldType?: string; // 'string' | 'decimal' и т.п. — только у GiftAPI-полей
+    validation?: IGiftApiFieldValidation; // { regex? } — только у GiftAPI-полей
 };
 
 export function SideBar({
@@ -52,24 +55,13 @@ export function SideBar({
     mode = 'desktop',
     onShowInstructions,
 }: SideBarProps) {
-    const isSteam = game?.slug?.toLowerCase().includes('steam');
     const isMobile = mode === 'mobile';
 
-    const { items, fields, setField, total } = useCartStore();
+    const { items, fields, setField, total, hasApproxPricedItem } =
+        useCartStore();
     const selectedProducts = items.map((item) => item.product);
-    const { checkSteam, isChecking } = useCheckSteam();
 
     const { placeOrder, isLoadingPlace } = usePlaceOrder();
-    const {
-        account,
-        amount,
-        currency,
-        paymentMethod: steamPaymentMethod,
-        setPaymentMethod: setSteamPaymentMethod,
-        checkResult,
-    } = useSteamStore();
-    const { placeSteamOrder, isLoadingPlace: isLoadingSteam } =
-        usePlaceSteamOrder();
     const { checkPromo, isCheckingPromo, promoData, promoError, resetPromo } =
         useCheckPromo();
 
@@ -88,7 +80,7 @@ export function SideBar({
     }, []);
 
     const rawTotal = total();
-    const discount = !isSteam ? (promoData?.discount ?? 0) : 0;
+    const discount = promoData?.discount ?? 0;
     const afterDiscount =
         discount > 0 ? +(rawTotal * (1 - discount / 100)).toFixed(2) : rawTotal;
 
@@ -106,26 +98,7 @@ export function SideBar({
     ).toFixed(2);
     const finalTotal = +(afterDiscount * commissionRate).toFixed(2);
 
-    const STEAM_SERVICE_COMMISSION_PERCENT = 6;
-    const steamBankCommissionPercent = steamPaymentMethod === 'sbp' ? 1 : 2;
-
-    const steamTotal =
-        checkResult == null
-            ? null
-            : steamPaymentMethod === 'sbp'
-              ? checkResult.totalRubSbp
-              : checkResult.totalRubCard;
-    const currencySymbol =
-        currency === 'RUB' ? '₽' : currency === 'KZT' ? '₸' : '$';
-
-    const steamTotalWithDiscount =
-        steamTotal === null
-            ? null
-            : promoData?.discount
-              ? +(steamTotal * (1 - promoData.discount / 100)).toFixed(2)
-              : steamTotal;
-
-    const isSteamAmountLoading = isSteam && isChecking;
+    const isApprox = hasApproxPricedItem();
 
     // ── Все товары игры (не только выбранные) — нужны, чтобы показать поля
     // заранее, ещё до того, как пользователь что-то выбрал/добавил в корзину.
@@ -133,10 +106,12 @@ export function SideBar({
 
     // ── Источник полей заказа зависит от типа игры:
     //  - AUTO   -> attributes.fields конкретных товаров GiftAPI в корзине
-    //              (эти поля уходят в GiftAPI при автоматической отправке заказа);
+    //              (эти поля уходят в GiftAPI при автоматической отправке заказа;
+    //              сюда же попадает "amount" у товаров с произвольной суммой,
+    //              например пополнение Steam);
     //  - MANUAL -> классические game.fields — их видит оператор и вводит
     //              вручную при обработке заказа, GiftAPI не участвует.
-    // Оба варианта приводятся к единому виду { key, label, required }.
+    // Оба варианта приводятся к единому виду DisplayField.
     const isAutoGame = game?.type === 'AUTO';
 
     const displayFields: DisplayField[] = useMemo(() => {
@@ -164,6 +139,8 @@ export function SideBar({
                         key: field.code,
                         label: field.name,
                         required: field.required,
+                        fieldType: field.type,
+                        validation: field.validation,
                     });
                 }
             });
@@ -183,29 +160,10 @@ export function SideBar({
     const handleApplyPromo = () => {
         const code = promoCode.trim();
         if (!code) return;
-        checkPromo({ code, target: isSteam ? 'STEAM' : 'GAME' });
+        checkPromo({ code, target: 'GAME' });
     };
 
     const handleBuy = () => {
-        if (isSteam) {
-            if (!account || !amount || steamTotalWithDiscount === null) return;
-            placeSteamOrder(
-                {
-                    account,
-                    amount,
-                    currency,
-                    paymentMethod: steamPaymentMethod,
-                    promoCode: promoCode.trim() || undefined,
-                },
-                {
-                    onSuccess: () => {
-                        saveAccountHistory(account);
-                    },
-                },
-            );
-            return;
-        }
-
         if (!canBuy || !game) return;
 
         placeOrder(
@@ -244,24 +202,14 @@ export function SideBar({
         <div className='sidebar__payment'>
             <div className='sidebar__payment-methods'>
                 {PAYMENT_METHODS.map((m) => {
-                    const isActive = isSteam
-                        ? steamPaymentMethod === m.key
-                        : paymentMethod === m.key;
+                    const isActive = paymentMethod === m.key;
 
                     return (
                         <button
                             key={m.key}
                             type='button'
                             className={`sidebar__payment-btn ${isActive ? 'sidebar__payment-btn--active' : ''}`}
-                            onClick={() => {
-                                if (isSteam) {
-                                    setSteamPaymentMethod(
-                                        m.key as 'bank_card' | 'sbp',
-                                    );
-                                } else {
-                                    setPaymentMethod(m.key);
-                                }
-                            }}
+                            onClick={() => setPaymentMethod(m.key)}
                         >
                             <img
                                 src={m.img}
@@ -352,6 +300,7 @@ export function SideBar({
                     const isServerField =
                         f.label.toLowerCase().includes('сервер') ||
                         f.label.toLowerCase().includes('server');
+                    const isDecimalField = f.fieldType === 'decimal';
                     const suggestions = fieldHistory[f.label] ?? [];
                     const currentValue = fields[f.key] ?? '';
                     const canShowSuggestions =
@@ -387,6 +336,20 @@ export function SideBar({
                                 <>
                                     <input
                                         className='sidebar__field-input'
+                                        type={
+                                            isDecimalField ? 'number' : 'text'
+                                        }
+                                        step={
+                                            isDecimalField ? 'any' : undefined
+                                        }
+                                        // Нативная HTML-валидация по regex работает только
+                                        // для type="text" — для number браузер её игнорирует,
+                                        // поэтому для decimal-полей pattern не выставляем.
+                                        pattern={
+                                            !isDecimalField
+                                                ? f.validation?.regex
+                                                : undefined
+                                        }
                                         value={currentValue}
                                         onChange={(e) =>
                                             setField(f.key, e.target.value)
@@ -433,42 +396,20 @@ export function SideBar({
                 <span className='sidebar__summary-total-value'>
                     {isLoading ? (
                         <Skeleton width={80} height={22} />
-                    ) : isSteam ? (
-                        steamTotal !== null ? (
-                            `${steamTotalWithDiscount!.toLocaleString('ru-RU')} ₽`
-                        ) : isChecking ? (
-                            <Skeleton width={120} height={22} />
-                        ) : (
-                            '—'
-                        )
                     ) : (
-                        `${finalTotal.toLocaleString('ru-RU')} ₽`
+                        `${isApprox ? '~' : ''}${finalTotal.toLocaleString('ru-RU')} ₽`
                     )}
                 </span>
             </div>
 
-            {!isLoading && isSteam && (
-                <>
-                    <div className='sidebar__summary-row sidebar__summary-row--commission'>
-                        <span>Комиссия Steam</span>
-                        <span>{STEAM_SERVICE_COMMISSION_PERCENT}%</span>
-                    </div>
-
-                    <div className='sidebar__summary-row sidebar__summary-row--commission'>
-                        <span>Комиссия банка</span>
-                        <span>{steamBankCommissionPercent}%</span>
-                    </div>
-
-                    {promoData && (
-                        <div className='sidebar__summary-row sidebar__summary-row--discount'>
-                            <span>Скидка по промокоду</span>
-                            <span>-{promoData.discount}%</span>
-                        </div>
-                    )}
-                </>
+            {!isLoading && isApprox && (
+                <div className='sidebar__summary-row sidebar__summary-row--commission'>
+                    <span>Комиссия сервиса (ориентировочно)</span>
+                    <span>{APPROX_CUSTOM_TOPUP_COMMISSION_PERCENT}%</span>
+                </div>
             )}
 
-            {!isLoading && !isSteam && (
+            {!isLoading && (
                 <>
                     {discount > 0 && (
                         <div className='sidebar__summary-row sidebar__summary-row--discount'>
@@ -485,16 +426,23 @@ export function SideBar({
                             +{commissionAmount.toLocaleString('ru-RU')} ₽
                         </span>
                     </div>
+
+                    {/* TODO: сюда добавить предупреждение, что итоговая стоимость
+                        может измениться из-за разницы в курсах — для товаров
+                        с isApprox === true */}
                 </>
             )}
 
-            {isMobile && !isLoading && !isSteam && items.length > 0 && (
+            {isMobile && !isLoading && items.length > 0 && (
                 <>
                     <div className='sidebar__summary-divider' />
 
                     <div className='sidebar__summary-row'>
                         <span>Сумма</span>
-                        <span>{rawTotal.toLocaleString('ru-RU')} ₽</span>
+                        <span>
+                            {isApprox ? '~' : ''}
+                            {rawTotal.toLocaleString('ru-RU')} ₽
+                        </span>
                     </div>
 
                     {discount > 0 && (
@@ -515,7 +463,10 @@ export function SideBar({
 
                     <div className='sidebar__summary-row sidebar__summary-row--accent'>
                         <span>Итого к оплате</span>
-                        <span>{finalTotal.toLocaleString('ru-RU')} ₽</span>
+                        <span>
+                            {isApprox ? '~' : ''}
+                            {finalTotal.toLocaleString('ru-RU')} ₽
+                        </span>
                     </div>
                 </>
             )}
@@ -556,29 +507,14 @@ export function SideBar({
         <button
             type='button'
             className='sidebar__btn'
-            disabled={
-                isSteam
-                    ? !account ||
-                      !amount ||
-                      steamTotal === null ||
-                      isLoadingSteam
-                    : !canBuy || isLoadingPlace
-            }
+            disabled={!canBuy || isLoadingPlace}
             onClick={handleBuy}
         >
-            {isSteam
-                ? isLoadingSteam
-                    ? 'Переход...'
-                    : isSteamAmountLoading && steamTotal === null
-                      ? 'Рассчитываем сумму...'
-                      : steamTotal !== null
-                        ? `Оплатить ${steamTotalWithDiscount!.toLocaleString('ru-RU')} ₽`
-                        : `Пополнить ${amount.toLocaleString('ru-RU')} ${currencySymbol}`
-                : isLoadingPlace
-                  ? 'Переход к оплате...'
-                  : items.length
-                    ? `Оплатить ${finalTotal.toLocaleString('ru-RU')} ₽`
-                    : 'Выберите позиции'}
+            {isLoadingPlace
+                ? 'Переход к оплате...'
+                : items.length
+                  ? `Оплатить ${isApprox ? '~' : ''}${finalTotal.toLocaleString('ru-RU')} ₽`
+                  : 'Выберите позиции'}
         </button>
     );
 
@@ -610,14 +546,10 @@ export function SideBar({
                         {promoSection}
                     </div>
 
-                    {!isSteam && (
-                        <div className='sidebar__mobile-section'>
-                            <p className='sidebar__section-title'>
-                                Ваши данные
-                            </p>
-                            {fieldsSection}
-                        </div>
-                    )}
+                    <div className='sidebar__mobile-section'>
+                        <p className='sidebar__section-title'>Ваши данные</p>
+                        {fieldsSection}
+                    </div>
 
                     {summarySection}
 
@@ -647,7 +579,7 @@ export function SideBar({
             <div className='sidebar'>
                 {summarySection}
                 {promoSection}
-                {!isSteam && fieldsSection}
+                {fieldsSection}
                 {confirmSection}
                 {actionSection}
                 {termsSection}
