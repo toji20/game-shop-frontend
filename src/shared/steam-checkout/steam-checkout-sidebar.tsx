@@ -1,11 +1,11 @@
 'use client';
-import '@/app/(root)/game/[slug]/info-block/sidebar/sidebar.css'
 import {
     getAmountField,
     getLoginField,
     getProductForCurrency,
 } from './steam-checkout.utils';
 import { useSteamTopupStore } from './steam-topup-store';
+import '@/app/(root)/game/[slug]/info-block/sidebar/sidebar.css';
 import { usePlaceOrder } from '@/hooks/queries/useOrder';
 import { useCheckPromo } from '@/hooks/queries/usePromo';
 import { IGame, PaymentMethod } from '@/shared/types';
@@ -17,7 +17,7 @@ const PAYMENT_METHODS: { key: PaymentMethod; img: string; title: string }[] = [
     { key: 'sbp', img: '/spb.png', title: 'СБП' },
 ];
 
-const STEAM_SERVICE_COMMISSION_PERCENT = 6;
+const STEAM_SERVICE_COMMISSION_PERCENT = 4;
 
 interface SteamCheckoutSidebarProps {
     game: IGame;
