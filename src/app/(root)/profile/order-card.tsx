@@ -158,14 +158,15 @@ function resolveStatus(order: IOrder): StatusConfig {
 // Сумма заказа. Предпочитаем готовое поле order.total (см. IOrder в
 // order.interface.ts), иначе считаем сами по items как защитный фолбэк.
 function resolveOrderTotal(order: IOrder): number {
-    if (typeof order.total === 'number') return order.total;
+    const raw =
+        typeof order.total === 'number' && order.total > 0
+            ? order.total
+            : (order.items ?? []).reduce(
+                  (sum, i) => sum + i.price * i.quantity,
+                  0,
+              );
 
-    return (order.items ?? []).reduce((sum, i) => {
-        const price = Number(
-            i.giftapiProduct?.finalPrice ?? i.giftapiProduct?.price ?? 0,
-        );
-        return sum + price * i.quantity;
-    }, 0);
+    return Math.round(raw * 100) / 100;
 }
 
 export function OrderCard({

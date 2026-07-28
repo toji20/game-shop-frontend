@@ -70,7 +70,13 @@ export function OrderStatusBlock({ order, onSendCode }: Props) {
             {isCompleted ? (
                 <OrderSuccess />
             ) : (
-                <div className='order-status__total'>{order.total} ₽</div>
+                <div className='order-status__total'>
+                    {order.total.toLocaleString('ru-RU', {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                    })}{' '}
+                    ₽
+                </div>
             )}
         </div>
     );
