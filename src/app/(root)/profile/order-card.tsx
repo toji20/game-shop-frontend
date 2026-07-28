@@ -3,7 +3,7 @@ import { IOrderItem, IOrder } from '@/shared/types';
 import {
     ManualStatus,
     DonateHubStatus,
-    OrderType,
+    OrderStatus,
 } from '@/shared/types/order.interface';
 import {
     Check,
@@ -14,6 +14,7 @@ import {
     XCircle,
     KeyRound,
     Loader2,
+    CreditCard,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -97,24 +98,74 @@ const DONATEHUB_STATUS_CONFIG: Record<DonateHubStatus, StatusConfig> = {
     },
 };
 
-const FALLBACK_CONFIG: StatusConfig = {
-    label: 'Оплачен',
-    color: '#fff',
-    bg: '#2563eb',
-    icon: <Zap size={10} />,
+const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
+    PENDING: {
+        label: 'Ожидает оплаты',
+        color: '#fff',
+        bg: '#6b7280',
+        icon: <CreditCard size={10} />,
+    },
+    PAID: {
+        label: 'Оплачен, готовится к выполнению',
+        color: '#fff',
+        bg: '#2563eb',
+        icon: <Loader2 size={10} />,
+    },
+    IN_PROCESS: {
+        label: 'В обработке',
+        color: '#fff',
+        bg: '#7c3aed',
+        icon: <Loader2 size={10} />,
+    },
+    COMPLETED: {
+        label: 'Выполнен',
+        color: '#fff',
+        bg: '#16a34a',
+        icon: <Check size={10} />,
+    },
+    CANCELED: {
+        label: 'Отменён',
+        color: '#fff',
+        bg: '#dc2626',
+        icon: <XCircle size={10} />,
+    },
 };
+
 function resolveStatus(order: IOrder): StatusConfig {
+    // Терминальные/предварительные статусы заказа — не зависят от типа обработки
+    if (
+        order.status === 'PENDING' ||
+        order.status === 'CANCELED' ||
+        order.status === 'COMPLETED'
+    ) {
+        return ORDER_STATUS_CONFIG[order.status];
+    }
+
+    // order.status === 'PAID' | 'IN_PROCESS' — заказ оплачен и обрабатывается,
+    // детализируем статус по типу заказа (MANUAL/AUTO)
     if (order.type === 'MANUAL') {
         return order.manualStatus
             ? MANUAL_STATUS_CONFIG[order.manualStatus]
-            : MANUAL_STATUS_CONFIG.PENDING;
+            : ORDER_STATUS_CONFIG.PAID;
     }
 
-    // AUTO — берём статус из первого item
     const donateHubStatus = order.items?.[0]?.donateHubStatus;
     return donateHubStatus
         ? DONATEHUB_STATUS_CONFIG[donateHubStatus]
-        : FALLBACK_CONFIG;
+        : ORDER_STATUS_CONFIG.PAID;
+}
+
+// Сумма заказа. Предпочитаем готовое поле order.total (см. IOrder в
+// order.interface.ts), иначе считаем сами по items как защитный фолбэк.
+function resolveOrderTotal(order: IOrder): number {
+    if (typeof order.total === 'number') return order.total;
+
+    return (order.items ?? []).reduce((sum, i) => {
+        const price = Number(
+            i.giftapiProduct?.finalPrice ?? i.giftapiProduct?.price ?? 0,
+        );
+        return sum + price * i.quantity;
+    }, 0);
 }
 
 export function OrderCard({
@@ -134,7 +185,8 @@ export function OrderCard({
     };
 
     const s = resolveStatus(order);
-    console.log(item.giftapiProduct?.image, item.giftapiProduct?.name);
+    const total = resolveOrderTotal(order);
+
     return (
         <Link href={PUBLIC_URL.order(order.id)} className='order-card'>
             <div className='order-card__img-wrap'>
@@ -153,8 +205,14 @@ export function OrderCard({
             </div>
 
             <div className='order-card__info'>
-                <p className='order-card__name'>{item.position?.name}</p>
+                <p className='order-card__name'>{item.giftapiProduct?.name}</p>
                 <p className='order-card__game'>{item.game?.name}</p>
+
+                <div className='order-card__price-row'>
+                    <span className='order-card__price'>
+                        {total.toLocaleString('ru-RU')} ₽
+                    </span>
+                </div>
 
                 <div className='order-card__bottom'>
                     <span className='order-card__date'>
