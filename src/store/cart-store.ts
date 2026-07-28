@@ -11,10 +11,6 @@ interface ExchangeRates {
     kztToRub: number;
 }
 
-// Та же комиссия, что и на бэкенде (GIFTAPI_CUSTOM_TOPUP_COMMISSION,
-// см. order.service.ts/resolveCustomAmountPrice) — здесь используется только
-// для ПРИБЛИЗИТЕЛЬНОГО отображения суммы на фронте. Точная цена всегда
-// пересчитывается на бэкенде в момент оформления заказа.
 const APPROX_CUSTOM_TOPUP_COMMISSION = 1.04;
 
 interface CartStore {
@@ -28,10 +24,6 @@ interface CartStore {
 
     isSelected: (productId: string) => boolean;
 
-    // Приблизительная сумма для товаров с denominationType='custom' (например,
-    // пополнение Steam на произвольную сумму) не входит в hasApproxPricedItem —
-    // используется, чтобы решить, показывать ли пометку "ориентировочно" рядом
-    // с итоговой суммой.
     hasApproxPricedItem: () => boolean;
 
     total: () => number;
@@ -39,14 +31,6 @@ interface CartStore {
     clear: () => void;
 }
 
-/**
- * Цена одной позиции в рублях.
- * - Обычный товар (фиксированная цена в каталоге) — берём finalPrice как есть.
- * - Товар с denominationType='custom' (сумма вводится пользователем, в
- *   каталоге цены нет) — считаем ПРИБЛИЗИТЕЛЬНО: сумма × курс валюты товара
- *   → RUB × комиссия. Настоящая цена в рублях всегда определяется на
- *   бэкенде при создании платежа (курс на тот момент может отличаться).
- */
 function resolveApproxItemPrice(
     item: CartItem,
     fields: Record<string, string>,
@@ -69,7 +53,7 @@ function resolveApproxItemPrice(
     const amount = Number(rawAmount);
     if (!rawAmount || Number.isNaN(amount)) return 0;
 
-    if (!exchangeRates) return 0; // курс ещё не загрузился — покажем чуть позже
+    if (!exchangeRates) return 0;
 
     let amountInRub: number;
     if (product.currency === 'USD') {
@@ -88,26 +72,21 @@ export const useCartStore = create<CartStore>((set, get) => ({
     fields: {},
     exchangeRates: null,
 
+    // Single-select: в корзине может быть только один товар одновременно.
+    // Клик по уже выбранному товару снимает выбор, клик по другому — заменяет
+    // текущий выбор новым (а не добавляет вторым элементом).
     toggle: (product, gameId) => {
         const exists = get().items.find((i) => i.product.id === product.id);
 
         if (exists) {
-            set((state) => ({
-                items: state.items.filter((i) => i.product.id !== product.id),
-            }));
+            set({ items: [], fields: {} });
         } else {
-            set((state) => ({
-                items: [
-                    ...state.items,
-                    {
-                        product,
-                        gameId,
-                    },
-                ],
-            }));
+            set({
+                items: [{ product, gameId }],
+                fields: {},
+            });
         }
     },
-
     setField: (fieldId, value) => {
         set((state) => ({
             fields: {
