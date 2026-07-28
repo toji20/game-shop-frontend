@@ -134,12 +134,13 @@ export function OrderCard({
     };
 
     const s = resolveStatus(order);
+    console.log(item.giftapiProduct?.image, item.giftapiProduct?.name);
     return (
         <Link href={PUBLIC_URL.order(order.id)} className='order-card'>
             <div className='order-card__img-wrap'>
                 <img
-                    src={item.position?.image || undefined}
-                    alt={item.position?.name}
+                    src={item.giftapiProduct?.image || undefined}
+                    alt={item.giftapiProduct?.name}
                     className='order-card__img'
                 />
                 <div
