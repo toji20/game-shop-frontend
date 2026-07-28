@@ -110,6 +110,70 @@
     width: 22px;
     background: rgba(255, 255, 255, 0.9);
 }
+/* SKELETON ROW — не тянется под ширину, обрезается вьюпортом (overflow: hidden) */
+.side-banners__skeleton-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    padding: 20px 0;
+    width: max-content;
+    margin: 0 auto;
+}
+
+.side-banners__skeleton-slide {
+    flex: 0 0 362px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.side-banner-skeleton-img {
+    width: 330px !important;
+    height: 175px !important;
+    border-radius: 16px !important;
+}
+
+/* средний — крупнее, как активный слайд */
+.side-banners__skeleton-slide--active {
+    z-index: 5;
+}
+
+/* DOTS SKELETON */
+.side-banners__dot-skeleton {
+    width: 6px !important;
+    height: 6px !important;
+    border-radius: 999px !important;
+}
+
+.side-banners__dot-skeleton--active {
+    width: 22px !important;
+}
+
+/* TABLET */
+@media (max-width: 650px) {
+    .side-banners__skeleton-slide {
+        flex: 0 0 312px;
+    }
+
+    .side-banner-skeleton-img {
+        width: 280px !important;
+        height: 155px !important;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 500px) {
+    .side-banners__skeleton-slide {
+        flex: 0 0 268px;
+    }
+
+    .side-banner-skeleton-img {
+        width: 246px !important;
+        height: 142px !important;
+    }
+}
 
 /* TABLET */
 @media (max-width: 650px) {

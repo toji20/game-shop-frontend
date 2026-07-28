@@ -8,6 +8,8 @@ import { useSideBanner } from '@/hooks/queries/useSideBanner';
 import useEmblaCarousel from 'embla-carousel-react';
 import { useEffect, useRef, useState } from 'react';
 
+const SKELETON_COUNT = 5;
+
 export function SideBanners() {
     const { sideBanners } = useSideBanner();
     const items = sideBanners ?? [];
@@ -97,7 +99,43 @@ export function SideBanners() {
         return (
             <div className='side-banners'>
                 <div className='side-banners__viewport'>
-                    <Skeleton width={360} height={195} borderRadius={16} />
+                    <div className='side-banners__skeleton-row'>
+                        {Array.from({ length: SKELETON_COUNT }).map(
+                            (_, index) => (
+                                <div
+                                    key={index}
+                                    className={`side-banners__skeleton-slide ${
+                                        index === 2
+                                            ? 'side-banners__skeleton-slide--active'
+                                            : ''
+                                    }`}
+                                >
+                                    <Skeleton
+                                        width={330}
+                                        height={175}
+                                        borderRadius={16}
+                                        className='side-banner-skeleton-img'
+                                    />
+                                </div>
+                            ),
+                        )}
+                    </div>
+                </div>
+
+                <div className='side-banners__dots'>
+                    {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+                        <Skeleton
+                            key={index}
+                            width={6}
+                            height={6}
+                            borderRadius={999}
+                            className={`side-banners__dot-skeleton ${
+                                index === 2
+                                    ? 'side-banners__dot-skeleton--active'
+                                    : ''
+                            }`}
+                        />
+                    ))}
                 </div>
             </div>
         );
